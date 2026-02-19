@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div th:fragment="resultsTable">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-list-ul"></i> Registros de Auditoría
+                <span class="badge bg-primary ms-2" th:text="${#lists.size(auditLogs)}">0</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div th:if="${#lists.isEmpty(auditLogs)}" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                <p class="mb-1"><strong>No hay registros de auditoría</strong></p>
+                <small>Prueba ajustando los filtros de búsqueda</small>
+            </div>
+            <div th:unless="${#lists.isEmpty(auditLogs)}" class="table-responsive">
+                <table class="table table-hover table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Fecha/Hora</th>
+                            <th>Usuario</th>
+                            <th>Evento</th>
+                            <th>Descripción</th>
+                            <th>IP</th>
+                            <th>Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="log : ${auditLogs}">
+                            <td>
+                                <small th:text="${#temporals.format(log.eventDate, 'dd/MM/yyyy HH:mm:ss')}"></small>
+                            </td>
+                            <td>
+                                <span th:if="${log.user != null}">
+                                    <i class="bi bi-person-circle"></i>
+                                    <span th:text="${log.user.username}"></span>
+                                </span>
+                                <span th:if="${log.user == null}" class="text-muted">
+                                    <i class="bi bi-gear"></i> Sistema
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-info" th:text="${log.eventType}"></span>
+                            </td>
+                            <td><small th:text="${log.description}"></small></td>
+                            <td>
+                                <small class="text-muted">
+                                    <i class="bi bi-geo-alt" th:if="${log.ipAddress != null && !log.ipAddress.isEmpty()}"></i>
+                                    <span th:text="${log.ipAddress}"></span>
+                                </small>
+                            </td>
+                            <td>
+                                <small class="text-muted" th:text="${log.details}"></small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

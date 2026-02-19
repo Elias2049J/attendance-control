@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Reprogramar Sesión')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content"><div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0">
+                            <i class="bi bi-calendar-x"></i> Reprogramar Sesión
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Actividad:</strong> <span th:text="${activity.name}"></span>
+                        </div>
+                        <form th:action="@{/incidents/reschedule}" method="post">
+                            <input type="hidden" name="activityId" th:value="${activity.id}">
+                            <div class="mb-3">
+                                <label for="originalDate" class="form-label">Sesión a reprogramar</label>
+                                <select class="form-select" id="originalDate" name="originalDate" required>
+                                    <option value="">Seleccione una sesión...</option>
+                                    <option th:each="sessionEntity : ${sessions}"
+                                            th:if="${sessionEntity.status.name() == 'PLANNED'}"
+                                            th:value="${sessionEntity.sessionDate}"
+                                            th:text="${#temporals.format(sessionEntity.sessionDate, 'dd/MM/yyyy') + ' - ' + #temporals.format(sessionEntity.startTime, 'HH:mm')}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newDate" class="form-label">Nueva fecha</label>
+                                <input type="date" class="form-control" id="newDate" name="newDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="reason" class="form-label">Motivo de la reprogramación</label>
+                                <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a th:href="@{/activities}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-calendar-check"></i> Reprogramar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div></main><div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

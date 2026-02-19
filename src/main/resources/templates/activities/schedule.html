@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Horario de Actividad')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content">
+        <div class="container-fluid py-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/activities}" class="text-decoration-none">Actividades</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/activities/{id}(id=${activity.id})}" class="text-decoration-none" th:text="${activity.name}">Actividad</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Horario</li>
+                </ol>
+            </nav>
+            <div class="mb-3">
+                <a th:href="@{/activities/{id}(id=${activity.id})}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+            <h2><i class="bi bi-calendar3"></i> Horario: <span th:text="${activity.name}"></span></h2>
+            <div class="card mt-4">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="sessionEntity : ${sessions}">
+                                    <td th:text="${#temporals.format(sessionEntity.sessionDate, 'dd/MM/yyyy')}">Fecha</td>
+                                    <td th:text="${(sessionEntity.activity != null and sessionEntity.activity.recurrenceRule != null) ? sessionEntity.activity.recurrenceRule.startTime : '-'}">Hora</td>
+                                    <td>
+                                        <span th:class="${sessionEntity.status == T(com.elias.attendancecontrol.model.entity.SessionStatus).ACTIVE ? 'badge bg-success' :
+                                                          (sessionEntity.status == T(com.elias.attendancecontrol.model.entity.SessionStatus).CLOSED ? 'badge bg-secondary' :
+                                                          (sessionEntity.status == T(com.elias.attendancecontrol.model.entity.SessionStatus).CANCELLED ? 'badge bg-danger' : 'badge bg-info'))}"
+                                              th:text="${sessionEntity.status}">Estado</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div th:if="${#lists.isEmpty(sessions)}" class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> No hay sesiones programadas
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrarse - Control de Asistencia</title>
+    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap-icons-1.13.1/bootstrap-icons.min.css}" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .register-card {
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card register-card">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <i class="bi bi-person-plus-fill text-primary" style="font-size: 3rem;"></i>
+                            <h2 class="mt-2">Crear Cuenta</h2>
+                            <p class="text-muted">Complete el formulario para registrarse</p>
+                        </div>
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" systemRole="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <span th:text="${error}">Error</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" systemRole="alert">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span th:text="${success}">Éxito</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        <form th:action="@{/auth/register}" method="post" th:object="${user}">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">
+                                    <i class="bi bi-person"></i> Nombre de Usuario *
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="username"
+                                       th:field="*{username}"
+                                       placeholder="Ingrese su nombre de usuario"
+                                       required
+                                       minlength="4"
+                                       maxlength="50">
+                                <small class="text-muted">Mínimo 4 caracteres</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="bi bi-envelope"></i> Correo Electrónico *
+                                </label>
+                                <input type="email"
+                                       class="form-control"
+                                       id="email"
+                                       th:field="*{email}"
+                                       placeholder="usuario@example.com"
+                                       required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">
+                                    <i class="bi bi-person-badge"></i> Nombre *
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="name"
+                                       th:field="*{name}"
+                                       placeholder="Ingrese su nombre"
+                                       required
+                                       maxlength="100">
+                            </div>
+                            <div class="mb-3">
+                                <label for="lastname" class="form-label">
+                                    <i class="bi bi-person-badge"></i> Apellido *
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="lastname"
+                                       th:field="*{lastname}"
+                                       placeholder="Ingrese su apellido"
+                                       required
+                                       maxlength="100">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    <i class="bi bi-lock"></i> Contraseña *
+                                </label>
+                                <input type="password"
+                                       class="form-control"
+                                       id="password"
+                                       th:field="*{password}"
+                                       placeholder="Ingrese su contraseña"
+                                       required
+                                       minlength="6">
+                                <small class="text-muted">Mínimo 6 caracteres</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">
+                                    <i class="bi bi-lock-fill"></i> Confirmar Contraseña *
+                                </label>
+                                <input type="password"
+                                       class="form-control"
+                                       id="confirmPassword"
+                                       name="confirmPassword"
+                                       placeholder="Confirme su contraseña"
+                                       required
+                                       minlength="6">
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="terms"
+                                       required>
+                                <label class="form-check-label" for="terms">
+                                    Acepto los términos y condiciones
+                                </label>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-person-plus"></i> Registrarse
+                                </button>
+                            </div>
+                        </form>
+                        <div class="text-center mt-4">
+                            <p class="text-muted">
+                                ¿Ya tienes una cuenta?
+                                <a th:href="@{/auth/login}" class="text-decoration-none">
+                                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:src="@{/js/bootstrap.bundle.js}"></script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Las contraseñas no coinciden. Por favor, verifique.');
+                document.getElementById('confirmPassword').focus();
+            }
+        });
+    </script>
+</body>
+</html>

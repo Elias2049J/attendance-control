@@ -1,0 +1,496 @@
+@startuml
+
+class LoginView <<boundary>> {
+}
+
+class OrganizationRegisterView <<boundary>> {
+}
+
+class OrganizationManageView <<boundary>> {
+}
+
+class OrganizationEditView <<boundary>> {
+}
+
+class UserManagementView <<boundary>> {
+}
+
+class ActivityFormView <<boundary>> {
+}
+
+class EnrollmentView <<boundary>> {
+}
+
+class RecurrenceConfigView <<boundary>> {
+}
+
+class CalendarView <<boundary>> {
+}
+
+class SessionFormView <<boundary>> {
+}
+
+class SessionDetailView <<boundary>> {
+}
+
+class QRView <<boundary>> {
+}
+
+class AttendanceScanView <<boundary>> {
+}
+
+class AttendanceHistoryView <<boundary>> {
+}
+
+class ReportView <<boundary>> {
+}
+
+class AuditLogView <<boundary>> {
+}
+
+' =========================
+' CONTROLLERS (REST API)
+' =========================
+
+class AuthController <<boundary>> {
+  + login()
+  + logout()
+  + register()
+}
+
+class OrganizationController <<boundary>> {
+  + registerOrganization()
+  + manageOrganization()
+  + updateOrganization()
+  + changePlan()
+}
+
+class UserController <<boundary>> {
+  + createUser()
+  + updateUser()
+  + deactivateUser()
+  + listUsers()
+}
+
+class ActivityController <<boundary>> {
+  + createActivity()
+  + updateActivity()
+  + deactivateActivity()
+  + listActivities()
+}
+
+class EnrollmentController <<boundary>> {
+  + enrollUser()
+  + enrollMultipleUsers()
+  + removeParticipant()
+  + listEnrollments()
+}
+
+class RecurrenceController <<boundary>> {
+  + configureRecurrence()
+  + updateRecurrence()
+}
+
+class ActivityExceptionController <<boundary>> {
+  + rescheduleOccurrence()
+  + cancelOccurrence()
+}
+
+class CalendarController <<boundary>> {
+  + getCalendarView()
+  + getActivitiesByDateRange()
+}
+
+class SessionController <<boundary>> {
+  + activateSession()
+  + closeSession()
+  + listSessions()
+  + generateSessions()
+}
+
+class QRController <<boundary>> {
+  + generateQR()
+  + regenerateQR()
+  + validateQR()
+}
+
+class AttendanceController <<boundary>> {
+  + registerAttendance()
+  + manualRegistration()
+  + listAttendance()
+  + getAttendanceHistory()
+}
+
+class ReportController <<boundary>> {
+  + generateActivityReport()
+  + generateEnrollmentReport()
+  + generateParticipantStatistics()
+  + exportReport()
+}
+
+class AuditController <<boundary>> {
+  + listAuditLogs()
+  + filterLogs()
+  + exportAuditLogs()
+}
+
+class OrganizationService <<control>> {
+  + registerOrganization()
+  + createOrganization()
+  + updateOrganization()
+  + deactivateOrganization()
+  + getOrganizationById()
+  + getOrganizationBySlug()
+  + listOrganizations()
+  + isSlugAvailable()
+  + canAddUser()
+  + canAddActivity()
+  + getUserCount()
+  + getActivityCount()
+  + addUserToOrganization()
+  + removeUserFromOrganization()
+  + changePlan()
+}
+
+class UserService <<control>> {
+  + registerUser()
+  + createUser()
+  + updateUser()
+  + deactivateUser()
+  + listUsers()
+  + getUserById()
+  + getUserByUsername()
+}
+
+class ActivityService <<control>> {
+  + createActivity()
+  + updateActivity()
+  + deactivateActivity()
+  + listActivities()
+  + getActivityById()
+  + findActiveActivities()
+  + findByResponsible()
+}
+
+class EnrollmentService <<control>> {
+  + enrollUser()
+  + enrollMultipleUsers()
+  + removeParticipant()
+  + getEnrolledParticipants()
+  + getActivitiesByUser()
+  + isUserEnrolled()
+  + getExpectedParticipants()
+  + getAbsentUsers()
+}
+
+class RecurrenceService <<control>> {
+  + configureRecurrence()
+  + updateRecurrence()
+  + validateRecurrence()
+}
+
+class ActivityIncidentService <<control>> {
+  + registerIncident()
+  + rescheduleOccurrence()
+  + cancelOccurrence()
+}
+
+class SessionService <<control>> {
+  + activateSession()
+  + closeSession()
+  + listSessions()
+  + getSessionById()
+  + canActivate()
+  + canClose()
+  + generateSessions()
+  + applyRecurrenceRules()
+  + applyExceptions()
+}
+
+class QRService <<control>> {
+  + generateQR()
+  + regenerateQR()
+  + validateQR()
+  + invalidateQR()
+}
+
+class AttendanceService <<control>> {
+  + registerAttendance()
+  + manualRegistration()
+  + listAttendance()
+  + getAttendanceBySession()
+  + getAttendanceByUser()
+  + getAttendanceHistory()
+}
+
+class ReportService <<control>> {
+  + generateActivityReport()
+  + generateSessionReport()
+  + generateEnrollmentReport()
+  + getParticipantStatistics()
+  + exportReport()
+}
+
+class LogService <<control>> {
+  + log()
+  + logEvent()
+  + createAuditLog()
+  + listLogs()
+  + filterLogs()
+}
+
+class AuthenticationService <<control>> {
+  + authenticate()
+  + loadUserByUsername()
+  + validateCredentials()
+}
+
+' =========================
+' SECURITY COMPONENTS
+' =========================
+
+class CustomAuthenticationProvider <<control>> {
+  + authenticate()
+  + supports()
+}
+
+class SecurityConfig <<control>> {
+  + securityFilterChain()
+}
+
+class TenantFilter <<control>> {
+  + doFilter()
+}
+
+class TenantContext <<control>> {
+  + setCurrentOrganizationId()
+  + getCurrentOrganizationId()
+  + clear()
+  + hasCurrentOrganization()
+}
+
+class GlobalExceptionHandler <<control>> {
+  + handleIllegalArgumentException()
+  + handleIllegalStateException()
+  + handleGenericException()
+}
+
+' =========================
+' REPOSITORIES (Data Access)
+' =========================
+
+class OrganizationRepository <<entity>> {
+  + findBySlug()
+  + existsBySlug()
+  + findByActiveTrue()
+  + findByOwner()
+  + countUsersByOrganization()
+  + countActivitiesByOrganization()
+  + findByPlan()
+}
+
+class UserRepository <<entity>> {
+  + findByUsername()
+  + findByEmail()
+  + existsByUsername()
+  + existsByEmail()
+  + findByOrganization()
+  + findByOrganizationAndActiveTrue()
+  + findByOrganizationId()
+}
+
+class ActivityRepository <<entity>> {
+  + findByActiveTrue()
+  + findByResponsible()
+  + findByOrganization()
+  + findByOrganizationAndActiveTrue()
+  + findByOrganizationAndResponsible()
+  + findByOrganizationId()
+}
+
+class EnrollmentRepository <<entity>> {
+  + findByActivity()
+  + findByUser()
+  + findByActivityAndStatus()
+  + findByActivityAndUser()
+  + existsByActivityAndUser()
+  + existsByActivityAndUserAndStatus()
+  + findUsersByActivityAndStatus()
+  + findActivitiesByUserAndStatus()
+}
+
+class RecurrenceRuleRepository <<entity>> {
+  + findByActivity()
+}
+
+class ActivityIncidentRepository <<entity>> {
+  + findByActivity()
+  + findByActivityAndOriginalDate()
+}
+
+class SessionRepository <<entity>> {
+  + findByActivity()
+  + findBySessionDateBetween()
+  + findByActivityAndSessionDateBetween()
+  + findByActivityAndSessionDate()
+  + existsByActivityAndSessionDate()
+  + findByStatus()
+  + findByActivityAndStatus()
+}
+
+class QRTokenRepository <<entity>> {
+  + findBySession()
+  + findByToken()
+  + findBySessionAndActiveTrue()
+}
+
+class SessionTokenRepository <<entity>> {
+  + findByUser()
+  + findByToken()
+  + findByUserAndActiveTrue()
+}
+
+class AttendanceRepository <<entity>> {
+  + findBySession()
+  + findByUser()
+  + findBySessionAndUser()
+  + existsBySessionAndUser()
+  + findBySessionAndStatus()
+}
+
+class AuditLogRepository <<entity>> {
+  + findByUser()
+  + findBySession()
+  + findByEventType()
+  + findByEventDateBetween()
+  + findByOrganization()
+}
+
+AuthController --> AuthenticationService
+AuthController --> UserService
+
+OrganizationController --> OrganizationService
+OrganizationController --> UserService
+
+UserController --> UserService
+UserController --> LogService
+UserController --> OrganizationService
+
+ActivityController --> ActivityService
+ActivityController --> UserService
+ActivityController --> LogService
+
+EnrollmentController --> EnrollmentService
+EnrollmentController --> ActivityService
+EnrollmentController --> UserService
+
+RecurrenceController --> RecurrenceService
+RecurrenceController --> ActivityService
+
+ActivityExceptionController --> ActivityIncidentService
+ActivityExceptionController --> ActivityService
+
+CalendarController --> ActivityService
+CalendarController --> SessionService
+
+SessionController --> SessionService
+SessionController --> ActivityService
+
+QRController --> QRService
+QRController --> SessionService
+
+AttendanceController --> AttendanceService
+AttendanceController --> SessionService
+AttendanceController --> EnrollmentService
+
+ReportController --> ReportService
+ReportController --> ActivityService
+ReportController --> EnrollmentService
+
+AuditController --> LogService
+
+
+OrganizationService --> OrganizationRepository
+OrganizationService --> UserRepository
+OrganizationService --> ActivityRepository
+OrganizationService --> LogService
+
+UserService --> UserRepository
+UserService --> OrganizationRepository
+UserService --> LogService
+UserService --> OrganizationService
+
+ActivityService --> ActivityRepository
+ActivityService --> OrganizationRepository
+ActivityService --> LogService
+ActivityService --> OrganizationService
+
+EnrollmentService --> EnrollmentRepository
+EnrollmentService --> ActivityRepository
+EnrollmentService --> UserRepository
+EnrollmentService --> LogService
+
+RecurrenceService --> RecurrenceRuleRepository
+RecurrenceService --> ActivityRepository
+RecurrenceService --> LogService
+
+ActivityIncidentService --> ActivityIncidentRepository
+ActivityIncidentService --> ActivityRepository
+ActivityIncidentService --> UserRepository
+ActivityIncidentService --> LogService
+
+SessionService --> SessionRepository
+SessionService --> ActivityRepository
+SessionService --> RecurrenceRuleRepository
+SessionService --> ActivityIncidentRepository
+SessionService --> LogService
+
+QRService --> QRTokenRepository
+QRService --> SessionRepository
+
+AttendanceService --> AttendanceRepository
+AttendanceService --> SessionRepository
+AttendanceService --> UserRepository
+AttendanceService --> EnrollmentService
+AttendanceService --> LogService
+
+ReportService --> ActivityRepository
+ReportService --> SessionRepository
+ReportService --> AttendanceRepository
+ReportService --> EnrollmentRepository
+
+LogService --> AuditLogRepository
+LogService --> UserRepository
+
+AuthenticationService --> UserRepository
+
+SecurityConfig --> CustomAuthenticationProvider
+SecurityConfig --> TenantFilter
+
+TenantFilter --> UserRepository
+TenantFilter --> TenantContext
+
+CustomAuthenticationProvider --> AuthenticationService
+
+
+note right of TenantContext
+  ThreadLocal storage for
+  current organization ID.
+  Set by TenantFilter on
+  each HTTP request.
+end note
+
+note right of TenantFilter
+  Intercepts HTTP requests.
+  Detects authenticated user.
+  Sets organization context.
+  Clears context after request.
+end note
+
+note right of OrganizationService
+  Manages organizations,
+  validates plan limits,
+  controls resource quotas.
+end note
+
+@enduml

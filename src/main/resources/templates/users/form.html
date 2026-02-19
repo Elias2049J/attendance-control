@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head(${user.id != null ? 'Editar Usuario' : 'Nuevo Usuario'})}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content"><div class="container py-4">
+        <div class="row">
+            <div class="col-12">
+                <h2>
+                    <i class="bi bi-person-plus"></i>
+                    <span th:text="${user.id != null ? 'Editar Usuario' : 'Nuevo Usuario'}">Nuevo Usuario</span>
+                </h2>
+                <p class="text-muted">Complete el formulario con los datos del usuario</p>
+                <hr>
+            </div>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form th:action="${user.id != null ? '/users/' + user.id : '/users'}"
+                              method="post"
+                              th:object="${user}">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">
+                                    <i class="bi bi-person"></i> Nombre de Usuario *
+                                </label>
+                                <input type="text" class="form-control" id="username" th:field="*{username}"
+                                       placeholder="Ingrese el nombre de usuario" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="bi bi-envelope"></i> Email *
+                                </label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}"
+                                       placeholder="correo@example.com" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">
+                                    <i class="bi bi-person-badge"></i> Nombre *
+                                </label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}"
+                                       placeholder="Nombre" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="lastname" class="form-label">
+                                    <i class="bi bi-person-badge"></i> Apellido *
+                                </label>
+                                <input type="text" class="form-control" id="lastname" th:field="*{lastname}"
+                                       placeholder="Apellido" required>
+                            </div>
+                            <div class="mb-3" th:if="${user.id == null}">
+                                <label for="password" class="form-label">
+                                    <i class="bi bi-lock"></i> Contraseña *
+                                </label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}"
+                                       placeholder="Ingrese contraseña" required>
+                                <small class="text-muted">Mínimo 6 caracteres</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="systemRole" class="form-label">
+                                    <i class="bi bi-shield"></i> Rol *
+                                </label>
+                                <select class="form-select" id="systemRole" th:field="*{systemRole}" required>
+                                    <option value="">Seleccione un rol</option>
+                                    <option th:each="roleOption : ${T(com.elias.attendancecontrol.model.entity.SystemRole).values()}"
+                                            th:value="${roleOption}"
+                                            th:text="${roleOption.name()}"
+                                            th:selected="${user.systemRole == roleOption}">Rol</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="active" th:field="*{active}">
+                                <label class="form-check-label" for="active">Usuario Activo</label>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a th:href="@{/users}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i>
+                                    <span th:text="${user.id != null ? 'Actualizar' : 'Guardar'}">Guardar</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div></main><div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

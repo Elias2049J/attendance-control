@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Registro/Edición de Asistencia')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content">
+        <div class="container-fluid py-4">
+            <div class="mb-3">
+                <a th:href="@{/sessions}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver a Sesiones
+                </a>
+            </div>
+
+            <h2><i class="bi bi-clipboard-check"></i> Registro y Edición de Asistencia</h2>
+            <p class="text-muted">Marque o modifique el estado de asistencia de cada participante</p>
+            <hr>
+
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+                <i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Información de la Sesión
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Actividad:</strong>
+                            <p th:text="${activity.name}">Nombre de Actividad</p>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Fecha:</strong>
+                            <p th:text="${#temporals.format(session.sessionDate, 'dd/MM/yyyy')}">01/01/2024</p>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Horario:</strong>
+                            <p>
+                                <span th:text="${#temporals.format(session.startTime, 'HH:mm')}">08:00</span> -
+                                <span th:text="${#temporals.format(session.endTime, 'HH:mm')}">10:00</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-people"></i> Lista de Participantes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/attendance/manual-registration}" method="post" id="attendanceForm">
+                        <input type="hidden" name="sessionId" th:value="${session.id}">
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 40%;">Participante</th>
+                                        <th class="text-center" style="width: 20%;">
+                                            <i class="bi bi-check-circle-fill text-success"></i> Presente
+                                        </th>
+                                        <th class="text-center" style="width: 20%;">
+                                            <i class="bi bi-clock-fill text-warning"></i> Tarde
+                                        </th>
+                                        <th class="text-center" style="width: 20%;">
+                                            <i class="bi bi-x-circle-fill text-danger"></i> Ausente
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="user : ${users}">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-person-circle fs-4 me-2 text-secondary"></i>
+                                                <div>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <strong th:text="${user.name + ' ' + user.lastname}">Nombre Usuario</strong>
+                                                        <span th:if="${existingAttendanceMap.containsKey(user.id)}"
+                                                              class="badge bg-info">
+                                                            <i class="bi bi-pencil"></i> Ya registrado
+                                                        </span>
+                                                    </div>
+                                                    <small class="text-muted" th:text="${user.email}">email@example.com</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <div class="form-check d-inline-block">
+                                                <input class="form-check-input"
+                                                       type="radio"
+                                                       th:name="${'attendance_' + user.id}"
+                                                       th:id="${'present_' + user.id}"
+                                                       value="PRESENT"
+                                                       th:checked="${existingAttendanceMap.containsKey(user.id) and existingAttendanceMap.get(user.id).status.name() == 'PRESENT'}"
+                                                       style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <div class="form-check d-inline-block">
+                                                <input class="form-check-input"
+                                                       type="radio"
+                                                       th:name="${'attendance_' + user.id}"
+                                                       th:id="${'late_' + user.id}"
+                                                       value="LATE"
+                                                       th:checked="${existingAttendanceMap.containsKey(user.id) and existingAttendanceMap.get(user.id).status.name() == 'LATE'}"
+                                                       style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <div class="form-check d-inline-block">
+                                                <input class="form-check-input"
+                                                       type="radio"
+                                                       th:name="${'attendance_' + user.id}"
+                                                       th:id="${'absent_' + user.id}"
+                                                       value="ABSENT"
+                                                       th:checked="${existingAttendanceMap.containsKey(user.id) and existingAttendanceMap.get(user.id).status.name() == 'ABSENT'}"
+                                                       style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(users)}">
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                            No hay participantes para registrar
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div>
+                                <button type="button" class="btn btn-outline-secondary" onclick="clearAll()">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Limpiar Todo
+                                </button>
+                                <button type="button" class="btn btn-outline-success" onclick="markAllPresent()">
+                                    <i class="bi bi-check-all"></i> Marcar Todos Presentes
+                                </button>
+                            </div>
+                            <div>
+                                <a th:href="@{/sessions}" class="btn btn-secondary me-2">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-3">
+                <i class="bi bi-info-circle"></i>
+                <strong>Nota:</strong>
+                <ul class="mb-0 mt-2">
+                    <li>Puede crear nuevos registros o modificar los existentes (marcados con badge "Ya registrado")</li>
+                    <li>Solo se procesarán los participantes que tengan un estado marcado</li>
+                    <li>Los cambios se pueden realizar mientras la sesión esté activa</li>
+                    <li>Una vez cerrada la sesión, no se podrán realizar más cambios</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+    <div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+
+    <script>
+        function clearAll() {
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => radio.checked = false);
+        }
+
+        function markAllPresent() {
+            const presentRadios = document.querySelectorAll('input[value="PRESENT"]');
+            presentRadios.forEach(radio => radio.checked = true);
+        }
+
+        document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+            const checkedRadios = document.querySelectorAll('input[type="radio"]:checked');
+            if (checkedRadios.length === 0) {
+                e.preventDefault();
+                alert('Debe marcar al menos un participante');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+

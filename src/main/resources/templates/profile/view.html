@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Mi Perfil')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content">
+        <div class="container-fluid py-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Inicio</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Mi Perfil</li>
+                </ol>
+            </nav>
+            <h2><i class="bi bi-person-circle"></i> Mi Perfil</h2>
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show mt-3">
+                <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div class="row mt-4">
+                <div class="col-lg-8">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="text-muted">Nombre de Usuario</label>
+                                    <p class="h5" th:text="${user.username}">username</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted">Email</label>
+                                    <p class="h5" th:text="${user.email}">email</p>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="text-muted">Nombre</label>
+                                    <p class="h5" th:text="${user.name}">Nombre</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted">Apellido</label>
+                                    <p class="h5" th:text="${user.lastname}">Apellido</p>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="text-muted">Rol del Sistema</label>
+                                    <p><span class="badge bg-primary" th:text="${user.systemRole}">ROLE</span></p>
+                                </div>
+                                <div class="col-md-6" th:if="${user.organizationRole != null}">
+                                    <label class="text-muted">Rol en Organización</label>
+                                    <p><span class="badge bg-info" th:text="${user.organizationRole}">ORG_ROLE</span></p>
+                                </div>
+                            </div>
+                            <div class="row mb-3" th:if="${user.organization != null}">
+                                <div class="col-12">
+                                    <label class="text-muted">Organización</label>
+                                    <p class="h5" th:text="${user.organization.name}">Organización</p>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <a th:href="@{/profile/edit}" class="btn btn-primary me-2">
+                                    <i class="bi bi-pencil"></i> Editar Perfil
+                                </a>
+                                <form th:action="@{/auth/logout}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

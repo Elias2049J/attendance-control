@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Detalle de Incidencia')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content"><div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-exclamation-triangle"></i> Detalle de Incidencia
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Tipo:</strong></p>
+                                <p>
+                                    <span th:if="${incident.incidentType.name() == 'CANCELLATION'}" class="badge bg-danger">
+                                        <i class="bi bi-x-circle"></i> Cancelación
+                                    </span>
+                                    <span th:if="${incident.incidentType.name() == 'RESCHEDULING'}" class="badge bg-warning">
+                                        <i class="bi bi-calendar-x"></i> Reprogramación
+                                    </span>
+                                    <span th:if="${incident.incidentType.name() == 'LOCATION_CHANGE'}" class="badge bg-info">
+                                        <i class="bi bi-geo-alt"></i> Cambio de lugar
+                                    </span>
+                                    <span th:if="${incident.incidentType.name() == 'OTHER'}" class="badge bg-secondary">
+                                        <i class="bi bi-info-circle"></i> Otro
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Fecha de registro:</strong></p>
+                                <p th:text="${#temporals.format(incident.incidentDate, 'dd/MM/yyyy HH:mm')}"></p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <p class="mb-1"><strong>Actividad:</strong></p>
+                                <p th:text="${incident.activity.name}"></p>
+                            </div>
+                        </div>
+                        <div class="row mb-3" th:if="${incident.affectedSession != null}">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Sesión afectada:</strong></p>
+                                <p th:text="${#temporals.format(incident.affectedSession.sessionDate, 'dd/MM/yyyy')}"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Horario:</strong></p>
+                                <p>
+                                    <span th:text="${#temporals.format(incident.affectedSession.startTime, 'HH:mm')}"></span>
+                                    -
+                                    <span th:text="${#temporals.format(incident.affectedSession.endTime, 'HH:mm')}"></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row mb-3" th:if="${incident.replacementSession != null}">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Nueva fecha:</strong></p>
+                                <p th:text="${#temporals.format(incident.replacementSession.sessionDate, 'dd/MM/yyyy')}"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Nuevo horario:</strong></p>
+                                <p>
+                                    <span th:text="${#temporals.format(incident.replacementSession.startTime, 'HH:mm')}"></span>
+                                    -
+                                    <span th:text="${#temporals.format(incident.replacementSession.endTime, 'HH:mm')}"></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <p class="mb-1"><strong>Motivo:</strong></p>
+                                <div class="alert alert-light">
+                                    <p class="mb-0" th:text="${incident.reason}"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3" th:if="${incident.createdByUser != null}">
+                            <div class="col-12">
+                                <p class="mb-1"><strong>Registrado por:</strong></p>
+                                <p>
+                                    <i class="bi bi-person"></i>
+                                    <span th:text="${incident.createdByUser.name + ' ' + incident.createdByUser.lastname}"></span>
+                                    (<span th:text="${incident.createdByUser.username}"></span>)
+                                </p>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a th:href="@{/incidents}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div></main><div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

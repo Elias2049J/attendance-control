@@ -1,6 +1,5 @@
 package com.elias.attendancecontrol.model.entity;
-
-public enum Role {
+public enum SystemRole {
     ADMIN,
     USER
 }

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Participantes Inscritos')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content">
+    <div class="container-fluid py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Inicio</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/activities}" class="text-decoration-none">Actividades</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Participantes</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-2">
+                    <i class="bi bi-people-fill me-2"></i>
+                    Participantes Inscritos
+                </h1>
+                <p class="text-muted mb-0">
+                    <strong>Actividad:</strong> <span th:text="${activity.name}">Actividad</span>
+                </p>
+                <p class="text-muted" th:if="${activity.description}">
+                    <small th:text="${activity.description}">Descripción</small>
+                </p>
+            </div>
+            <div>
+                <a th:href="@{/activities/{id}/enrollments/enroll(id=${activity.id})}"
+                   class="btn btn-primary">
+                    <i class="bi bi-person-plus-fill me-1"></i>
+                    Inscribir Participantes
+                </a>
+            </div>
+        </div>
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" systemRole="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" systemRole="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">
+                            <i class="bi bi-people me-2"></i>
+                            Total Inscritos
+                        </h5>
+                        <h2 class="mb-0" th:text="${enrolledCount}">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-info">
+                    <div class="card-body">
+                        <h5 class="card-title text-info">
+                            <i class="bi bi-person-check me-2"></i>
+                            Activos
+                        </h5>
+                        <h2 class="mb-0" th:text="${enrolledUsers.size()}">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-warning">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning">
+                            <i class="bi bi-shield-check me-2"></i>
+                            Inscripción Requerida
+                        </h5>
+                        <h2 class="mb-0">
+                            <span th:if="${activity.requiresEnrollment}" class="badge bg-success">SÍ</span>
+                            <span th:unless="${activity.requiresEnrollment}" class="badge bg-secondary">NO</span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-table me-2"></i>
+                    Lista de Participantes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${enrollments.isEmpty()}" class="text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted"></i>
+                    <p class="text-muted mt-3">No hay participantes inscritos en esta actividad</p>
+                    <a th:href="@{/activities/{id}/enrollments/enroll(id=${activity.id})}"
+                       class="btn btn-primary">
+                        <i class="bi bi-person-plus-fill me-1"></i>
+                        Inscribir Ahora
+                    </a>
+                </div>
+                <div th:if="${!enrollments.isEmpty()}" class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Usuario</th>
+                                <th>Nombre Completo</th>
+                                <th>Email</th>
+                                <th>Fecha Inscripción</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="enrollment, iterStat : ${enrollments}">
+                                <td th:text="${iterStat.count}">1</td>
+                                <td>
+                                    <strong th:text="${enrollment.user.username}">usuario</strong>
+                                </td>
+                                <td th:text="${enrollment.user.name + ' ' + enrollment.user.lastname}">Nombre</td>
+                                <td>
+                                    <a th:href="'mailto:' + ${enrollment.user.email}"
+                                       th:text="${enrollment.user.email}"
+                                       class="text-decoration-none">
+                                        email@example.com
+                                    </a>
+                                </td>
+                                <td th:text="${#temporals.format(enrollment.enrollmentDate, 'dd/MM/yyyy HH:mm')}">
+                                    01/01/2024 10:00
+                                </td>
+                                <td>
+                                    <span th:if="${enrollment.status.name() == 'ENROLLED'}"
+                                          class="badge bg-success">
+                                        <i class="bi bi-check-circle me-1"></i>Inscrito
+                                    </span>
+                                    <span th:if="${enrollment.status.name() == 'DROPPED'}"
+                                          class="badge bg-danger">
+                                        <i class="bi bi-x-circle me-1"></i>Dado de Baja
+                                    </span>
+                                    <span th:if="${enrollment.status.name() == 'COMPLETED'}"
+                                          class="badge bg-info">
+                                        <i class="bi bi-award me-1"></i>Completado
+                                    </span>
+                                </td>
+                                <td>
+                                    <form th:if="${enrollment.status.name() == 'ENROLLED'}"
+                                          th:action="@{/activities/{activityId}/enrollments/{userId}/remove(activityId=${activity.id}, userId=${enrollment.user.id})}"
+                                          method="post"
+                                          onsubmit="return confirm('¿Está seguro de remover este participante?');"
+                                          class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                title="Remover participante">
+                                            <i class="bi bi-person-dash"></i>
+                                        </button>
+                                    </form>
+                                    <span th:unless="${enrollment.status.name() == 'ENROLLED'}"
+                                          class="text-muted">
+                                        <small>Sin acciones</small>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 d-flex gap-2">
+            <a th:href="@{/activities}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                Volver a Actividades
+            </a>
+            <a th:href="@{/activities/{id}(id=${activity.id})}" class="btn btn-outline-primary">
+                <i class="bi bi-eye me-1"></i>
+                Ver Detalle de Actividad
+            </a>
+        </div>
+    </div>
+    </main>
+    <div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

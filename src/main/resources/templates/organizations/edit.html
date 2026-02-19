@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Editar Organización')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content"><div class="container py-4">
+        <div class="row">
+            <div class="col-12">
+                <h2><i class="bi bi-pencil-square"></i> Editar Organización</h2>
+                <p class="text-muted">Actualiza la información de tu organización</p>
+                <hr>
+            </div>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span th:text="${error}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form th:action="@{/organizations/update}" method="post" th:object="${organization}">
+                            <input type="hidden" th:field="*{id}">
+                            <h5 class="mb-3">Información Básica</h5>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nombre de la Organización *</label>
+                                <input type="text" class="form-control" id="name"
+                                       th:field="*{name}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="slug" class="form-label">Identificador único (slug) *</label>
+                                <input type="text" class="form-control" id="slug"
+                                       th:field="*{slug}" required readonly
+                                       title="El identificador no puede ser modificado">
+                                <div class="form-text">El identificador único no puede ser modificado</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="description"
+                                          th:field="*{description}" rows="3"></textarea>
+                            </div>
+                            <hr class="my-4">
+                            <h5 class="mb-3">Información de Contacto</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="contactEmail" class="form-label">Email de Contacto</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control" id="contactEmail"
+                                               th:field="*{contactEmail}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="phone" class="form-label">Teléfono</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                        <input type="tel" class="form-control" id="phone"
+                                               th:field="*{phone}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="address"
+                                       th:field="*{address}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="logoUrl" class="form-label">URL del Logo</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-image"></i></span>
+                                    <input type="url" class="form-control" id="logoUrl"
+                                           th:field="*{logoUrl}"
+                                           placeholder="https://ejemplo.com/logo.png">
+                                </div>
+                                <div class="form-text">URL completa de la imagen del logo (opcional)</div>
+                            </div>
+                            <hr class="my-4">
+                            <h5 class="mb-3">Plan de Suscripción</h5>
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                <strong>Plan actual:</strong> <span th:text="${organization.plan}">FREE</span>
+                                <br>
+                                <small>Para cambiar tu plan, contacta con el administrador del sistema.</small>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a th:href="@{/organizations/manage}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div></main><div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

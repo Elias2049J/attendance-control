@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Asistencias')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content">
+        <div class="container-fluid py-4">
+            <div class="mb-3">
+                <a th:href="@{/activities/{id}(id=${activity.id})}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+            <h2><i class="bi bi-check2-square"></i> Asistencias: <span th:text="${activity.name}"></span></h2>
+            <div th:each="entry : ${attendanceMap}" class="card mt-3">
+                <div class="card-header">
+                    <strong th:text="${#temporals.format(entry.key.sessionDate, 'dd/MM/yyyy')}">Fecha</strong>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Hora Registro</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="attendance : ${entry.value}">
+                                    <td th:text="${attendance.user.name + ' ' + attendance.user.lastname}">Usuario</td>
+                                    <td th:text="${#temporals.format(attendance.registrationTime, 'HH:mm')}">Hora</td>
+                                    <td>
+                                        <span th:class="'badge ' + ${attendance.status == 'PRESENT' ? 'bg-success' : 'bg-warning text-dark'}"
+                                              th:text="${attendance.status}">Estado</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div th:if="${#lists.isEmpty(entry.value)}" class="alert alert-info">
+                        Sin registros de asistencia
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#maps.isEmpty(attendanceMap)}" class="alert alert-info mt-3">
+                <i class="bi bi-info-circle"></i> No hay sesiones con asistencias registradas
+            </div>
+        </div>
+    </main>
+    <div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

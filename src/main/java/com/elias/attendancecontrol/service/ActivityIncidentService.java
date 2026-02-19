@@ -1,24 +1,12 @@
 package com.elias.attendancecontrol.service;
-
-import com.elias.attendancecontrol.model.entity.ActivityException;
-
+import com.elias.attendancecontrol.model.entity.ActivityIncident;
 import java.time.LocalDate;
-
-public interface ActivityExceptionService {
-
-    /**
-     * Crea una excepción de actividad
-     */
-    ActivityException createException(ActivityException exception);
-
-    /**
-     * Reprograma una ocurrencia de actividad
-     */
-    ActivityException rescheduleOccurrence(Long activityId, LocalDate originalDate, LocalDate newDate, String reason);
-
-    /**
-     * Cancela una ocurrencia de actividad
-     */
-    ActivityException cancelOccurrence(Long activityId, LocalDate date, String reason);
+import java.util.List;
+public interface ActivityIncidentService {
+    ActivityIncident registerIncident(ActivityIncident exception);
+    ActivityIncident rescheduleOccurrence(Long activityId, LocalDate originalDate, LocalDate newDate, String reason);
+    ActivityIncident cancelOccurrence(Long activityId, LocalDate date, String reason);
+    List<ActivityIncident> getAllIncidents();
+    List<ActivityIncident> getIncidentsByActivity(Long activityId);
+    ActivityIncident getIncidentById(Long id);
 }
-

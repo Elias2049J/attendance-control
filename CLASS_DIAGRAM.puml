@@ -1,0 +1,206 @@
+@startuml
+
+enum Role {
+  ADMIN
+  RESPONSIBLE
+  USER
+}
+
+enum OrganizationPlan {
+  FREE
+  BASIC
+  PREMIUM
+  ENTERPRISE
+}
+
+enum OrganizationRole {
+  OWNER
+  ADMIN
+  RESPONSIBLE
+  MEMBER
+}
+
+enum SessionStatus {
+  PLANNED
+  ACTIVE
+  CLOSED
+  CANCELLED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  LATE
+  ABSENT
+}
+
+enum RecurrenceType {
+  NONE
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  DROPPED
+  COMPLETED
+}
+
+
+class Organization <<entity>> {
+  - id: Long
+  - name: String
+  - slug: String
+  - description: String
+  - contactEmail: String
+  - phone: String
+  - address: String
+  - logoUrl: String
+  - active: Boolean
+  - plan: OrganizationPlan
+  - maxUsers: Integer
+  - maxActivities: Integer
+  - createdDate: Date
+  - expirationDate: Date
+  - ownerId: Long
+  + applyPlanLimits(): void
+}
+
+class User <<entity>> {
+  - id: Long
+  - username: String
+  - password: String
+  - name: String
+  - lastname: String
+  - email: String
+  - active: Boolean
+  - role: Role
+  - organizationId: Long
+  - organizationRole: OrganizationRole
+  - createdDate: Date
+}
+
+class Activity <<entity>> {
+  - id: Long
+  - name: String
+  - description: String
+  - active: Boolean
+  - requiresEnrollment: Boolean
+  - createdDate: Date
+  - responsibleId: Long
+  - organizationId: Long
+}
+
+class Enrollment <<entity>> {
+  - id: Long
+  - activityId: Long
+  - userId: Long
+  - enrollmentDate: DateTime
+  - status: EnrollmentStatus
+  - enrolledById: Long
+}
+
+class RecurrenceRule <<entity>> {
+  - id: Long
+  - activityId: Long
+  - recurrenceType: RecurrenceType
+  - daysOfWeek: String
+  - startDate: Date
+  - endDate: Date
+  - startTime: Time
+  - endTime: Time
+}
+
+class ActivityException <<entity>> {
+  - id: Long
+  - activityId: Long
+  - originalDate: Date
+  - newDate: Date
+  - cancelled: Boolean
+  - reason: String
+  - createdBy: Long
+  - createdDate: Date
+}
+
+class Session <<entity>> {
+  - id: Long
+  - activityId: Long
+  - sessionDate: Date
+  - startTime: Time
+  - endTime: Time
+  - toleranceMinutes: Integer
+  - status: SessionStatus
+  - createdDate: Date
+}
+
+class Attendance <<entity>> {
+  - id: Long
+  - sessionId: Long
+  - userId: Long
+  - registrationTime: DateTime
+  - status: AttendanceStatus
+  - registrationType: String
+  - createdDate: Date
+}
+
+
+class Token <<entity>> {
+  - id: Long
+  - token: String
+  - expirationTime: DateTime
+  - active: Boolean
+  - createdDate: Date
+}
+
+class SessionToken <<entity>> {
+  - userId: Long
+  - ipAddress: String
+}
+
+class QRToken <<entity>> {
+  - sessionId: Long
+  - validFrom: DateTime
+  - validUntil: DateTime
+}
+
+Token <|-- SessionToken
+Token <|-- QRToken
+
+class AuditLog <<entity>> {
+  - id: Long
+  - userId: Long
+  - sessionId: Long
+  - organizationId: Long
+  - eventType: String
+  - eventDate: DateTime
+  - description: String
+  - ipAddress: String
+  - details: String
+}
+
+Organization "1" -- "0..*" User : owns
+Organization "1" -- "0..*" Activity : owns
+Organization "1" -- "0..*" AuditLog : audits
+Organization "1" -- "1" User : owner
+
+User "1" -- "0.*" SessionToken : has
+User "1" -- "0.*" Attendance : registers
+User "1" -- "0.*" Activity : responsible for
+User "1" -- "0.*" AuditLog : performs
+User "1" -- "0.*" ActivityException : creates
+User "1" -- "0.*" Enrollment : enrolls
+
+Activity "1" -- "0..1" RecurrenceRule : has
+Activity "1" -- "0..*" ActivityException : has
+Activity "1" -- "0..*" Session : generates
+Activity "1" -- "0..*" Enrollment : has
+
+Enrollment "1" -- "1" Activity : for
+Enrollment "1" -- "1" User : of
+
+Session "1" -- "0..*" Attendance : tracks
+Session "1" -- "0..1" QRToken : has
+Session "0..1" -- "0..*" AuditLog : audits
+
+@enduml
+

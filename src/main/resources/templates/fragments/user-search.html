@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div th:fragment="searchForm" id="userSearchContainer">
+    <div class="card mb-3">
+        <div class="card-body">
+            <form id="userSearchForm">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="searchQuery" class="form-label">
+                            <i class="bi bi-search"></i> Buscar usuario
+                        </label>
+                        <input type="text"
+                               class="form-control"
+                               id="searchQuery"
+                               name="query"
+                               placeholder="Nombre, apellido, usuario o email..."
+                               autocomplete="off">
+                        <small class="text-muted">Escribe para buscar automáticamente</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="searchRole" class="form-label">
+                            <i class="bi bi-person-badge"></i> Rol
+                        </label>
+                        <select class="form-select" id="searchRole" name="role">
+                            <option value="">Todos los roles</option>
+                            <option value="ADMIN">Administrador</option>
+                            <option value="RESPONSIBLE">Responsable</option>
+                            <option value="USER">Usuario</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="searchActive" class="form-label">
+                            <i class="bi bi-toggle-on"></i> Estado
+                        </label>
+                        <select class="form-select" id="searchActive" name="active">
+                            <option value="">Todos</option>
+                            <option value="true">Activos</option>
+                            <option value="false">Inactivos</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="searchLoading" class="text-center py-3" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Buscando...</span>
+        </div>
+    </div>
+    <div id="searchResultsContainer">
+        <div th:replace="~{fragments/user-search :: resultsTable}"></div>
+    </div>
+</div>
+<div th:fragment="resultsTable">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-list-ul"></i> Resultados
+                <span class="badge bg-primary ms-2" th:text="${users.size()}">0</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div th:if="${users.isEmpty()}" class="text-center py-4 text-muted">
+                <i class="bi bi-inbox fs-1"></i>
+                <p class="mt-2">
+                    <span th:if="${query != null && !query.isEmpty()}">
+                        No se encontraron usuarios con "<strong th:text="${query}"></strong>"
+                    </span>
+                    <span th:unless="${query != null && !query.isEmpty()}">
+                        No hay usuarios para mostrar
+                    </span>
+                </p>
+            </div>
+            <div th:unless="${users.isEmpty()}" class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Nombre Completo</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                            <td>
+                                <i class="bi bi-person-circle"></i>
+                                <span th:text="${user.username}"></span>
+                            </td>
+                            <td th:text="${user.name + ' ' + user.lastname}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${user.systemRole.name() == 'ADMIN'} ? 'bg-danger' :
+                                                       (${user.systemRole.name() == 'RESPONSIBLE'} ? 'bg-warning text-dark' : 'bg-primary')"
+                                      th:text="${user.systemRole}"></span>
+                            </td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${user.active} ? 'bg-success' : 'bg-secondary'"
+                                      th:text="${user.active} ? 'Activo' : 'Inactivo'"></span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a th:href="@{/users/{id}/edit(id=${user.id})}"
+                                       class="btn btn-outline-primary"
+                                       title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button"
+                                            class="btn btn-outline-info select-user-btn"
+                                            th:data-user-id="${user.id}"
+                                            th:data-user-name="${user.name + ' ' + user.lastname}"
+                                            title="Seleccionar">
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:fragment="searchScript">
+    (function() {
+        let searchTimeout;
+        const DEBOUNCE_DELAY = 300;
+        const form = document.getElementById('userSearchForm');
+        const queryInput = document.getElementById('searchQuery');
+        const roleSelect = document.getElementById('searchRole');
+        const activeSelect = document.getElementById('searchActive');
+        const resultsContainer = document.getElementById('searchResultsContainer');
+        const loadingIndicator = document.getElementById('searchLoading');
+        function performSearch() {
+            clearTimeout(searchTimeout);
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+            loadingIndicator.style.display = 'block';
+            resultsContainer.style.opacity = '0.5';
+            fetch('/users/search/results?' + params.toString(), {
+                method: 'GET',
+                headers: {
+                    'Accept': 'text/html'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                resultsContainer.innerHTML = html;
+                loadingIndicator.style.display = 'none';
+                resultsContainer.style.opacity = '1';
+                attachSelectUserButtons();
+            })
+            .catch(error => {
+                console.error('Error en búsqueda:', error);
+                loadingIndicator.style.display = 'none';
+                resultsContainer.style.opacity = '1';
+            });
+        }
+        queryInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch();
+            }, DEBOUNCE_DELAY);
+        });
+        roleSelect.addEventListener('change', performSearch);
+        activeSelect.addEventListener('change', performSearch);
+        function attachSelectUserButtons() {
+            document.querySelectorAll('.select-user-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    const userName = this.getAttribute('data-user-name');
+                    const event = new CustomEvent('userSelected', {
+                        detail: { userId, userName }
+                    });
+                    document.dispatchEvent(event);
+                });
+            });
+        }
+        attachSelectUserButtons();
+        if (queryInput.value.trim() !== '') {
+            performSearch();
+        }
+    })();
+</script>
+<div th:fragment="userListItems">
+    <div th:each="user : ${users}" class="list-group-item list-group-item-action user-search-result"
+         th:attr="data-id=${user.id}, data-name=${user.name + ' ' + user.lastname}, data-email=${user.email}">
+        <div class="d-flex w-100 justify-content-between">
+            <h6 class="mb-1" th:text="${user.name + ' ' + user.lastname}">Nombre Usuario</h6>
+            <small><span class="badge bg-secondary" th:text="${user.username}">username</span></small>
+        </div>
+        <small class="text-muted" th:text="${user.email}">email@example.com</small>
+    </div>
+    <div th:if="${users.isEmpty()}" class="list-group-item text-muted text-center">
+        <i class="bi bi-search"></i> No se encontraron usuarios
+    </div>
+</div>
+</body>
+</html>

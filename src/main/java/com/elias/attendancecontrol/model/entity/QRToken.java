@@ -1,30 +1,34 @@
 package com.elias.attendancecontrol.model.entity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import lombok.Setter;
 import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "qr_tokens")
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class QRToken extends Token {
-
-    @Column(nullable = false)
-    private Long sessionId;
-
-    @Column(nullable = false)
+    @NotNull(message = "La sesión asociada es obligatoria")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "session_id", nullable = false, unique = true)
+    private Session session;
+    @NotNull(message = "La fecha de inicio de validez es obligatoria")
+    @Column(name = "valid_from", nullable = false)
     private LocalDateTime validFrom;
-
-    @Column(nullable = false)
+    @NotNull(message = "La fecha de fin de validez es obligatoria")
+    @Column(name = "valid_until", nullable = false)
     private LocalDateTime validUntil;
+    public QRToken(Long id, String token, LocalDateTime expirationTime, Boolean active, LocalDateTime createdDate, Session session, LocalDateTime validFrom, LocalDateTime validUntil) {
+        super(id, token, expirationTime, active, createdDate);
+        this.session = session;
+        this.validFrom = validFrom;
+        this.validUntil = validUntil;
+    }
 }
-

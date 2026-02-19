@@ -1,32 +1,53 @@
 package com.elias.attendancecontrol.config;
-
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-
 @Slf4j
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleAllExceptions(Exception e, HttpServletRequest request) {
+    private static final String ATTR_PATH = "path";
+    private static final String ATTR_METHOD = "method";
+    private static final String ATTR_TIMESTAMP = "timestamp";
+    private static final String ATTR_ERROR = "error";
+    private static final String ATTR_MESSAGE = "message";
+    private static final String VIEW_ERROR = "exceptions/error";
+    @ExceptionHandler(IllegalArgumentException.class)
+    public String handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request, Model model) {
         String path = request.getRequestURI();
         String method = request.getMethod();
-
-        Map<String, Object> body = new HashMap<>();
-        body.put("path", path);
-        body.put("method", method);
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", e.getMessage());
-
-        log.error("An Unexpected Exception occurred at path: {}, {}", path, body);
-
-        return ResponseEntity.internalServerError().body(body);
+        model.addAttribute(ATTR_PATH, path);
+        model.addAttribute(ATTR_METHOD, method);
+        model.addAttribute(ATTR_TIMESTAMP, LocalDateTime.now());
+        model.addAttribute(ATTR_ERROR, "Solicitud Inválida");
+        model.addAttribute(ATTR_MESSAGE, e.getMessage());
+        log.warn("IllegalArgumentException occurred at path: {}, message: {}", path, e.getMessage());
+        return VIEW_ERROR;
+    }
+    @ExceptionHandler(IllegalStateException.class)
+    public String handleIllegalStateException(IllegalStateException e, HttpServletRequest request, Model model) {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+        model.addAttribute(ATTR_PATH, path);
+        model.addAttribute(ATTR_METHOD, method);
+        model.addAttribute(ATTR_TIMESTAMP, LocalDateTime.now());
+        model.addAttribute(ATTR_ERROR, "Estado Conflictivo");
+        model.addAttribute(ATTR_MESSAGE, e.getMessage());
+        log.warn("IllegalStateException occurred at path: {}, message: {}", path, e.getMessage());
+        return VIEW_ERROR;
+    }
+    @ExceptionHandler(Exception.class)
+    public String handleAllExceptions(Exception e, HttpServletRequest request, Model model) {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+        model.addAttribute(ATTR_PATH, path);
+        model.addAttribute(ATTR_METHOD, method);
+        model.addAttribute(ATTR_TIMESTAMP, LocalDateTime.now());
+        model.addAttribute(ATTR_ERROR, "Error Interno del Servidor");
+        model.addAttribute(ATTR_MESSAGE, e.getMessage());
+        log.error("An Unexpected Exception occurred at path: {}, method: {}, error: {}", path, method, e.getMessage(), e);
+        return VIEW_ERROR;
     }
 }

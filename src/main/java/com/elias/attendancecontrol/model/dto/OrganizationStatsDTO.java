@@ -1,15 +1,13 @@
 package com.elias.attendancecontrol.model.dto;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrganizationStats {
+public class OrganizationStatsDTO {
     private long totalMembers;
     private long adminCount;
     private long memberCount;
@@ -18,4 +16,3 @@ public class OrganizationStats {
     private long totalActivities;
     private long scheduledSessions;
 }
-

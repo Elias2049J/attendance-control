@@ -1,61 +1,23 @@
 package com.elias.attendancecontrol.service;
-
 import com.elias.attendancecontrol.model.entity.Activity;
-import com.elias.attendancecontrol.model.entity.Attendance;
-import com.elias.attendancecontrol.model.entity.AttendanceStatus;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import com.elias.attendancecontrol.model.entity.ActivityStatus;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-
 public interface ActivityService {
-
-    /**
-     * Crea una nueva actividad
-     */
     Activity createActivity(Activity activity);
-
-    /**
-     * Actualiza una actividad existente
-     */
     Activity updateActivity(Long id, Activity activity);
-
-    /**
-     * Desactiva una actividad
-     */
-    void deactivateActivity(Long id);
-
-    /**
-     * Lista todas las actividades
-     */
+    void activateActivity(Long id);
     List<Activity> listActivities();
-
-    /**
-     * Obtiene una actividad por ID
-     */
     Activity getActivityById(Long id);
-
-    AttendanceStatus classifyAttendance(Long sessionId, LocalDateTime registrationTime);
-
-    /**
-     * Determina el estado de asistencia
-     */
-    AttendanceStatus determineStatus(LocalDateTime sessionStart, LocalDateTime registrationTime);
-
-
-    /**
-     * Obtiene el historial de asistencias
-     */
-    List<Attendance> getAttendanceHistory(Long userId, LocalDate startDate, LocalDate endDate);
-
-    /**
-     * Obtiene asistencias por sesión
-     */
-    List<Attendance> getAttendanceBySession(Long sessionId);
-
-    /**
-     * Obtiene asistencias por usuario
-     */
-    List<Attendance> getAttendanceByUser(Long userId);
+    @Transactional(readOnly = true)
+    List<Activity> findActiveActivities();
+    @Transactional(readOnly = true)
+    List<Activity> findByResponsible(Long userId);
+    void pauseActivity(Long activityId);
+    void completeActivity(Long activityId);
+    void cancelActivity(Long activityId);
+    boolean canPublish(Long activityId);
+    boolean canComplete(Long activityId);
+    void changeStatus(Long activityId, ActivityStatus newStatus);
+    List<Activity> searchActivities(String query, Long userId, String role);
 }
-

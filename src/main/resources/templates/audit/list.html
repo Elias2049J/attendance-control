@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Auditoría')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content"><div class="container-fluid py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Inicio</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/reports/menu}" class="text-decoration-none">Reportes</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Auditoría</li>
+            </ol>
+        </nav>
+        <h2><i class="bi bi-shield-check"></i> Auditoría del Sistema</h2>
+        <p class="text-muted">Registro de eventos y acciones del sistema</p>
+        <hr>
+        <div class="card mb-3">
+            <div class="card-body">
+                <form th:action="@{/audit/filter}" method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Usuario</label>
+                        <select class="form-select" name="userId">
+                            <option value="">Todos</option>
+                            <option th:each="user : ${users}"
+                                    th:value="${user.id}"
+                                    th:text="${user.username}"
+                                    th:selected="${selectedUserId == user.id}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tipo de Evento</label>
+                        <input type="text" class="form-control" name="eventType"
+                               th:value="${selectedEventType}" placeholder="LOGIN, USER_CREATED, etc.">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Fecha Inicio</label>
+                        <input type="datetime-local" class="form-control" name="startDate" th:value="${startDate}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Fecha Fin</label>
+                        <input type="datetime-local" class="form-control" name="endDate" th:value="${endDate}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha/Hora</th>
+                                <th>Usuario</th>
+                                <th>Evento</th>
+                                <th>Descripción</th>
+                                <th>IP</th>
+                                <th>Detalles</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="log : ${auditLogs}">
+                                <td>
+                                    <small th:text="${#temporals.format(log.eventDate, 'dd/MM/yyyy HH:mm:ss')}"></small>
+                                </td>
+                                <td>
+                                    <span th:if="${log.user != null}" th:text="${log.user.username}"></span>
+                                    <span th:if="${log.user == null}" class="text-muted">Sistema</span>
+                                </td>
+                                <td><span class="badge bg-info" th:text="${log.eventType}"></span></td>
+                                <td><small th:text="${log.description}"></small></td>
+                                <td><small class="text-muted" th:text="${log.ipAddress}"></small></td>
+                                <td><small class="text-muted" th:text="${log.details}"></small></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(auditLogs)}">
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    No hay registros de auditoría
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div></main><div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

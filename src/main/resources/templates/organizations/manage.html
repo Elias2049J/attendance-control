@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Gestión de Organización')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content"><div class="container py-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2>
+                            <i class="bi bi-building"></i>
+                            <span th:text="${organization.name}">Mi Organización</span>
+                        </h2>
+                        <p class="text-muted">Panel de gestión y configuración</p>
+                    </div>
+                    <div>
+                        <a th:href="@{/organizations/edit}" class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Editar Información
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle-fill"></i>
+            <span th:text="${success}">Éxito</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span th:text="${error}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 border-primary">
+                    <div class="card-body text-center">
+                        <i class="bi bi-award fs-1 text-primary mb-3"></i>
+                        <h6 class="text-muted mb-2">Plan Actual</h6>
+                        <h3 class="mb-0" th:text="${organization.plan}">FREE</h3>
+                        <span class="badge bg-success mt-2" th:if="${organization.active}">Activo</span>
+                        <span class="badge bg-danger mt-2" th:unless="${organization.active}">Inactivo</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-people fs-1 text-info mb-3"></i>
+                        <h6 class="text-muted mb-2">Usuarios</h6>
+                        <h3 class="mb-0">
+                            <span th:text="${userCount}">0</span> /
+                            <span th:text="${organization.maxUsers}">50</span>
+                        </h3>
+                        <div class="progress mt-2" style="height: 5px;">
+                            <div class="progress-bar bg-info" systemRole="progressbar"
+                                 th:style="'width: ' + ${(userCount * 100.0 / organization.maxUsers)} + '%'"
+                                 th:attr="aria-valuenow=${userCount}, aria-valuemax=${organization.maxUsers}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-event fs-1 text-success mb-3"></i>
+                        <h6 class="text-muted mb-2">Actividades</h6>
+                        <h3 class="mb-0">
+                            <span th:text="${activityCount}">0</span> /
+                            <span th:text="${organization.maxActivities}">10</span>
+                        </h3>
+                        <div class="progress mt-2" style="height: 5px;">
+                            <div class="progress-bar bg-success" systemRole="progressbar"
+                                 th:style="'width: ' + ${(activityCount * 100.0 / organization.maxActivities)} + '%'"
+                                 th:attr="aria-valuenow=${activityCount}, aria-valuemax=${organization.maxActivities}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-check fs-1 text-warning mb-3"></i>
+                        <h6 class="text-muted mb-2">Creada el</h6>
+                        <h5 class="mb-0" th:text="${#temporals.format(organization.createdDate, 'dd/MM/yyyy')}">01/01/2026</h5>
+                        <small class="text-muted" th:text="${#temporals.format(organization.createdDate, 'HH:mm')}">10:00</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información de la Organización</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong><i class="bi bi-building"></i> Nombre:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${organization.name}">Mi Organización</span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong><i class="bi bi-link-45deg"></i> Identificador (slug):</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <code th:text="${organization.slug}">mi-organizacion</code>
+                            </div>
+                        </div>
+                        <div class="row mb-3" th:if="${organization.description}">
+                            <div class="col-md-4">
+                                <strong><i class="bi bi-file-text"></i> Descripción:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${organization.description}">Descripción de la organización</span>
+                            </div>
+                        </div>
+                        <div class="row mb-3" th:if="${organization.contactEmail}">
+                            <div class="col-md-4">
+                                <strong><i class="bi bi-envelope"></i> Email:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <a th:href="'mailto:' + ${organization.contactEmail}" th:text="${organization.contactEmail}">
+                                    email@example.com
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row mb-3" th:if="${organization.phone}">
+                            <div class="col-md-4">
+                                <strong><i class="bi bi-telephone"></i> Teléfono:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${organization.phone}">+1 234 567 8900</span>
+                            </div>
+                        </div>
+                        <div class="row" th:if="${organization.address}">
+                            <div class="col-md-4">
+                                <strong><i class="bi bi-geo-alt"></i> Dirección:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${organization.address}">Dirección completa</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Límites del Plan</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Recurso</th>
+                                        <th>Utilizado</th>
+                                        <th>Límite</th>
+                                        <th>Disponible</th>
+                                        <th>Uso</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><i class="bi bi-people"></i> Usuarios</td>
+                                        <td><strong th:text="${userCount}">0</strong></td>
+                                        <td th:text="${organization.maxUsers}">50</td>
+                                        <td th:text="${organization.maxUsers - userCount}">50</td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar"
+                                                     th:classappend="${(userCount * 100.0 / organization.maxUsers) > 80} ? 'bg-danger' : 'bg-success'"
+                                                     th:style="'width: ' + ${(userCount * 100.0 / organization.maxUsers)} + '%'"
+                                                     th:text="${#numbers.formatDecimal((userCount * 100.0 / organization.maxUsers), 1, 1)} + '%'">
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="bi bi-calendar-event"></i> Actividades</td>
+                                        <td><strong th:text="${activityCount}">0</strong></td>
+                                        <td th:text="${organization.maxActivities}">10</td>
+                                        <td th:text="${organization.maxActivities - activityCount}">10</td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar"
+                                                     th:classappend="${(activityCount * 100.0 / organization.maxActivities) > 80} ? 'bg-danger' : 'bg-success'"
+                                                     th:style="'width: ' + ${(activityCount * 100.0 / organization.maxActivities)} + '%'"
+                                                     th:text="${#numbers.formatDecimal((activityCount * 100.0 / organization.maxActivities), 1, 1)} + '%'">
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="alert alert-warning mt-3"
+                             th:if="${(userCount * 100.0 / organization.maxUsers) > 80 or (activityCount * 100.0 / organization.maxActivities) > 80}">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>¡Atención!</strong> Estás cerca de alcanzar el límite de tu plan.
+                            Considera actualizar a un plan superior.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="bi bi-lightning"></i> Acciones Rápidas</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/users}" class="btn btn-outline-primary">
+                                <i class="bi bi-people"></i> Gestionar Usuarios
+                            </a>
+                            <a th:href="@{/activities}" class="btn btn-outline-success">
+                                <i class="bi bi-calendar-event"></i> Ver Actividades
+                            </a>
+                            <a th:href="@{/calendar}" class="btn btn-outline-info">
+                                <i class="bi bi-calendar3"></i> Ver Calendario
+                            </a>
+                            <a th:href="@{/reports}" class="btn btn-outline-warning" sec:authorize="hasAnyRole('ADMIN', 'RESPONSIBLE')">
+                                <i class="bi bi-graph-up"></i> Ver Reportes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="bi bi-award"></i> Tu Plan</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <span class="badge bg-primary fs-5" th:text="${organization.plan}">FREE</span>
+                        </div>
+                        <div class="mb-3">
+                            <h6>Beneficios incluidos:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle text-success"></i> Control de asistencia</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Códigos QR</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Calendario integrado</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Reportes básicos</li>
+                            </ul>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-success" disabled>
+                                <i class="bi bi-arrow-up-circle"></i> Actualizar Plan (Próximamente)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div></main><div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

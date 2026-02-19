@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Registrar Organización')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-building"></i> Sistema de Control de Asistencia
+            </a>
+            <a th:href="@{/auth/login}" class="btn btn-outline-light">
+                <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+            </a>
+        </div>
+    </nav>
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="mb-0">
+                                <i class="bi bi-building-add"></i> Registrar Nueva Organización
+                            </h3>
+                            <p class="mb-0 mt-2">Complete el formulario para crear su organización y comenzar a usar el sistema</p>
+                        </div>
+                        <div class="card-body p-4">
+                            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span th:text="${error}">Error</span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            <form th:action="@{/organizations/register}" method="post" th:object="${registrationDTO}">
+                                <div class="mb-4">
+                                    <h5 class="border-bottom pb-2 mb-3">
+                                        <i class="bi bi-building"></i> Información de la Organización
+                                    </h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="name" class="form-label">Nombre de la Organización *</label>
+                                            <input type="text" class="form-control" id="name"
+                                                   th:field="*{organization.name}" required
+                                                   placeholder="Ej: Mi Empresa S.A.">
+                                            <div class="form-text">Nombre completo de su organización</div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="slug" class="form-label">Identificador único (URL) *</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                                                <input type="text" class="form-control" id="slug"
+                                                       th:field="*{organization.slug}" required
+                                                       pattern="[a-z0-9-]+"
+                                                       placeholder="mi-empresa">
+                                            </div>
+                                            <div class="form-text">Solo letras minúsculas, números y guiones. Ej: mi-empresa</div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Descripción</label>
+                                        <textarea class="form-control" id="description"
+                                                  th:field="*{organization.description}" rows="3"
+                                                  placeholder="Describe brevemente tu organización..."></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="contactEmail" class="form-label">Email de Contacto</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                                <input type="email" class="form-control" id="contactEmail"
+                                                       th:field="*{organization.contactEmail}"
+                                                       placeholder="contacto@miempresa.com">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="phone" class="form-label">Teléfono</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                                <input type="tel" class="form-control" id="phone"
+                                                       th:field="*{organization.phone}"
+                                                       placeholder="+1 234 567 8900">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="plan" class="form-label">Plan de Suscripción *</label>
+                                        <select class="form-select" id="plan" th:field="*{organization.plan}" required>
+                                            <option value="">Seleccione un plan</option>
+                                            <option value="FREE">Plan Gratuito (50 usuarios, 10 actividades)</option>
+                                            <option value="BASIC">Plan Básico (200 usuarios, 50 actividades)</option>
+                                            <option value="PREMIUM">Plan Premium (1000 usuarios, 200 actividades)</option>
+                                            <option value="ENTERPRISE">Plan Empresarial (Ilimitado)</option>
+                                        </select>
+                                        <div class="form-text">Puedes cambiar el plan después desde el panel de gestión</div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="mb-4">
+                                    <h5 class="border-bottom pb-2 mb-3">
+                                        <i class="bi bi-person-badge"></i> Administrador Principal
+                                    </h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="userUsername" class="form-label">Nombre de usuario *</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                                <input type="text" class="form-control" id="userUsername"
+                                                       th:field="*{user.username}" required
+                                                       placeholder="admin">
+                                            </div>
+                                            <div class="form-text">Este será tu usuario para iniciar sesión</div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="userEmail" class="form-label">Email *</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                                <input type="email" class="form-control" id="userEmail"
+                                                       th:field="*{user.email}" required
+                                                       placeholder="admin@miempresa.com">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="userName" class="form-label">Nombre *</label>
+                                            <input type="text" class="form-control" id="userName"
+                                                   th:field="*{user.name}" required
+                                                   placeholder="Juan">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="userLastname" class="form-label">Apellido *</label>
+                                            <input type="text" class="form-control" id="userLastname"
+                                                   th:field="*{user.lastname}" required
+                                                   placeholder="Pérez">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="userPassword" class="form-label">Contraseña *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                            <input type="password" class="form-control" id="userPassword"
+                                                   th:field="*{user.password}" required minlength="8"
+                                                   placeholder="Mínimo 8 caracteres">
+                                        </div>
+                                        <div class="form-text">La contraseña debe tener al menos 8 caracteres</div>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="terms" required>
+                                        <label class="form-check-label" for="terms">
+                                            Acepto los términos y condiciones del servicio *
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a th:href="@{/auth/login}" class="btn btn-secondary">
+                                        <i class="bi bi-x-circle"></i> Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-check-circle"></i> Registrar Organización
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class="bi bi-info-circle"></i> ¿Por qué registrar tu organización?</h6>
+                            <ul class="mb-0">
+                                <li>Gestiona múltiples actividades y eventos</li>
+                                <li>Control de asistencia con códigos QR</li>
+                                <li>Reportes y estadísticas en tiempo real</li>
+                                <li>Gestión de usuarios y permisos</li>
+                                <li>Calendario integrado de actividades</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

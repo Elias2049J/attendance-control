@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Cancelar Actividad')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content">
+        <div class="container-fluid py-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="card shadow">
+                        <div class="card-header bg-danger text-white">
+                            <h4 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Confirmar Cancelación</h4>
+                        </div>
+                        <div class="card-body">
+                            <h5 th:text="${activity.name}">Actividad</h5>
+                            <p class="text-muted" th:text="${activity.description}">Descripción</p>
+                            <div class="alert alert-warning">
+                                <strong><i class="bi bi-info-circle"></i> Advertencia:</strong>
+                                <p class="mb-0">Esta acción cancelará permanentemente esta actividad y todas sus sesiones programadas.</p>
+                            </div>
+                            <div class="alert alert-info">
+                                <strong>Sesiones pendientes:</strong> <span th:text="${pendingSessions}">0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mt-4">
+                                <a th:href="@{/activities/{id}(id=${activity.id})}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> No, Volver
+                                </a>
+                                <form th:action="@{/activities/{id}/cancel(id=${activity.id})}" method="post">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-check-circle"></i> Sí, Cancelar Actividad
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+    <aside th:fragment="sidebar" class="sidebar-navbar bg-primary text-white d-none d-md-flex flex-column">
+        <div class="sidebar-header">
+            <h5 class="mb-0">
+                <i class="bi bi-calendar-check"></i>
+                <span class="ms-2">Control</span>
+            </h5>
+        </div>
+        <nav class="flex-grow-1 py-3">
+            <a th:href="@{/}" th:class="'sidebar-link' + ${activeMenu == 'home' ? ' active' : ''}">
+                <i class="bi bi-house-door"></i>
+                <span class="ms-2">Inicio</span>
+            </a>
+            <a th:href="@{/activities}" th:class="'sidebar-link' + ${activeMenu == 'activities' ? ' active' : ''}">
+                <i class="bi bi-list-task"></i>
+                <span class="ms-2">Actividades</span>
+            </a>
+            <a th:href="@{/calendar}" th:class="'sidebar-link' + ${activeMenu == 'calendar' ? ' active' : ''}">
+                <i class="bi bi-calendar3"></i>
+                <span class="ms-2">Calendario</span>
+            </a>
+            <a th:href="@{/organizations/dashboard}" th:class="'sidebar-link' + ${activeMenu == 'organizations' ? ' active' : ''}"
+               sec:authorize="hasAnyRole('ORG_OWNER', 'ORG_ADMIN')">
+                <i class="bi bi-building"></i>
+                <span class="ms-2">Mi Organización</span>
+            </a>
+            <a th:href="@{/organizations}" th:class="'sidebar-link' + ${activeMenu == 'organizations-list' ? ' active' : ''}"
+               th:if="${isSysAdmin}">
+                <i class="bi bi-buildings"></i>
+                <span class="ms-2">Organizaciones</span>
+            </a>
+            <a th:href="@{/reports}" th:class="'sidebar-link' + ${activeMenu == 'reports' ? ' active' : ''}"
+               sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
+                <i class="bi bi-graph-up"></i>
+                <span class="ms-2">Reportes</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a th:href="@{/profile}" th:class="'sidebar-link' + ${activeMenu == 'profile' ? ' active' : ''}">
+                <i class="bi bi-person-circle"></i>
+                <span class="ms-2">Mi Perfil</span>
+            </a>
+        </div>
+    </aside>
+</body>
+</html>

@@ -1,41 +1,172 @@
 package com.elias.attendancecontrol.service.implementation;
-
+import com.elias.attendancecontrol.config.TenantContext;
+import com.elias.attendancecontrol.model.entity.Organization;
+import com.elias.attendancecontrol.model.entity.SystemRole;
 import com.elias.attendancecontrol.model.entity.User;
+import com.elias.attendancecontrol.persistence.repository.OrganizationRepository;
+import com.elias.attendancecontrol.persistence.repository.UserRepository;
+import com.elias.attendancecontrol.service.LogService;
+import com.elias.attendancecontrol.service.OrganizationService;
 import com.elias.attendancecontrol.service.UserService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Collections;
 import java.util.List;
-
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
+    private final UserRepository userRepository;
+    private final OrganizationRepository organizationRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final LogService logService;
+    private final OrganizationService organizationService;
     @Override
+    @Transactional
+    public User registerUser(User user) {
+        log.debug("Registering new user: {}", user.getUsername());
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("El nombre de usuario ya existe");
+        }
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("El correo electrónico ya existe");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getSystemRole() == null) {
+            user.setSystemRole(SystemRole.USER);
+        }
+        if (user.getActive() == null) {
+            user.setActive(true);
+        }
+        User savedUser = userRepository.save(user);
+        log.info("User registered successfully: {}", savedUser.getUsername());
+        return savedUser;
+    }
+    @Override
+    @Transactional
     public User createUser(User user) {
-        // TODO: Implementar creación de usuario
-        return null;
+        log.debug("Creating new user: {}", user.getUsername());
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("El nombre de usuario ya existe");
+        }
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("El correo electrónico ya existe");
+        }
+        if (TenantContext.hasCurrentOrganization()) {
+            Long orgId = TenantContext.getCurrentOrganizationId();
+            Organization organization = organizationRepository.findById(orgId)
+                    .orElseThrow(() -> new IllegalArgumentException("Organización no encontrada"));
+            if (!organizationService.canAddUser(orgId)) {
+                throw new IllegalStateException(
+                        "Has alcanzado el límite de usuarios de tu plan (" +
+                        organization.getMaxUsers() + " usuarios)");
+            }
+            user.setOrganization(organization);
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User savedUser = userRepository.save(user);
+        logService.log(builder -> builder
+            .eventType("USER_CREATED")
+            .description("Usuario creado: " + savedUser.getUsername())
+            .user(savedUser)
+            .details("SystemRole: " + savedUser.getSystemRole())
+        );
+        log.info("User created successfully: {}", savedUser.getUsername());
+        return savedUser;
     }
-
     @Override
+    @Transactional
     public User updateUser(Long id, User user) {
-        // TODO: Implementar actualización de usuario
-        return null;
+        log.debug("Updating user: {}", id);
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        existingUser.setName(user.getName());
+        existingUser.setLastname(user.getLastname());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setSystemRole(user.getSystemRole());
+        existingUser.setActive(user.getActive());
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        User updatedUser = userRepository.save(existingUser);
+        logService.log(builder -> builder
+            .eventType("USER_UPDATED")
+            .description("Usuario actualizado: " + updatedUser.getUsername())
+            .user(updatedUser)
+        );
+        log.info("User updated successfully: {}", updatedUser.getUsername());
+        return updatedUser;
     }
-
     @Override
+    @Transactional
     public void deactivateUser(Long id) {
-        // TODO: Implementar desactivación de usuario
+        log.debug("Deactivating user: {}", id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        user.setActive(false);
+        userRepository.save(user);
+        logService.log(builder -> builder
+            .eventType("USER_DEACTIVATED")
+            .description("Usuario desactivado: " + user.getUsername())
+            .user(user)
+        );
+        log.info("User deactivated successfully: {}", user.getUsername());
     }
-
     @Override
+    @Transactional(readOnly = true)
     public List<User> listUsers() {
-        // TODO: Implementar listado de usuarios
-        return List.of();
+        if (TenantContext.hasCurrentOrganization()) {
+            Long orgId = TenantContext.getCurrentOrganizationId();
+            return userRepository.findByOrganizationId(orgId);
+        }
+        return userRepository.findAll();
     }
-
     @Override
+    @Transactional(readOnly = true)
     public User getUserById(Long id) {
-        // TODO: Implementar obtención de usuario por ID
-        return null;
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getAvailableUsersExcluding(SystemRole systemRole, List<Long> excludedUserIds) {
+        if (excludedUserIds == null || excludedUserIds.isEmpty()) {
+            return userRepository.findBySystemRoleAndActiveTrue(systemRole);
+        }
+        return userRepository.findActiveBySystemRoleAndIdNotIn(systemRole, excludedUserIds);
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getActiveUsersBySystemRole(SystemRole systemRole) {
+        return userRepository.findBySystemRoleAndActiveTrue(systemRole);
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> findByOrganizationId(Long organizationId) {
+        return userRepository.findByOrganizationId(organizationId);
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> searchUsers(String query, SystemRole role, Boolean active) {
+        log.debug("Searching users: query={}, role={}, active={}", query, role, active);
+        if (query == null || query.trim().isEmpty()) {
+            return listUsers();
+        }
+        if (!TenantContext.hasCurrentOrganization()) {
+            return Collections.emptyList();
+        }
+        Long orgId = TenantContext.getCurrentOrganizationId();
+        if (role != null && active != null) {
+            return userRepository.searchByAllCriteria(query, orgId, role, active);
+        } else if (role != null) {
+            return userRepository.searchByMultipleFieldsAndOrganizationAndRole(query, orgId, role);
+        } else if (active != null) {
+            return userRepository.searchByMultipleFieldsAndOrganizationAndActive(query, orgId, active);
+        } else {
+            return userRepository.searchByMultipleFieldsAndOrganization(query, orgId);
+        }
     }
 }
-

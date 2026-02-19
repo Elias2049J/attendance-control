@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Actividades')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content">
+        <div class="container-fluid py-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Inicio</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Actividades</li>
+                </ol>
+            </nav>
+            <div class="row mb-4">
+                <div class="col-12 col-md-6">
+                    <h2><i class="bi bi-list-task"></i> Actividades</h2>
+                </div>
+                <div class="col-12 col-md-6 text-md-end mt-2 mt-md-0" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
+                    <a th:href="@{/activities/new}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Nueva
+                    </a>
+                </div>
+            </div>
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+                <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <input type="search"
+                           class="form-control form-control-lg"
+                           id="searchActivities"
+                           placeholder="Buscar actividades..."
+                           autocomplete="off">
+                </div>
+            </div>
+            <div id="activitiesList" class="row g-3">
+                <div th:each="activity : ${activities}" class="col-12">
+                    <a th:href="@{/activities/{id}(id=${activity.id})}" class="text-decoration-none">
+                        <div class="card activity-card shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title mb-1" th:text="${activity.name}">Actividad</h5>
+                                    <p class="card-text text-muted mb-2" th:text="${activity.description}">Descripción</p>
+                                    <div class="d-flex gap-3 flex-wrap">
+                                        <span th:if="${activity.recurrenceRule != null}" class="badge bg-info">
+                                            <i class="bi bi-clock"></i>
+                                            <span th:text="${activity.recurrenceRule.daysOfWeek}">Días</span>
+                                        </span>
+                                        <span th:if="${activity.recurrenceRule != null}" class="badge bg-secondary">
+                                            <i class="bi bi-alarm"></i>
+                                            <span th:text="${activity.recurrenceRule.startTime}">Hora</span>
+                                        </span>
+                                        <span th:class="'badge ' + ${activity.status == T(com.elias.attendancecontrol.model.entity.ActivityStatus).SCHEDULED ? 'bg-success' :
+                                                                     activity.status == T(com.elias.attendancecontrol.model.entity.ActivityStatus).DRAFT ? 'bg-warning text-dark' :
+                                                                     activity.status == T(com.elias.attendancecontrol.model.entity.ActivityStatus).COMPLETED ? 'bg-secondary' : 'bg-danger'}"
+                                              th:text="${activity.status}">Estado</span>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <i class="bi bi-chevron-right fs-4 text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div th:if="${#lists.isEmpty(activities)}" class="col-12">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> No hay actividades disponibles
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+    <script>
+        const searchInput = document.getElementById('searchActivities');
+        const activitiesList = document.getElementById('activitiesList');
+        let debounceTimer;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+            if (query.length === 0) {
+                location.reload();
+                return;
+            }
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const response = await fetch(`/activities/search?q=${encodeURIComponent(query)}`);
+                    const activities = await response.json();
+                    if (activities.length === 0) {
+                        activitiesList.innerHTML = '<div class="col-12"><div class="alert alert-info"><i class="bi bi-info-circle"></i> No se encontraron actividades</div></div>';
+                        return;
+                    }
+                    activitiesList.innerHTML = activities.map(activity => `
+                        <div class="col-12">
+                            <a href="/activities/${activity.id}" class="text-decoration-none">
+                                <div class="card activity-card shadow-sm">
+                                    <div class="card-body d-flex align-items-center">
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title mb-1">${activity.name}</h5>
+                                            <p class="card-text text-muted mb-2">${activity.description || ''}</p>
+                                            <span class="badge ${activity.status === 'SCHEDULED' ? 'bg-success' : activity.status === 'DRAFT' ? 'bg-warning text-dark' : 'bg-secondary'}">
+                                                ${activity.status}
+                                            </span>
+                                        </div>
+                                        <div class="ms-3">
+                                            <i class="bi bi-chevron-right fs-4 text-muted"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Error al buscar:', error);
+                }
+            }, 300);
+        });
+    </script>
+</body>
+</html>

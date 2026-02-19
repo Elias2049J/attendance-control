@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Asistencia Confirmada')}"></head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-success">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <i class="bi bi-check-circle-fill" style="font-size: 3rem;"></i>
+                    <h3 class="mt-3 mb-0">¡Asistencia Registrada!</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-success mb-4">
+                        <h5 class="mb-2">
+                            <i class="bi bi-person-check"></i> Registrado Exitosamente
+                        </h5>
+                        <p class="mb-0">
+                            Tu asistencia ha sido confirmada en el sistema.
+                        </p>
+                    </div>
+                    <h5 class="mb-3">
+                        <i class="bi bi-info-circle"></i> Detalles de la Sesión
+                    </h5>
+                    <div class="list-group mb-4">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="bi bi-bookmark-fill text-primary"></i> Actividad</h6>
+                            </div>
+                            <p class="mb-0" th:text="${activity.name}">Nombre de la actividad</p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="bi bi-calendar3 text-info"></i> Fecha</h6>
+                            </div>
+                            <p class="mb-0" th:text="${#temporals.format(session.sessionDate, 'dd/MM/yyyy')}">01/01/2024</p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="bi bi-clock text-warning"></i> Horario</h6>
+                            </div>
+                            <p class="mb-0">
+                                <span th:text="${session.startTime}">08:00</span> -
+                                <span th:text="${session.endTime}">10:00</span>
+                            </p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="bi bi-person-badge text-secondary"></i> Usuario</h6>
+                            </div>
+                            <p class="mb-0">
+                                <span th:text="${user.firstName}">Nombre</span>
+                                <span th:text="${user.lastName}">Apellido</span>
+                            </p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="bi bi-hourglass-split text-success"></i> Hora de Registro</h6>
+                            </div>
+                            <p class="mb-0" th:text="${#temporals.format(attendance.registrationTime, 'dd/MM/yyyy HH:mm:ss')}">
+                                01/01/2024 08:15:30
+                            </p>
+                        </div>
+                        <div class="list-group-item bg-light">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="bi bi-check-circle text-success"></i> Estado</h6>
+                            </div>
+                            <span class="badge bg-success" th:text="${attendance.status}">PRESENTE</span>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a th:href="@{/}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-house-door"></i> Ir al Inicio
+                        </a>
+                        <a th:href="@{/attendance/history}" class="btn btn-outline-secondary">
+                            <i class="bi bi-clock-history"></i> Ver Mi Historial
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer text-center text-muted">
+                    <small>
+                        <i class="bi bi-shield-check"></i>
+                        Registro verificado y almacenado de forma segura
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{layout :: mobileNavs}"></div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

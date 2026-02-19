@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Generación de Reportes')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content"><div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Inicio</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Reportes</li>
+            </ol>
+        </nav>
+        <div class="row">
+            <div class="col-12">
+                <h2><i class="bi bi-file-earmark-bar-graph"></i> Generación de Reportes</h2>
+                <p class="text-muted">Generar reportes agregados y estadísticas</p>
+                <hr>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up"></i> Reporte General
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Generar reporte general de asistencias del sistema</p>
+                        <form th:action="@{/reports/generate}" method="post">
+                            <div class="mb-3">
+                                <label for="startDateGeneral" class="form-label">Fecha Inicio</label>
+                                <input type="date" class="form-control" id="startDateGeneral" name="startDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="endDateGeneral" class="form-label">Fecha Fin</label>
+                                <input type="date" class="form-control" id="endDateGeneral" name="endDate" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-file-earmark-text"></i> Generar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-list-task"></i> Reporte por Actividad
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Generar reporte de asistencias por actividad específica</p>
+                        <form th:action="@{/reports/activity/{id}(id=${activityId})}" method="post">
+                            <div class="mb-3">
+                                <label for="activityId" class="form-label">Actividad</label>
+                                <select class="form-select" id="activityId" name="activityId" required>
+                                    <option value="">Seleccione...</option>
+                                    <option th:each="activity : ${activities}"
+                                            th:value="${activity.id}"
+                                            th:text="${activity.name}">Actividad</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="startDateActivity" class="form-label">Fecha Inicio</label>
+                                <input type="date" class="form-control" id="startDateActivity" name="startDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="endDateActivity" class="form-label">Fecha Fin</label>
+                                <input type="date" class="form-control" id="endDateActivity" name="endDate" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-file-earmark-bar-graph"></i> Generar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person"></i> Reporte por Usuario
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Generar reporte de asistencias de un usuario</p>
+                        <form th:action="@{/reports/user/{id}(id=${userId})}" method="post">
+                            <div class="mb-3">
+                                <label for="userId" class="form-label">Usuario</label>
+                                <select class="form-select" id="userId" name="userId" required>
+                                    <option value="">Seleccione...</option>
+                                    <option th:each="user : ${users}"
+                                            th:value="${user.id}"
+                                            th:text="${user.name + ' ' + user.lastname}">Usuario</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="startDateUser" class="form-label">Fecha Inicio</label>
+                                <input type="date" class="form-control" id="startDateUser" name="startDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="endDateUser" class="form-label">Fecha Fin</label>
+                                <input type="date" class="form-control" id="endDateUser" name="endDate" required>
+                            </div>
+                            <button type="submit" class="btn btn-warning w-100">
+                                <i class="bi bi-file-earmark-person"></i> Generar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-shield-check"></i> Auditoría
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Ver registros de auditoría y actividad del sistema</p>
+                        <div class="d-flex flex-column gap-2">
+                            <a th:href="@{/audit}" class="btn btn-info w-100">
+                                <i class="bi bi-shield-check"></i> Ver Auditoría
+                            </a>
+                            <small class="text-muted mt-2">
+                                <i class="bi bi-info-circle"></i>
+                                Acceso a logs de seguridad y eventos del sistema
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-archive"></i> Reportes Generados Recientemente</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fecha Generación</th>
+                                        <th>Tipo</th>
+                                        <th>Periodo</th>
+                                        <th>Generado Por</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                            No hay reportes generados recientemente
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div></main><div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

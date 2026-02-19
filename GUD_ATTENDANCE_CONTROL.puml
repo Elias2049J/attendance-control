@@ -1,22 +1,102 @@
 @startuml
-'https://plantuml.com/use-case-diagram
 
-:Main Admin: as Admin
-(Use the application) as (Use)
+left to right direction
+actor "Representante de organizacion" as OWNER
+actor "Miembro" as miembro
+actor "Administrador de organizacion" as adminOrg
+actor "Administrador del sistema" as adminSis
+actor "Usuario del sistema" as usuario
+actor "Visitante" as visitante
+actor "Responsable de actividades" as resAct
 
-User -> (Start)
-User --> (Use)
+package "Organizacion" as packageOrg {
+    usecase "Registrar Organización" as cus03
+    usecase "Configurar Organización" as cus04
+    usecase "Gestionar Organizaciones" as cus05
+    usecase "Ceder Propiedad de la Organización" as cus07
+    usecase "Visualizar Calendario de la Organización" as cus08
+    usecase "Auditar Organización" as cus10
+    usecase "Deshabilitar Organización" as cus11
+}
 
-Admin ---> (Use)
+package "Sistema" as packageSys {
+    usecase "Registrarse como usuario" as cus12
+    usecase "Iniciar Sesión" as cus13
+    usecase "Cerrar Sesión" as cus14
+}
 
-note right of Admin : This is an example.
+package "Asistencia" as packageAsis {
+    usecase "Registrar Asistencia" as cus15
+    usecase "Gestionar Asistencias" as cus22
+    usecase "Visualizar Historial de Asistencias" as cus16
+}
 
-note right of (Use)
-A note can also
-be on several lines
-end note
+package "Actividad" as packageAct {
+    usecase "Crear Actividad" as cus17
+    usecase "Gestionar Actividades" as cus21
+    usecase "Configurar Actividad" as cus18
+    usecase "Buscar Actividad" as cus02
+    usecase "Cancelar Actividad" as cus23
+}
 
-note "This note is connected\nto several objects." as N2
-(Start) .. N2
-N2 .. (Use)
+package "Usuario" as packageUser {
+    usecase "Gestionar Usuarios de la Organización" as cus06
+    usecase "Buscar Usuario" as cus01
+}
+
+package "Sesion" as packageSes {
+    usecase "Registrar Incidencia de Sesión" as cus19
+    usecase "Activar Sesión" as cus20
+
+}
+
+package "Reporte" as packageRep {
+    usecase "Generar Reporte" as cus09
+}
+
+OWNER --> cus03
+    cus03 ..> cus12 : include
+OWNER --> cus08
+OWNER --> cus04
+    cus04 <.. cus01 : extend
+    cus04 <.. cus11 : extend
+OWNER --> cus06
+OWNER --> cus19
+OWNER --> cus15
+OWNER --> cus17
+OWNER --> cus16
+OWNER --> cus09
+OWNER --> cus10
+OWNER --> cus07
+    cus07 <.. cus01 : extend
+
+adminOrg --> cus08
+adminOrg --> cus06
+    cus06 <.. cus01 : extend
+adminOrg --> cus19
+adminOrg --> cus15
+adminOrg --> cus17
+adminOrg --> cus16
+adminOrg --> cus09
+adminOrg --> cus18
+    cus18 <.. cus23 : extend
+adminOrg --> cus10
+adminOrg --> cus21
+    cus21 <.. cus02 : extend
+
+resAct --> cus15
+resAct --> cus20
+resAct --> cus19
+resAct --> cus22
+
+usuario --> cus13
+visitante --> cus12
+
+usuario --> cus14
+
+miembro --> cus15
+miembro --> cus16
+
+adminSis --> cus05
+    cus05 <.. cus11 : extend
 @enduml

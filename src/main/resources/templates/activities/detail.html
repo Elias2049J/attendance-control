@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Detalle de Actividad')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content">
+        <div class="container-fluid py-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/activities}" class="text-decoration-none">Actividades</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${activity.name}">Detalle</li>
+                </ol>
+            </nav>
+            <div class="mb-3">
+                <a th:href="@{/activities}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+            <div class="card mb-4 shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0" th:text="${activity.name}">Nombre Actividad</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead" th:text="${activity.description}">Descripción</p>
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-3">
+                            <h6 class="text-muted">Responsable</h6>
+                            <p class="mb-0">
+                                <i class="bi bi-person"></i>
+                                <span th:text="${(activity.responsible != null) ? (activity.responsible.name + ' ' + activity.responsible.lastname) : 'Sin asignar'}">Responsable</span>
+                            </p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6 class="text-muted">Estado</h6>
+                            <span class="badge"
+                                  th:classappend="${activity.status.name() == 'SCHEDULED' ? 'bg-success' :
+                                                   (activity.status.name() == 'DRAFT' ? 'bg-warning text-dark' :
+                                                   (activity.status.name() == 'COMPLETED' ? 'bg-secondary' :
+                                                   (activity.status.name() == 'PAUSED' ? 'bg-info' : 'bg-danger')))}"
+                                  th:text="${activity.status.displayName}">Estado</span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6 class="text-muted">Participantes</h6>
+                            <p class="mb-0">
+                                <i class="bi bi-people"></i>
+                                <span th:text="${enrolledCount}">0</span> inscritos
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div th:if="${activity.recurrenceRule != null}">
+                        <h5 class="mb-3"><i class="bi bi-calendar-check"></i> Programación</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted">Frecuencia</h6>
+                                <p class="mb-0">
+                                    <i class="bi bi-arrow-repeat"></i>
+                                    <span th:text="${activity.recurrenceRule.recurrenceType.displayName}">Tipo</span>
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3" th:if="${activity.recurrenceRule.recurrenceType.name() != 'NONE'}">
+                                <h6 class="text-muted">Periodo</h6>
+                                <p class="mb-0">
+                                    <i class="bi bi-calendar-range"></i>
+                                    Desde: <strong th:text="${#temporals.format(activity.recurrenceRule.startDate, 'dd/MM/yyyy')}">01/01/2024</strong>
+                                    <span th:if="${activity.recurrenceRule.endDate != null}">
+                                        <br>Hasta: <strong th:text="${#temporals.format(activity.recurrenceRule.endDate, 'dd/MM/yyyy')}">31/12/2024</strong>
+                                    </span>
+                                    <span th:if="${activity.recurrenceRule.endDate == null}">
+                                        <br><span class="text-muted">(Sin fecha fin)</span>
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3" th:if="${activity.recurrenceRule.recurrenceType.name() == 'NONE'}">
+                                <h6 class="text-muted">Fecha del Evento</h6>
+                                <p class="mb-0">
+                                    <i class="bi bi-calendar-day"></i>
+                                    <strong th:text="${#temporals.format(activity.recurrenceRule.startDate, 'dd/MM/yyyy')}">01/01/2024</strong>
+                                </p>
+                            </div>
+                            <div class="col-md-12 mb-3" th:if="${activity.recurrenceRule.recurrenceType.name() == 'WEEKLY' && activity.recurrenceRule.daysOfWeek != null}">
+                                <h6 class="text-muted">Días de la Semana</h6>
+                                <p class="mb-0">
+                                    <i class="bi bi-calendar-week"></i>
+                                    <span th:each="day, iterStat : ${#strings.arraySplit(activity.recurrenceRule.daysOfWeek, ',')}">
+                                        <span th:text="${T(com.elias.attendancecontrol.model.entity.DayOfWeek).valueOf(#strings.trim(day)).displayName}">Día</span>
+                                        <span th:if="${!iterStat.last}"> </span>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <h6 class="text-muted">Hora de Inicio</h6>
+                                <p class="mb-0">
+                                    <i class="bi bi-clock"></i>
+                                    <strong th:text="${#temporals.format(activity.recurrenceRule.startTime, 'HH:mm')}">08:00</strong>
+                                </p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <h6 class="text-muted">Hora de Fin</h6>
+                                <p class="mb-0">
+                                    <i class="bi bi-clock-history"></i>
+                                    <strong th:text="${#temporals.format(activity.recurrenceRule.endTime, 'HH:mm')}">10:00</strong>
+                                </p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <h6 class="text-muted">Tolerancia</h6>
+                                <p class="mb-0">
+                                    <i class="bi bi-hourglass-split"></i>
+                                    <strong th:text="${activity.recurrenceRule.toleranceMinutes}">0</strong> minutos
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${activity.recurrenceRule == null}" class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Atención:</strong> Esta actividad no tiene programación configurada.
+                        <a th:href="@{/activities/{id}/edit(id=${activity.id})}" class="alert-link">Configurar ahora</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow" th:if="${activity.requiresEnrollment}">
+                <div class="card-body">
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-shield-check"></i>
+                        <strong>Inscripción requerida:</strong> Solo los usuarios inscritos pueden registrar asistencia.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow" th:if="${activity.status.name() == 'DRAFT'}" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
+                <div class="card-body">
+                    <div class="alert alert-warning mb-0">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <strong>Actividad en Borrador:</strong> Esta actividad aún no está activa.
+                        Para comenzar a utilizarla, debe activarla usando el botón "Activar y Generar Sesiones".
+                        Esto cambiará su estado a "Programada" y creará automáticamente todas las sesiones según la configuración de recurrencia.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-12 col-md-6" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')"
+                     th:if="${activity.status.name() == 'DRAFT'}">
+                    <form th:action="@{/activities/{id}/activate(id=${activity.id})}" method="post" class="w-100">
+                        <button type="submit" class="btn btn-lg btn-success w-100 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-play-circle me-2"></i> Activar y Generar Sesiones
+                        </button>
+                    </form>
+                </div>
+                <div class="col-12 col-md-6">
+                    <a th:href="@{/activities/{id}/sessions(id=${activity.id})}"
+                       class="btn btn-lg btn-outline-primary w-100 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-calendar3 me-2"></i> Ver Horario
+                    </a>
+                </div>
+                <div class="col-12 col-md-6">
+                    <a th:href="@{/activities/{id}/attendances(id=${activity.id})}"
+                       class="btn btn-lg btn-outline-info w-100 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-check2-square me-2"></i> Ver Asistencias
+                    </a>
+                </div>
+                <div class="col-12 col-md-6">
+                    <a th:href="@{/activities/{id}/enrollments(id=${activity.id})}"
+                       class="btn btn-lg btn-outline-success w-100 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-person-plus me-2"></i> Gestionar Inscripciones
+                    </a>
+                </div>
+                <div class="col-12 col-md-6" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
+                    <a th:href="@{/activities/{id}/edit(id=${activity.id})}"
+                       class="btn btn-lg btn-outline-primary w-100 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-pencil me-2"></i> Editar Actividad
+                    </a>
+                </div>
+                <div class="col-12 col-md-6" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')"
+                     th:if="${activity.status != T(com.elias.attendancecontrol.model.entity.ActivityStatus).CANCELLED &&
+                             activity.status != T(com.elias.attendancecontrol.model.entity.ActivityStatus).COMPLETED}">
+                    <a th:href="@{/activities/{id}/cancel-confirm(id=${activity.id})}"
+                       class="btn btn-lg btn-outline-danger w-100 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-x-circle me-2"></i> Cancelar Actividad
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

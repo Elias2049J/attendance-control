@@ -1,39 +1,34 @@
 package com.elias.attendancecontrol.model.entity;
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import jakarta.validation.constraints.*;
+import lombok.*;
 import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "tokens")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class Token {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, unique = true, length = 500)
+    @NotBlank(message = "El token es obligatorio")
+    @Size(max = 500, message = "El token no puede exceder 500 caracteres")
+    @Column(name = "token", nullable = false, unique = true, length = 500)
     private String token;
-
-    @Column(nullable = false)
+    @NotNull(message = "La fecha de expiración es obligatoria")
+    @FutureOrPresent(message = "La fecha de expiración debe ser en el futuro o presente")
+    @Column(name = "expiration_time", nullable = false)
     private LocalDateTime expirationTime;
-
-    @Column(nullable = false)
+    @NotNull(message = "El estado activo es obligatorio")
+    @Column(name = "active", nullable = false)
     private Boolean active = true;
-
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
-
     @PrePersist
     protected void onCreate() {
         createdDate = LocalDateTime.now();
     }
 }
-

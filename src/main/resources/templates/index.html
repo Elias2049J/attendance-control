@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Inicio')}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content">
+        <div class="container-fluid py-4">
+            <h2><i class="bi bi-house-door"></i> Bienvenido, <span th:text="${username}">Usuario</span></h2>
+            <p class="text-muted">Panel principal del sistema</p>
+            <div class="row mt-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center shadow">
+                        <div class="card-body">
+                            <i class="bi bi-people fs-1 text-primary"></i>
+                            <h5 class="card-title mt-3">Usuarios</h5>
+                            <p class="card-text display-4" th:text="${totalUsers ?: 0}">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center shadow">
+                        <div class="card-body">
+                            <i class="bi bi-list-task fs-1 text-success"></i>
+                            <h5 class="card-title mt-3">Actividades</h5>
+                            <p class="card-text display-4" th:text="${totalActivities ?: 0}">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center shadow">
+                        <div class="card-body">
+                            <i class="bi bi-calendar-event fs-1 text-warning"></i>
+                            <h5 class="card-title mt-3">Sesiones</h5>
+                            <p class="card-text display-4" th:text="${totalSessions ?: 0}">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center shadow">
+                        <div class="card-body">
+                            <i class="bi bi-building fs-1 text-info"></i>
+                            <h5 class="card-title mt-3">Organización</h5>
+                            <p class="card-text h5" th:text="${(organization != null and organization.name != null) ? organization.name : 'N/A'}">Organización</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4" th:if="${activities != null && !#lists.isEmpty(activities)}">
+                <div class="col-12">
+                    <h4><i class="bi bi-list-task"></i> Mis Actividades Recientes</h4>
+                    <div class="row g-3 mt-2">
+                        <div th:each="activity, iterStat : ${activities}" th:if="${iterStat.index < 6}" class="col-md-6">
+                            <a th:href="@{/activities/{id}(id=${activity.id})}" class="text-decoration-none">
+                                <div class="card activity-card shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title" th:text="${activity.name}">Actividad</h5>
+                                        <p class="card-text text-muted" th:text="${activity.description}">Descripción</p>
+                                        <span th:class="'badge ' + ${activity.status == T(com.elias.attendancecontrol.model.entity.ActivityStatus).SCHEDULED ? 'bg-success' : 'bg-warning text-dark'}"
+                                              th:text="${activity.status}">Estado</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <a th:href="@{/activities}" class="btn btn-primary">
+                            <i class="bi bi-list-task"></i> Ver Todas las Actividades
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h5><i class="bi bi-info-circle"></i> Accesos Rápidos</h5>
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                <a th:href="@{/profile}" class="btn btn-outline-primary">
+                                    <i class="bi bi-person-circle"></i> Mi Perfil
+                                </a>
+                                <a th:href="@{/activities}" class="btn btn-outline-success">
+                                    <i class="bi bi-list-task"></i> Actividades
+                                </a>
+                                <a th:href="@{/organizations/dashboard}"
+                                   sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')"
+                                   class="btn btn-outline-info">
+                                    <i class="bi bi-building"></i> Mi Organización
+                                </a>
+                                <a th:href="@{/reports}"
+                                   sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')"
+                                   class="btn btn-outline-secondary">
+                                    <i class="bi bi-graph-up"></i> Reportes
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

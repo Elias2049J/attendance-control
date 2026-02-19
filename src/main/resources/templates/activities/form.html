@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head(${activity.id != null ? 'Editar Actividad' : 'Nueva Actividad'})}"></head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/sidebar-navbar :: sidebar}"></div>
+    <main class="flex-grow-1" id="main-content">
+        <div class="container-fluid py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Inicio</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/activities}" class="text-decoration-none">Actividades</a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${activity.id != null ? 'Editar' : 'Nueva'}">Nueva</li>
+            </ol>
+        </nav>
+        <div class="row">
+            <div class="col-12">
+                <h2>
+                    <i class="bi bi-file-earmark-plus"></i>
+                    <span th:text="${activity.id != null ? 'Editar Actividad' : 'Nueva Actividad'}">Nueva Actividad</span>
+                </h2>
+                <p class="text-muted">Complete el formulario con los datos de la actividad</p>
+                <hr>
+            </div>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form th:action="${activity.id != null ? '/activities/' + activity.id : '/activities'}"
+                              method="post"
+                              th:object="${activity}">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">
+                                    <i class="bi bi-tag"></i> Nombre de la Actividad *
+                                </label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}"
+                                       placeholder="Ej: Capacitación de Ventas" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">
+                                    <i class="bi bi-card-text"></i> Descripción
+                                </label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="3"
+                                          placeholder="Descripción detallada de la actividad"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="responsibleSearch" class="form-label">
+                                    <i class="bi bi-person-check"></i> Responsable *
+                                </label>
+                                <div class="position-relative">
+                                    <input type="text"
+                                           class="form-control"
+                                           id="responsibleSearch"
+                                           placeholder="Buscar usuario responsable..."
+                                           autocomplete="off">
+                                    <input type="hidden"
+                                           id="responsibleId"
+                                           name="responsibleId"
+                                           th:value="${activity.responsible != null ? activity.responsible.id : ''}"
+                                           required>
+                                    <div id="responsibleSearchResults" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; max-height: 300px; overflow-y: auto; display: none;"></div>
+                                </div>
+                                <small class="form-text text-muted d-block">
+                                    Escriba para buscar y seleccionar el usuario responsable
+                                </small>
+                                <div id="selectedResponsible" class="mt-2" style="display: none;">
+                                    <div class="alert alert-info py-2">
+                                        <i class="bi bi-person-check-fill"></i>
+                                        <strong>Seleccionado:</strong> <span id="selectedResponsibleName"></span>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary float-end" onclick="clearResponsible()">
+                                            <i class="bi bi-x"></i> Cambiar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="requiresEnrollment" th:field="*{requiresEnrollment}">
+                                <label class="form-check-label" for="requiresEnrollment">
+                                    <i class="bi bi-shield-check"></i> Requiere inscripción previa
+                                </label>
+                                <small class="form-text text-muted d-block">
+                                    Si activa esta opción, solo los usuarios inscritos podrán registrar asistencia
+                                </small>
+                            </div>
+
+                            <hr class="my-4">
+                            <h5 class="mb-3"><i class="bi bi-calendar-plus"></i> Programación de la Actividad</h5>
+
+                            <div class="mb-4">
+                                <label for="recurrenceType" class="form-label fw-bold">
+                                    <i class="bi bi-calendar-event"></i> ¿Con qué frecuencia se realizará esta actividad? *
+                                </label>
+                                <select class="form-select form-select-lg" id="recurrenceType" name="recurrenceType" required>
+                                    <option value="">Seleccione una opción...</option>
+                                    <option th:each="type : ${recurrenceTypes}"
+                                            th:value="${type}"
+                                            th:selected="${activity.recurrenceRule != null && activity.recurrenceRule.recurrenceType == type}"
+                                            th:text="${type.displayName}">Tipo</option>
+                                </select>
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle"></i>
+                                    Elija "Ninguna" si es un evento único que no se repetirá
+                                </small>
+                            </div>
+
+                            <div id="singleEventContainer" style="display: none;">
+                                <div class="alert alert-info border-info mb-4">
+                                    <i class="bi bi-calendar-day"></i>
+                                    <strong>Evento único:</strong> Esta actividad se realizará una sola vez en la fecha que indique.
+                                </div>
+                                <div class="mb-3">
+                                    <label for="singleEventDate" class="form-label">
+                                        <i class="bi bi-calendar-check"></i> ¿Cuándo se realizará? *
+                                    </label>
+                                    <input type="date" class="form-control" id="singleEventDate">
+                                    <small class="text-muted">Seleccione la fecha del evento</small>
+                                </div>
+                            </div>
+
+                            <div id="recurringEventContainer" style="display: none;">
+                                <div class="alert alert-primary border-primary mb-4">
+                                    <i class="bi bi-arrow-repeat"></i>
+                                    <strong>Actividad recurrente:</strong> Esta actividad se repetirá automáticamente según el periodo que configure.
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="startDate" class="form-label">
+                                            <i class="bi bi-calendar-event"></i> ¿Desde cuándo? *
+                                        </label>
+                                        <input type="date" class="form-control" id="startDate" name="startDate"
+                                               th:value="${activity.recurrenceRule != null ? activity.recurrenceRule.startDate : ''}">
+                                        <small class="text-muted">Fecha de inicio de la repetición</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="endDate" class="form-label">
+                                            <i class="bi bi-calendar-x"></i> ¿Hasta cuándo? (opcional)
+                                        </label>
+                                        <input type="date" class="form-control" id="endDate" name="endDate"
+                                               th:value="${activity.recurrenceRule != null ? activity.recurrenceRule.endDate : ''}">
+                                        <small class="text-muted">Dejar vacío si no tiene fecha fin</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3" id="daysOfWeekContainer" style="display: none;">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-calendar-week"></i> ¿Qué días de la semana?
+                                </label>
+                                <div class="d-flex flex-wrap gap-2" id="daysOfWeekCheckboxes">
+                                    <div th:each="day : ${daysOfWeek}" class="form-check-pill">
+                                        <input type="checkbox"
+                                               class="btn-check day-checkbox"
+                                               th:id="'day_' + ${day.name()}"
+                                               th:value="${day.name()}"
+                                               autocomplete="off">
+                                        <label class="btn btn-outline-primary"
+                                               th:for="'day_' + ${day.name()}"
+                                               th:text="${day.displayName}">
+                                            Día
+                                        </label>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="daysOfWeek" id="daysOfWeekInput"
+                                       th:value="${activity.recurrenceRule != null ? activity.recurrenceRule.daysOfWeek : ''}">
+                                <small class="text-muted">Seleccione uno o más días en los que se realizará</small>
+                            </div>
+
+                            <hr class="my-4">
+                            <h5 class="mb-3"><i class="bi bi-clock"></i> Horario de la Actividad</h5>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="startTime" class="form-label">
+                                        <i class="bi bi-clock"></i> ¿A qué hora comienza? *
+                                    </label>
+                                    <input type="time" class="form-control form-control-lg" id="startTime" name="startTime"
+                                           th:value="${activity.recurrenceRule != null ? activity.recurrenceRule.startTime : ''}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="endTime" class="form-label">
+                                        <i class="bi bi-clock-history"></i> ¿A qué hora termina? *
+                                    </label>
+                                    <input type="time" class="form-control form-control-lg" id="endTime" name="endTime"
+                                           th:value="${activity.recurrenceRule != null ? activity.recurrenceRule.endTime : ''}" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="toleranceMinutes" class="form-label">
+                                    <i class="bi bi-hourglass-split"></i> Tiempo de tolerancia para llegar (minutos)
+                                </label>
+                                <input type="number" class="form-control" id="toleranceMinutes" name="toleranceMinutes"
+                                       th:value="${activity.recurrenceRule != null ? activity.recurrenceRule.toleranceMinutes : 0}"
+                                       min="0" placeholder="Ejemplo: 10">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle"></i>
+                                    Los participantes podrán registrar su asistencia dentro de este tiempo después de la hora de inicio
+                                </small>
+                            </div>
+
+                            <div class="alert alert-warning border-warning">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <strong>Importante:</strong> El tiempo de tolerancia no puede ser mayor que la duración de la sesión.
+                            </div>
+
+                            <hr>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a th:href="@{/activities}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i>
+                                    <span th:text="${activity.id != null ? 'Actualizar' : 'Guardar'}">Guardar</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </main>
+    <div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    <div th:replace="~{layout :: scripts}"></div>
+    <script th:inline="javascript">
+        // Responsible search logic
+        let searchTimeout;
+        const searchInput = document.getElementById('responsibleSearch');
+        const resultsDiv = document.getElementById('responsibleSearchResults');
+        const responsibleIdInput = document.getElementById('responsibleId');
+        const selectedDiv = document.getElementById('selectedResponsible');
+        const selectedNameSpan = document.getElementById('selectedResponsibleName');
+        const activityResponsible = /*[[${activity.responsible}]]*/ null;
+
+
+
+        searchInput.addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            if (query.length < 2) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+            searchTimeout = setTimeout(() => {
+                fetch(`/users/search?q=${encodeURIComponent(query)}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        resultsDiv.innerHTML = html;
+                        resultsDiv.style.display = 'block';
+                        attachClickHandlers();
+                    })
+                    .catch(error => {
+                        console.error('Error searching users:', error);
+                        resultsDiv.innerHTML = '<div class="list-group-item text-danger">Error al buscar usuarios</div>';
+                        resultsDiv.style.display = 'block';
+                    });
+            }, 300);
+        });
+
+        function attachClickHandlers() {
+            document.querySelectorAll('.user-search-result').forEach(item => {
+                item.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    const name = this.dataset.name;
+                    const email = this.dataset.email;
+                    selectResponsible(id, name, email);
+                });
+            });
+        }
+
+        function selectResponsible(id, name, email) {
+            responsibleIdInput.value = id;
+            showSelectedResponsible(id, name, email);
+            resultsDiv.style.display = 'none';
+            searchInput.value = '';
+        }
+
+        function showSelectedResponsible(id, name, email) {
+            selectedNameSpan.textContent = `${name} (${email})`;
+            selectedDiv.style.display = 'block';
+            searchInput.style.display = 'none';
+        }
+
+        function clearResponsible() {
+            responsibleIdInput.value = '';
+            selectedDiv.style.display = 'none';
+            searchInput.style.display = 'block';
+            searchInput.focus();
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
+                resultsDiv.style.display = 'none';
+            }
+        });
+
+        // Recurrence logic
+        const recurrenceTypeSelect = document.getElementById('recurrenceType');
+        const singleEventContainer = document.getElementById('singleEventContainer');
+        const recurringEventContainer = document.getElementById('recurringEventContainer');
+        const daysOfWeekContainer = document.getElementById('daysOfWeekContainer');
+        const singleEventDateInput = document.getElementById('singleEventDate');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+
+        function updateFormVisibility() {
+            const selectedType = recurrenceTypeSelect.value;
+
+            if (selectedType === 'NONE' || selectedType === '') {
+                singleEventContainer.style.display = 'block';
+                recurringEventContainer.style.display = 'none';
+                daysOfWeekContainer.style.display = 'none';
+
+                startDateInput.removeAttribute('required');
+                singleEventDateInput.setAttribute('required', 'required');
+
+                document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = false);
+                document.getElementById('daysOfWeekInput').value = '';
+            } else {
+                singleEventContainer.style.display = 'none';
+                recurringEventContainer.style.display = 'block';
+
+                singleEventDateInput.removeAttribute('required');
+                startDateInput.setAttribute('required', 'required');
+
+                if (selectedType === 'WEEKLY') {
+                    daysOfWeekContainer.style.display = 'block';
+                } else {
+                    daysOfWeekContainer.style.display = 'none';
+                    document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = false);
+                    document.getElementById('daysOfWeekInput').value = '';
+                }
+            }
+        }
+
+        recurrenceTypeSelect.addEventListener('change', updateFormVisibility);
+
+        document.querySelectorAll('.day-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const selectedDays = [];
+                document.querySelectorAll('.day-checkbox:checked').forEach(cb => {
+                    selectedDays.push(cb.value);
+                });
+                document.getElementById('daysOfWeekInput').value = selectedDays.join(',');
+            });
+        });
+
+        window.addEventListener('DOMContentLoaded', function() {
+            const recurrenceType = recurrenceTypeSelect.value;
+            const daysOfWeekValue = document.getElementById('daysOfWeekInput').value;
+
+            updateFormVisibility();
+
+            if (daysOfWeekValue) {
+                const selectedDays = daysOfWeekValue.split(',');
+                selectedDays.forEach(day => {
+                    const checkbox = document.getElementById('day_' + day.trim());
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+        });
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const recurrenceType = recurrenceTypeSelect.value;
+
+            if (recurrenceType === 'NONE') {
+                const singleDate = singleEventDateInput.value;
+                if (!singleDate) {
+                    e.preventDefault();
+                    alert('Por favor, seleccione la fecha del evento.');
+                    return false;
+                }
+                startDateInput.value = singleDate;
+                endDateInput.value = singleDate;
+            }
+
+            if (recurrenceType === 'WEEKLY') {
+                const daysSelected = document.querySelectorAll('.day-checkbox:checked').length;
+                if (daysSelected === 0) {
+                    e.preventDefault();
+                    alert('Por favor, seleccione al menos un día de la semana.');
+                    return false;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

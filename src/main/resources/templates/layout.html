@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title th:text="${pageTitle != null ? pageTitle + ' - Control de Asistencia' : 'Control de Asistencia'}">Control de Asistencia</title>
+    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap-icons-1.13.1/bootstrap-icons.min.css}" rel="stylesheet">
+    <link th:href="@{/css/custom-navbar.css}" rel="stylesheet">
+</head>
+<body>
+    <div th:fragment="mobileNavs">
+        <div th:replace="~{fragments/mobile-navbar :: bottomNav}"></div>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" th:fragment="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="bi bi-calendar-check"></i> Control de Asistencia
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">
+                            <i class="bi bi-house"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
+                        <a class="nav-link" th:href="@{/users}">
+                            <i class="bi bi-people"></i> Usuarios
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
+                        <a class="nav-link" th:href="@{/activities}">
+                            <i class="bi bi-list-task"></i> Actividades
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/calendar}">
+                            <i class="bi bi-calendar3"></i> Calendario
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
+                        <a class="nav-link" th:href="@{/sessions}">
+                            <i class="bi bi-clock-history"></i> Sesiones
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
+                        <a class="nav-link" th:href="@{/incidents}">
+                            <i class="bi bi-exclamation-triangle"></i> Incidencias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/attendance}">
+                            <i class="bi bi-check2-square"></i> Asistencia
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
+                        <a class="nav-link" th:href="@{/reports}">
+                            <i class="bi bi-file-earmark-bar-graph"></i> Reportes
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
+                        <a class="nav-link" th:href="@{/audit}">
+                            <i class="bi bi-shield-check"></i> Auditoría
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/organizations/manage}">
+                            <i class="bi bi-building"></i> Mi Organización
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" systemRole="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+                            <span sec:authentication="name">Usuario</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <span class="dropdown-item-text">
+                                    <small class="text-muted">Rol:</small>
+                                    <span sec:authentication="principal.authorities">ROLE</span>
+                                </span>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/auth/logout}" method="post">
+                                    <button class="dropdown-item" type="submit">
+                                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="content-wrapper" th:fragment="content">
+    </div>
+    <footer class="bg-light text-center text-muted py-3 mt-4" th:fragment="footer">
+        <div class="container">
+            <p class="mb-0">
+                <i class="bi bi-c-circle"></i>
+                <span th:text="${#dates.year(#dates.createNow())}">2026</span>
+                Sistema de Control de Asistencia
+            </p>
+            <small>Desarrollado con Spring Boot & Bootstrap</small>
+        </div>
+    </footer>
+    <th:block th:fragment="scripts">
+        <script th:src="@{/js/bootstrap.bundle.js}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Auto-cerrar alertas después de 5 segundos
+                const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
+                alerts.forEach(function(alert) {
+                    setTimeout(function() {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }, 5000);
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>
