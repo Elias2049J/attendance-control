@@ -23,7 +23,7 @@
                             <p class="mb-0 mt-2">Complete el formulario para crear su organización y comenzar a usar el sistema</p>
                         </div>
                         <div class="card-body p-4">
-                            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <i class="bi bi-exclamation-triangle-fill"></i>
                                 <span th:text="${error}">Error</span>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>

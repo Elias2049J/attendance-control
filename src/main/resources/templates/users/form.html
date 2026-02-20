@@ -14,7 +14,7 @@
                 <hr>
             </div>
         </div>
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>

@@ -22,12 +22,12 @@
                 </div>
             </div>
         </div>
-        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle-fill"></i>
             <span th:text="${success}">Éxito</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
             <span th:text="${error}">Error</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -54,7 +54,7 @@
                             <span th:text="${organization.maxUsers}">50</span>
                         </h3>
                         <div class="progress mt-2" style="height: 5px;">
-                            <div class="progress-bar bg-info" systemRole="progressbar"
+                            <div class="progress-bar bg-info" role="progressbar"
                                  th:style="'width: ' + ${(userCount * 100.0 / organization.maxUsers)} + '%'"
                                  th:attr="aria-valuenow=${userCount}, aria-valuemax=${organization.maxUsers}">
                             </div>
@@ -72,7 +72,7 @@
                             <span th:text="${organization.maxActivities}">10</span>
                         </h3>
                         <div class="progress mt-2" style="height: 5px;">
-                            <div class="progress-bar bg-success" systemRole="progressbar"
+                            <div class="progress-bar bg-success" role="progressbar"
                                  th:style="'width: ' + ${(activityCount * 100.0 / organization.maxActivities)} + '%'"
                                  th:attr="aria-valuenow=${activityCount}, aria-valuemax=${organization.maxActivities}">
                             </div>

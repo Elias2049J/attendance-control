@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio de Sesión - Control de Asistencia</title>
-    <link th:href="@{/css/bootstrap.css}" rel="stylesheet" href="/css/bootstrap.css">
-    <link th:href="@{/bootstrap-icons-1.13.1/bootstrap-icons.min.css}" rel="stylesheet" href="/bootstrap-icons-1.13.1/bootstrap-icons.min.css">
+    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap-icons-1.13.1/bootstrap-icons.min.css}" rel="stylesheet">
 </head>
 <body class="bg-light">
     <div class="container">
@@ -28,12 +28,12 @@
                             <span th:text="${success}">Operación exitosa</span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
-                        <div th:if="${inactive}" class="alert alert-warning alert-dismissible fade show" systemRole="alert">
+                        <div th:if="${inactive}" class="alert alert-warning alert-dismissible fade show" role="alert">
                             <i class="bi bi-lock-fill"></i>
                             Usuario inactivo. Contacte al administrador.
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
-                        <div th:if="${logout}" class="alert alert-success alert-dismissible fade show" systemRole="alert">
+                        <div th:if="${logout}" class="alert alert-success alert-dismissible fade show" role="alert">
                             <i class="bi bi-check-circle-fill"></i>
                             Sesión cerrada correctamente
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
