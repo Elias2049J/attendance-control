@@ -1,5 +1,6 @@
 package com.elias.attendancecontrol.service.implementation;
-import com.elias.attendancecontrol.config.TenantContext;
+
+import com.elias.attendancecontrol.config.SecurityUtils;
 import com.elias.attendancecontrol.model.entity.Organization;
 import com.elias.attendancecontrol.model.entity.SystemRole;
 import com.elias.attendancecontrol.model.entity.User;
@@ -13,17 +14,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Collections;
 import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final OrganizationRepository organizationRepository;
     private final PasswordEncoder passwordEncoder;
     private final LogService logService;
     private final OrganizationService organizationService;
+    private final SecurityUtils securityUtils;
     @Override
     @Transactional
     public User registerUser(User user) {
@@ -55,17 +60,20 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("El correo electrónico ya existe");
         }
-        if (TenantContext.hasCurrentOrganization()) {
-            Long orgId = TenantContext.getCurrentOrganizationId();
+
+        securityUtils.getCurrentOrganizationId().ifPresent(orgId -> {
             Organization organization = organizationRepository.findById(orgId)
                     .orElseThrow(() -> new IllegalArgumentException("Organización no encontrada"));
+
             if (!organizationService.canAddUser(orgId)) {
                 throw new IllegalStateException(
                         "Has alcanzado el límite de usuarios de tu plan (" +
                         organization.getMaxUsers() + " usuarios)");
             }
+
             user.setOrganization(organization);
-        }
+        });
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         logService.log(builder -> builder
@@ -118,11 +126,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<User> listUsers() {
-        if (TenantContext.hasCurrentOrganization()) {
-            Long orgId = TenantContext.getCurrentOrganizationId();
-            return userRepository.findByOrganizationId(orgId);
-        }
-        return userRepository.findAll();
+        return securityUtils.getCurrentOrganizationId()
+                .map(userRepository::findByOrganizationId)
+                .orElseGet(userRepository::findAll);
     }
     @Override
     @Transactional(readOnly = true)
@@ -152,21 +158,23 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<User> searchUsers(String query, SystemRole role, Boolean active) {
         log.debug("Searching users: query={}, role={}, active={}", query, role, active);
+
         if (query == null || query.trim().isEmpty()) {
             return listUsers();
         }
-        if (!TenantContext.hasCurrentOrganization()) {
-            return Collections.emptyList();
-        }
-        Long orgId = TenantContext.getCurrentOrganizationId();
-        if (role != null && active != null) {
-            return userRepository.searchByAllCriteria(query, orgId, role, active);
-        } else if (role != null) {
-            return userRepository.searchByMultipleFieldsAndOrganizationAndRole(query, orgId, role);
-        } else if (active != null) {
-            return userRepository.searchByMultipleFieldsAndOrganizationAndActive(query, orgId, active);
-        } else {
-            return userRepository.searchByMultipleFieldsAndOrganization(query, orgId);
-        }
+
+        return securityUtils.getCurrentOrganizationId()
+                .map(orgId -> {
+                    if (role != null && active != null) {
+                        return userRepository.searchByAllCriteria(query, orgId, role, active);
+                    } else if (role != null) {
+                        return userRepository.searchByMultipleFieldsAndOrganizationAndRole(query, orgId, role);
+                    } else if (active != null) {
+                        return userRepository.searchByMultipleFieldsAndOrganizationAndActive(query, orgId, active);
+                    } else {
+                        return userRepository.searchByMultipleFieldsAndOrganization(query, orgId);
+                    }
+                })
+                .orElse(Collections.emptyList());
     }
 }

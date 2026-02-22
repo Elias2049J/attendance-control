@@ -1,4 +1,10 @@
 package com.elias.attendancecontrol.model.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum ActivityStatus {
     DRAFT("Borrador"),
     SCHEDULED("Programada"),
@@ -6,12 +12,7 @@ public enum ActivityStatus {
     COMPLETED("Completada"),
     CANCELLED("Cancelada");
     private final String displayName;
-    ActivityStatus(String displayName) {
-        this.displayName = displayName;
-    }
-    public String getDisplayName() {
-        return displayName;
-    }
+
     public boolean isEditable() {
         return this == DRAFT || this == SCHEDULED || this == PAUSED;
     }

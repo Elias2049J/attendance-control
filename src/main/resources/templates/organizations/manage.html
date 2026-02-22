@@ -34,9 +34,9 @@
         </div>
         <div class="row mb-4">
             <div class="col-md-3 mb-3">
-                <div class="card h-100 border-primary">
+                <div class="card h-100 border-success">
                     <div class="card-body text-center">
-                        <i class="bi bi-award fs-1 text-primary mb-3"></i>
+                        <i class="bi bi-award fs-1 text-mirae-green mb-3"></i>
                         <h6 class="text-muted mb-2">Plan Actual</h6>
                         <h3 class="mb-0" th:text="${organization.plan}">FREE</h3>
                         <span class="badge bg-success mt-2" th:if="${organization.active}">Activo</span>
@@ -47,14 +47,14 @@
             <div class="col-md-3 mb-3">
                 <div class="card h-100">
                     <div class="card-body text-center">
-                        <i class="bi bi-people fs-1 text-info mb-3"></i>
+                        <i class="bi bi-people fs-1 text-mirae-green mb-3"></i>
                         <h6 class="text-muted mb-2">Usuarios</h6>
                         <h3 class="mb-0">
                             <span th:text="${userCount}">0</span> /
                             <span th:text="${organization.maxUsers}">50</span>
                         </h3>
                         <div class="progress mt-2" style="height: 5px;">
-                            <div class="progress-bar bg-info" role="progressbar"
+                            <div class="progress-bar bg-success" role="progressbar"
                                  th:style="'width: ' + ${(userCount * 100.0 / organization.maxUsers)} + '%'"
                                  th:attr="aria-valuenow=${userCount}, aria-valuemax=${organization.maxUsers}">
                             </div>
@@ -65,7 +65,7 @@
             <div class="col-md-3 mb-3">
                 <div class="card h-100">
                     <div class="card-body text-center">
-                        <i class="bi bi-calendar-event fs-1 text-success mb-3"></i>
+                        <i class="bi bi-calendar-event fs-1 text-mirae-green mb-3"></i>
                         <h6 class="text-muted mb-2">Actividades</h6>
                         <h3 class="mb-0">
                             <span th:text="${activityCount}">0</span> /
@@ -83,7 +83,7 @@
             <div class="col-md-3 mb-3">
                 <div class="card h-100">
                     <div class="card-body text-center">
-                        <i class="bi bi-calendar-check fs-1 text-warning mb-3"></i>
+                        <i class="bi bi-calendar-check fs-1 text-mirae-dark mb-3"></i>
                         <h6 class="text-muted mb-2">Creada el</h6>
                         <h5 class="mb-0" th:text="${#temporals.format(organization.createdDate, 'dd/MM/yyyy')}">01/01/2026</h5>
                         <small class="text-muted" th:text="${#temporals.format(organization.createdDate, 'HH:mm')}">10:00</small>
@@ -222,10 +222,10 @@
                             <a th:href="@{/activities}" class="btn btn-outline-success">
                                 <i class="bi bi-calendar-event"></i> Ver Actividades
                             </a>
-                            <a th:href="@{/calendar}" class="btn btn-outline-info">
+                            <a th:href="@{/calendar}" class="btn btn-outline-success">
                                 <i class="bi bi-calendar3"></i> Ver Calendario
                             </a>
-                            <a th:href="@{/reports}" class="btn btn-outline-warning" sec:authorize="hasAnyRole('ADMIN', 'RESPONSIBLE')">
+                            <a th:href="@{/reports}" class="btn btn-outline-primary" sec:authorize="hasAnyRole('ADMIN', 'RESPONSIBLE')">
                                 <i class="bi bi-graph-up"></i> Ver Reportes
                             </a>
                         </div>

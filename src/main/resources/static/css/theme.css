@@ -1,0 +1,589 @@
+/* ============================================
+   MIRAE THEME
+   Paleta: Oscuros (#2C3E50, #212121), Blanco, Verde (#26A69A)
+   ============================================ */
+
+:root {
+    /* Colores principales */
+    --mirae-primary-dark: #2C3E50;
+    --mirae-secondary-dark: #34495e;
+    --mirae-accent-green: #26A69A;
+    --mirae-accent-green-hover: #1e8880;
+    --mirae-accent-green-light: rgba(38, 166, 154, 0.1);
+    --mirae-light: #F5F5F5;
+    --mirae-white: #FFFFFF;
+    --mirae-footer-dark: #212121;
+    --mirae-text-muted: #6c757d;
+
+    /* Sobrescribir colores de Bootstrap */
+    --bs-primary: #2C3E50;
+    --bs-primary-rgb: 44, 62, 80;
+    --bs-success: #26A69A;
+    --bs-success-rgb: 38, 166, 154;
+    --bs-dark: #212121;
+    --bs-dark-rgb: 33, 33, 33;
+}
+
+/* ============================================
+   OVERRIDE BOOTSTRAP COMPONENTS
+   ============================================ */
+
+/* Navbar */
+.navbar-dark,
+.bg-primary {
+    background-color: var(--mirae-primary-dark) !important;
+}
+
+.navbar-brand {
+    color: var(--mirae-white) !important;
+    font-weight: 600;
+}
+
+.navbar-dark .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.navbar-dark .nav-link:hover,
+.navbar-dark .nav-link:focus {
+    color: var(--mirae-accent-green) !important;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--mirae-primary-dark);
+    border-color: var(--mirae-primary-dark);
+    color: var(--mirae-white);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--mirae-secondary-dark);
+    border-color: var(--mirae-secondary-dark);
+}
+
+.btn-success {
+    background-color: var(--mirae-accent-green);
+    border-color: var(--mirae-accent-green);
+    color: var(--mirae-white);
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background-color: var(--mirae-accent-green-hover);
+    border-color: var(--mirae-accent-green-hover);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #5a6268;
+}
+
+.btn-outline-primary {
+    color: var(--mirae-primary-dark);
+    border-color: var(--mirae-primary-dark);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--mirae-primary-dark);
+    border-color: var(--mirae-primary-dark);
+    color: var(--mirae-white);
+}
+
+.btn-outline-success {
+    color: var(--mirae-accent-green);
+    border-color: var(--mirae-accent-green);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--mirae-accent-green);
+    border-color: var(--mirae-accent-green);
+    color: var(--mirae-white);
+}
+
+.btn-outline-light {
+    color: var(--mirae-white);
+    border-color: var(--mirae-white);
+}
+
+.btn-outline-light:hover {
+    background-color: var(--mirae-accent-green);
+    border-color: var(--mirae-accent-green);
+    color: var(--mirae-white);
+}
+
+.btn-info {
+    background-color: var(--mirae-accent-green);
+    border-color: var(--mirae-accent-green);
+    color: var(--mirae-white);
+}
+
+.btn-info:hover {
+    background-color: var(--mirae-accent-green-hover);
+    border-color: var(--mirae-accent-green-hover);
+}
+
+/* Cards */
+.card {
+    border: 1px solid rgba(44, 62, 80, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    background-color: var(--mirae-primary-dark);
+    color: var(--mirae-white);
+    border-bottom: none;
+}
+
+.bg-primary .card-header {
+    background-color: var(--mirae-secondary-dark);
+}
+
+.card-header.bg-light {
+    background-color: var(--mirae-light) !important;
+    color: var(--mirae-primary-dark) !important;
+    border-bottom: 1px solid rgba(44, 62, 80, 0.1);
+}
+
+.card.border-success {
+    border-color: var(--mirae-accent-green) !important;
+    border-width: 2px;
+}
+
+.card.border-primary {
+    border-color: var(--mirae-primary-dark) !important;
+    border-width: 2px;
+}
+
+.card.border-danger {
+    border-color: #dc3545 !important;
+    border-width: 2px;
+}
+
+.card-header.bg-danger {
+    background-color: #dc3545 !important;
+    color: var(--mirae-white) !important;
+}
+
+/* Badges */
+.badge.bg-primary {
+    background-color: var(--mirae-primary-dark) !important;
+}
+
+.badge.bg-success {
+    background-color: var(--mirae-accent-green) !important;
+}
+
+.badge.bg-info {
+    background-color: var(--mirae-accent-green) !important;
+}
+
+.badge.bg-warning {
+    background-color: #f39c12 !important;
+    color: var(--mirae-primary-dark) !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+/* Text colors */
+.text-primary {
+    color: var(--mirae-primary-dark) !important;
+}
+
+.text-success {
+    color: var(--mirae-accent-green) !important;
+}
+
+.bi-check-circle.text-success {
+    color: var(--mirae-accent-green) !important;
+}
+
+/* Links */
+a {
+    color: var(--mirae-accent-green);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--mirae-accent-green-hover);
+}
+
+/* Tables */
+.table thead {
+    background-color: var(--mirae-primary-dark);
+    color: var(--mirae-white);
+}
+
+.table-light thead {
+    background-color: var(--mirae-light);
+    color: var(--mirae-primary-dark);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(44, 62, 80, 0.03);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(38, 166, 154, 0.08);
+}
+
+/* Forms */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--mirae-accent-green);
+    box-shadow: 0 0 0 0.25rem rgba(38, 166, 154, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: var(--mirae-accent-green);
+    border-color: var(--mirae-accent-green);
+}
+
+.input-group-text {
+    background-color: var(--mirae-light);
+    border-color: #dee2e6;
+    color: var(--mirae-primary-dark);
+}
+
+.form-control:focus ~ .input-group-text,
+.input-group:focus-within .input-group-text {
+    border-color: var(--mirae-accent-green);
+}
+
+/* Alerts */
+.alert-success {
+    background-color: var(--mirae-accent-green-light);
+    border-color: var(--mirae-accent-green);
+    color: var(--mirae-primary-dark);
+}
+
+.alert-info {
+    background-color: rgba(38, 166, 154, 0.1);
+    border-color: var(--mirae-accent-green);
+    color: var(--mirae-primary-dark);
+}
+
+.alert-info .bi {
+    color: var(--mirae-accent-green);
+}
+
+/* Pagination */
+.pagination .page-link {
+    color: var(--mirae-primary-dark);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--mirae-accent-green);
+    border-color: var(--mirae-accent-green);
+}
+
+.pagination .page-link:hover {
+    background-color: var(--mirae-accent-green-light);
+    color: var(--mirae-accent-green);
+}
+
+/* Sidebar */
+.sidebar-navbar {
+    background-color: var(--mirae-primary-dark) !important;
+}
+
+.sidebar-link {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.sidebar-link:hover {
+    background-color: rgba(38, 166, 154, 0.15);
+    color: var(--mirae-white);
+}
+
+.sidebar-link.active {
+    background-color: var(--mirae-accent-green);
+    color: var(--mirae-white);
+    border-left: 4px solid var(--mirae-white);
+}
+
+/* Mobile Bottom Navbar */
+.mobile-bottom-navbar {
+    background-color: var(--mirae-white);
+    border-top: 1px solid rgba(44, 62, 80, 0.1);
+}
+
+.mobile-nav-item {
+    color: var(--mirae-text-muted);
+}
+
+.mobile-nav-item.active,
+.mobile-nav-item:hover {
+    color: var(--mirae-accent-green);
+    background-color: var(--mirae-accent-green-light);
+}
+
+/* Footer */
+footer {
+    background-color: var(--mirae-footer-dark) !important;
+    color: var(--mirae-accent-green) !important;
+}
+
+footer a {
+    color: var(--mirae-accent-green) !important;
+}
+
+footer a:hover {
+    color: var(--mirae-accent-green-hover) !important;
+}
+
+/* Icons with colors */
+.text-info {
+    color: var(--mirae-accent-green) !important;
+}
+
+.text-warning {
+    color: #f39c12 !important;
+}
+
+/* Dropdown */
+.dropdown-menu {
+    border: 1px solid rgba(44, 62, 80, 0.1);
+}
+
+.dropdown-item:hover {
+    background-color: var(--mirae-accent-green-light);
+    color: var(--mirae-primary-dark);
+}
+
+/* Progress bars */
+.progress-bar {
+    background-color: var(--mirae-accent-green);
+}
+
+/* List groups */
+.list-group-item.active {
+    background-color: var(--mirae-accent-green);
+    border-color: var(--mirae-accent-green);
+}
+
+.list-group-item:hover {
+    background-color: var(--mirae-accent-green-light);
+}
+
+/* Modals */
+.modal-header {
+    background-color: var(--mirae-primary-dark);
+    color: var(--mirae-white);
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background-color: transparent;
+}
+
+.breadcrumb-item.active {
+    color: var(--mirae-primary-dark);
+}
+
+.breadcrumb-item a {
+    color: var(--mirae-accent-green);
+}
+
+/* Activity cards - special styling */
+.activity-card {
+    border-left: 4px solid var(--mirae-accent-green);
+}
+
+.activity-card:hover {
+    border-left-color: var(--mirae-accent-green-hover);
+    box-shadow: 0 4px 12px rgba(38, 166, 154, 0.2);
+}
+
+/* Stats cards */
+.stat-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card .card-body {
+    padding: 1.5rem;
+}
+
+.stat-card i {
+    color: var(--mirae-accent-green);
+}
+
+/* QR Section */
+.qr-container {
+    background: var(--mirae-white);
+    border: 2px solid var(--mirae-accent-green);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+/* Body background */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Content wrapper */
+.content-wrapper,
+#main-content {
+    background-color: #f8f9fa;
+}
+
+/* Calendar custom colors */
+.fc-event {
+    background-color: var(--mirae-accent-green);
+    border-color: var(--mirae-accent-green);
+}
+
+.fc-event:hover {
+    background-color: var(--mirae-accent-green-hover);
+}
+
+/* Utility classes */
+.bg-mirae-dark {
+    background-color: var(--mirae-primary-dark) !important;
+    color: var(--mirae-white) !important;
+}
+
+.bg-mirae-green {
+    background-color: var(--mirae-accent-green) !important;
+    color: var(--mirae-white) !important;
+}
+
+.text-mirae-dark {
+    color: var(--mirae-primary-dark) !important;
+}
+
+.text-mirae-green {
+    color: var(--mirae-accent-green) !important;
+}
+
+.border-mirae-green {
+    border-color: var(--mirae-accent-green) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Spinners */
+.spinner-border.text-primary {
+    color: var(--mirae-primary-dark) !important;
+}
+
+.spinner-border.text-success {
+    color: var(--mirae-accent-green) !important;
+}
+
+/* Nav tabs */
+.nav-tabs .nav-link.active {
+    color: var(--mirae-accent-green);
+    border-color: #dee2e6 #dee2e6 var(--mirae-accent-green);
+    border-bottom-width: 3px;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--mirae-accent-green);
+}
+
+/* Small buttons in tables */
+.btn-sm {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Action buttons group */
+.btn-group .btn-primary,
+.btn-group .btn-success {
+    border-color: transparent;
+}
+
+/* Toast notifications */
+.toast-header {
+    background-color: var(--mirae-primary-dark);
+    color: var(--mirae-white);
+}
+
+/* Switch/Toggle */
+.form-switch .form-check-input:checked {
+    background-color: var(--mirae-accent-green);
+    border-color: var(--mirae-accent-green);
+}
+
+/* Horizontal rules */
+hr {
+    border-top: 1px solid rgba(44, 62, 80, 0.15);
+}
+
+/* Border utilities */
+.border-bottom {
+    border-bottom: 1px solid rgba(44, 62, 80, 0.15) !important;
+}
+
+.border-top {
+    border-top: 1px solid rgba(44, 62, 80, 0.15) !important;
+}
+
+/* Offcanvas */
+.offcanvas-header {
+    background-color: var(--mirae-primary-dark);
+    color: var(--mirae-white);
+}
+
+.offcanvas-header .btn-close {
+    filter: invert(1);
+}
+
+/* Accordion */
+.accordion-button:not(.collapsed) {
+    background-color: var(--mirae-accent-green-light);
+    color: var(--mirae-primary-dark);
+}
+
+.accordion-button:focus {
+    border-color: var(--mirae-accent-green);
+    box-shadow: 0 0 0 0.25rem rgba(38, 166, 154, 0.25);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

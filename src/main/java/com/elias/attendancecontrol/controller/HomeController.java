@@ -24,11 +24,11 @@ public class HomeController {
     public String home(Model model) {
         var userOptional = securityUtils.getCurrentUser();
         if (userOptional.isEmpty()) {
-            log.warn("No authenticated user found in security context, redirecting to login");
-            return "redirect:/auth/login";
+            log.debug("No authenticated user, showing landing page");
+            return "landing";
         }
         var user = userOptional.get();
-        log.debug("User {} accessing home page", user.getUsername());
+        log.debug("User {} accessing dashboard", user.getUsername());
         model.addAttribute("username", user.getUsername());
         model.addAttribute("user", user);
         model.addAttribute("organization", user.getOrganization());

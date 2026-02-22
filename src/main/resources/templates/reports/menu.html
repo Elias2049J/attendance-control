@@ -114,7 +114,7 @@
             </div>
             <div class="col-md-4" sec:authorize="hasAnyRole('ADMIN', 'ORG_OWNER', 'ORG_ADMIN')">
                 <div class="card h-100">
-                    <div class="card-header bg-info text-white">
+                    <div class="card-header bg-primary text-white">
                         <h5 class="mb-0">
                             <i class="bi bi-shield-check"></i> Auditoría
                         </h5>
@@ -122,7 +122,7 @@
                     <div class="card-body">
                         <p>Ver registros de auditoría y actividad del sistema</p>
                         <div class="d-flex flex-column gap-2">
-                            <a th:href="@{/audit}" class="btn btn-info w-100">
+                            <a th:href="@{/audit}" class="btn btn-success w-100">
                                 <i class="bi bi-shield-check"></i> Ver Auditoría
                             </a>
                             <small class="text-muted mt-2">

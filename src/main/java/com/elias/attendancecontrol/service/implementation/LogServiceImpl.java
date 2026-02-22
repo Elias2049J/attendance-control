@@ -1,6 +1,6 @@
 package com.elias.attendancecontrol.service.implementation;
+
 import com.elias.attendancecontrol.config.SecurityUtils;
-import com.elias.attendancecontrol.config.TenantContext;
 import com.elias.attendancecontrol.model.entity.AuditLog;
 import com.elias.attendancecontrol.model.entity.User;
 import com.elias.attendancecontrol.persistence.repository.AuditLogRepository;
@@ -10,13 +10,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Consumer;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LogServiceImpl implements LogService {
+
     private final AuditLogRepository auditLogRepository;
     private final UserRepository userRepository;
     private final SecurityUtils securityUtils;
@@ -46,25 +49,24 @@ public class LogServiceImpl implements LogService {
         if (securityUtils.isSystemAdmin()) {
             return auditLogRepository.findAll();
         }
-        if (!TenantContext.hasCurrentOrganization()) {
-            return List.of();
-        }
-        Long orgId = TenantContext.getCurrentOrganizationId();
-        return auditLogRepository.findByOrganization(orgId);
+
+        return securityUtils.getCurrentOrganizationId()
+                .map(auditLogRepository::findByOrganization)
+                .orElse(List.of());
     }
     @Override
     @Transactional(readOnly = true)
     public List<AuditLog> searchLogs(Long userId, String eventType, LocalDateTime startDate, LocalDateTime endDate) {
         log.debug("Searching logs: userId={}, eventType={}, startDate={}, endDate={}",
                 userId, eventType, startDate, endDate);
+
         if (securityUtils.isSystemAdmin()) {
             return auditLogRepository.searchLogs(userId, eventType, startDate, endDate);
         }
-        if (!TenantContext.hasCurrentOrganization()) {
-            return List.of();
-        }
-        Long orgId = TenantContext.getCurrentOrganizationId();
-        return auditLogRepository.searchLogsByOrganization(orgId, userId, eventType, startDate, endDate);
+
+        return securityUtils.getCurrentOrganizationId()
+                .map(orgId -> auditLogRepository.searchLogsByOrganization(orgId, userId, eventType, startDate, endDate))
+                .orElse(List.of());
     }
     @Override
     @Transactional(readOnly = true)

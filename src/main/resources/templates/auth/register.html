@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrarse - Control de Asistencia</title>
+    <title>Registrarse - MIRAE</title>
     <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
     <link th:href="@{/bootstrap-icons-1.13.1/bootstrap-icons.min.css}" rel="stylesheet">
+    <link th:href="@{/css/theme.css}" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2C3E50 0%, #34495e 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -29,8 +30,8 @@
                 <div class="card register-card">
                     <div class="card-body p-5">
                         <div class="text-center mb-4">
-                            <i class="bi bi-person-plus-fill text-primary" style="font-size: 3rem;"></i>
-                            <h2 class="mt-2">Crear Cuenta</h2>
+                            <i class="bi bi-person-plus-fill text-mirae-green" style="font-size: 3rem;"></i>
+                            <h2 class="mt-2 text-mirae-dark">Crear Cuenta</h2>
                             <p class="text-muted">Complete el formulario para registrarse</p>
                         </div>
                         <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">

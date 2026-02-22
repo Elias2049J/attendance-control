@@ -1,5 +1,6 @@
 package com.elias.attendancecontrol.service.implementation;
-import com.elias.attendancecontrol.config.TenantContext;
+
+import com.elias.attendancecontrol.config.SecurityUtils;
 import com.elias.attendancecontrol.model.entity.Activity;
 import com.elias.attendancecontrol.model.entity.ActivityStatus;
 import com.elias.attendancecontrol.model.entity.Organization;
@@ -17,11 +18,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ActivityServiceImpl implements ActivityService {
+
     private final ActivityRepository activityRepository;
     private final OrganizationRepository organizationRepository;
     private final SessionRepository sessionRepository;
@@ -30,21 +34,25 @@ public class ActivityServiceImpl implements ActivityService {
     private final EnrollmentService enrollmentService;
     private final RecurrenceService recurrenceService;
     private final LogService logService;
+    private final SecurityUtils securityUtils;
     @Override
     @Transactional
     public Activity createActivity(Activity activity) {
         log.debug("Creating new activity: {}", activity.getName());
-        if (TenantContext.hasCurrentOrganization()) {
-            Long orgId = TenantContext.getCurrentOrganizationId();
+
+        securityUtils.getCurrentOrganizationId().ifPresent(orgId -> {
             Organization organization = organizationRepository.findById(orgId)
                     .orElseThrow(() -> new IllegalArgumentException("Organización no encontrada"));
+
             if (!organizationService.canAddActivity(orgId)) {
                 throw new IllegalStateException(
                         "Has alcanzado el límite de actividades de tu plan (" +
                         organization.getMaxActivities() + " actividades)");
             }
+
             activity.setOrganization(organization);
-        }
+        });
+
         Activity savedActivity = activityRepository.save(activity);
         logService.log(builder -> builder
                 .eventType("ACTIVITY_CREATED")
@@ -103,11 +111,9 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     @Transactional(readOnly = true)
     public List<Activity> listActivities() {
-        if (TenantContext.hasCurrentOrganization()) {
-            Long orgId = TenantContext.getCurrentOrganizationId();
-            return activityRepository.findByOrganizationId(orgId);
-        }
-        return activityRepository.findAll();
+        return securityUtils.getCurrentOrganizationId()
+                .map(activityRepository::findByOrganizationId)
+                .orElseGet(activityRepository::findAll);
     }
     @Override
     @Transactional(readOnly = true)
@@ -118,11 +124,9 @@ public class ActivityServiceImpl implements ActivityService {
     @Transactional(readOnly = true)
     @Override
     public List<Activity> findActiveActivities() {
-        if (TenantContext.hasCurrentOrganization()) {
-            Long orgId = TenantContext.getCurrentOrganizationId();
-            return activityRepository.findByOrganizationIdAndStatus(orgId, ActivityStatus.SCHEDULED);
-        }
-        return activityRepository.findByStatus(ActivityStatus.SCHEDULED);
+        return securityUtils.getCurrentOrganizationId()
+                .map(orgId -> activityRepository.findByOrganizationIdAndStatus(orgId, ActivityStatus.SCHEDULED))
+                .orElseGet(() -> activityRepository.findByStatus(ActivityStatus.SCHEDULED));
     }
     @Transactional(readOnly = true)
     @Override

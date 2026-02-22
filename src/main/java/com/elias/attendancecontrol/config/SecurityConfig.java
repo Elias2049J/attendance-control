@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 @Configuration
 @EnableWebSecurity
@@ -21,7 +20,7 @@ public class SecurityConfig {
     private static final String ORG_ROLE_OWNER = "ORG_OWNER";
     private static final String ORG_ROLE_ADMIN = "ORG_ADMIN";
     private final CustomAuthenticationProvider customAuthenticationProvider;
-    private final TenantFilter tenantFilter;
+
     @Value("${security.max-sessions-per-user:1}")
     private int maxSessionsPerUser;
     @Value("${security.session-prevents-login:false}")
@@ -33,21 +32,28 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
+                        "/",
                         LOGIN_URL,
                         "/auth/register",
                         "/organizations/register",
                         "/css/**",
                         "/js/**",
+                        "/images/**",
                         "/bootstrap-icons-1.13.1/**",
                         "/static/**",
                         "/webjars/**",
+                        "/*.jpg",
+                        "/*.png",
+                        "/*.gif",
+                        "/*.ico",
+                        "/favicon.ico",
                         "/error"
                 ).permitAll()
                 .requestMatchers("/organizations/{slug}/members").hasRole(SYS_ROLE_ADMIN)
                 .requestMatchers("/organizations/manage", "/organizations/edit", "/organizations/settings")
                     .hasAnyRole(ORG_ROLE_OWNER, ORG_ROLE_ADMIN)
                 .requestMatchers("/org/{orgSlug}/attendance/verify").authenticated()
-                .requestMatchers("/", "/home").authenticated()
+                .requestMatchers("/home", "/dashboard").authenticated()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -75,10 +81,9 @@ public class SecurityConfig {
                 .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny)
                 .xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
                 .contentSecurityPolicy(csp -> csp
-                    .policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'")
+                    .policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:")
                 )
-            )
-            .addFilterAfter(tenantFilter, UsernamePasswordAuthenticationFilter.class);
+            );
         return http.build();
     }
 }

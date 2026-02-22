@@ -10,36 +10,36 @@
             <p class="text-muted">Panel principal del sistema</p>
             <div class="row mt-4">
                 <div class="col-md-3 mb-3">
-                    <div class="card text-center shadow">
+                    <div class="card text-center shadow stat-card">
                         <div class="card-body">
-                            <i class="bi bi-people fs-1 text-primary"></i>
+                            <i class="bi bi-people fs-1 text-mirae-green"></i>
                             <h5 class="card-title mt-3">Usuarios</h5>
                             <p class="card-text display-4" th:text="${totalUsers ?: 0}">0</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="card text-center shadow">
+                    <div class="card text-center shadow stat-card">
                         <div class="card-body">
-                            <i class="bi bi-list-task fs-1 text-success"></i>
+                            <i class="bi bi-list-task fs-1 text-mirae-green"></i>
                             <h5 class="card-title mt-3">Actividades</h5>
                             <p class="card-text display-4" th:text="${totalActivities ?: 0}">0</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="card text-center shadow">
+                    <div class="card text-center shadow stat-card">
                         <div class="card-body">
-                            <i class="bi bi-calendar-event fs-1 text-warning"></i>
+                            <i class="bi bi-calendar-event fs-1 text-mirae-green"></i>
                             <h5 class="card-title mt-3">Sesiones</h5>
                             <p class="card-text display-4" th:text="${totalSessions ?: 0}">0</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="card text-center shadow">
+                    <div class="card text-center shadow stat-card">
                         <div class="card-body">
-                            <i class="bi bi-building fs-1 text-info"></i>
+                            <i class="bi bi-building fs-1 text-mirae-dark"></i>
                             <h5 class="card-title mt-3">Organización</h5>
                             <p class="card-text h5" th:text="${(organization != null and organization.name != null) ? organization.name : 'N/A'}">Organización</p>
                         </div>

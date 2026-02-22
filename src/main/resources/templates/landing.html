@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIRAE - Control Inteligente</title>
+
+    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/css/landing.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap-icons-1.13.1/bootstrap-icons.min.css}" rel="stylesheet">
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="sidebar-mobile" id="sidebarMobile">
+    <a href="#contact" class="nav-link">Contacto</a>
+    <a th:href="@{/organizations/register}" class="btn btn-register">Registrarse</a>
+    <a th:href="@{/auth/login}" class="nav-link">Ingresar</a>
+</div>
+
+<nav class="navbar-landing">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <button class="btn btn-link navbar-mobile-only" id="menuToggle" style="color: white; font-size: 1.5rem; text-decoration: none;">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <a class="navbar-brand" href="#">MIRAE</a>
+
+            <div class="navbar-desktop d-none d-md-flex align-items-center">
+                <a class="nav-link" href="#inicio">Inicio</a>
+                <a class="nav-link" href="#caracteristicas">Características</a>
+                <a class="nav-link" href="#contact">Contacto</a>
+                <a th:href="@{/organizations/register}" class="btn btn-register ms-3">Registrarse</a>
+                <a th:href="@{/auth/login}" class="nav-link">Ingresar</a>
+            </div>
+
+            <a th:href="@{/organizations/register}" class="btn btn-register d-md-none navbar-mobile-only">Registrarse</a>
+        </div>
+    </div>
+</nav>
+
+<section class="hero-section" id="inicio">
+    <div class="hero-background"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">Control inteligente para equipos modernos</h1>
+        <p class="hero-subtitle">Revoluciona la forma de gestionar asistencias en tu organización</p>
+        <p class="hero-description">
+            Con MIRAE, olvídate de las listas manuales y planillas desactualizadas.
+            Gestiona la asistencia de forma inteligente, automática y en tiempo real.
+        </p>
+        <a th:href="@{/organizations/register}" class="btn-cta">
+            <i class="bi bi-rocket-takeoff me-2"></i>Comenzar Gratis
+        </a>
+        <p class="hero-footnote mt-3">
+            <i class="bi bi-check-circle-fill me-1"></i> Sin tarjeta de crédito
+            <span class="mx-2">•</span>
+            <i class="bi bi-check-circle-fill me-1"></i> Configuración en 5 minutos
+        </p>
+    </div>
+</section>
+
+<section class="features-section" id="caracteristicas">
+    <div class="container">
+        <h2 class="text-center mb-3 features-heading">¿Por qué elegir MIRAE?</h2>
+        <p class="text-center text-white-50 mb-5 features-subheading">
+            La solución más completa para gestionar asistencias de manera profesional
+        </p>
+        <div class="row g-4 justify-content-center features-row">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="feature-card feature-card-primary">
+                    <div class="feature-icon feature-icon-large">
+                        <i class="bi bi-qr-code-scan"></i>
+                    </div>
+                    <h3 class="feature-title">Registro con QR</h3>
+                    <p class="feature-description">
+                        Olvídate de las listas en papel. Genera códigos QR únicos para cada sesión y permite que tus participantes registren su asistencia con un simple escaneo desde su móvil. Rápido, fácil y sin errores.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="feature-card feature-card-primary">
+                    <div class="feature-icon feature-icon-large">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h3 class="feature-title">Reportes en Tiempo Real</h3>
+                    <p class="feature-description">
+                        Visualiza quién asistió y quién faltó al instante. Accede a dashboards intuitivos, estadísticas actualizadas y exporta reportes profesionales en PDF para análisis y auditorías completas.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="feature-card feature-card-primary">
+                    <div class="feature-icon feature-icon-large">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h3 class="feature-title">Seguridad Total</h3>
+                    <p class="feature-description">
+                        Arquitectura multi-tenant con datos completamente aislados. Cada organización tiene su propio espacio seguro con autenticación robusta y cumplimiento de los más altos estándares de seguridad.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="benefits-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="benefits-heading">Transforma la gestión de asistencias en tu organización</h2>
+                <p class="benefits-text">
+                    MIRAE elimina las ineficiencias de los métodos tradicionales de control de asistencia.
+                    Ahorra tiempo, reduce errores y obtén insights valiosos sobre la participación de tus miembros.
+                </p>
+                <ul class="benefits-list">
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <strong>Ahorra hasta 90% del tiempo</strong> en gestión manual de listas y registro de asistencias
+                        </div>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <strong>Elimina errores humanos</strong> con registro digital automatizado y validación en tiempo real
+                        </div>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <strong>Decisiones basadas en datos</strong> con reportes detallados y estadísticas precisas
+                        </div>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <strong>Mayor participación</strong> con sistema simple y accesible desde cualquier dispositivo
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-6">
+                <div class="benefits-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <div class="stat-number">5 min</div>
+                        <div class="stat-label">Para configurar tu organización</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-file-earmark-check"></i>
+                        </div>
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Digital y sin papel</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-globe"></i>
+                        </div>
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Acceso desde cualquier lugar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-infinity"></i>
+                        </div>
+                        <div class="stat-number">∞</div>
+                        <div class="stat-label">Actividades y participantes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="additional-features-section">
+    <div class="container">
+        <h2 class="text-center mb-4 additional-features-heading">Funcionalidades que marcan la diferencia</h2>
+        <p class="text-center text-muted mb-5 additional-features-subheading">
+            Herramientas diseñadas para maximizar tu productividad
+        </p>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="additional-feature-item">
+                    <div class="additional-feature-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <h4 class="additional-feature-title">Calendario Inteligente</h4>
+                    <p class="additional-feature-text">
+                        Organiza actividades con recurrencia automática y visualiza todo en un calendario interactivo.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="additional-feature-item">
+                    <div class="additional-feature-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h4 class="additional-feature-title">Gestión de Usuarios</h4>
+                    <p class="additional-feature-text">
+                        Administra miembros, roles y permisos con control de acceso granular y flexible.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="additional-feature-item">
+                    <div class="additional-feature-icon">
+                        <i class="bi bi-phone"></i>
+                    </div>
+                    <h4 class="additional-feature-title">100% Responsive</h4>
+                    <p class="additional-feature-text">
+                        Funciona perfectamente en PC, tablet y móvil con diseño adaptativo optimizado.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="additional-feature-item">
+                    <div class="additional-feature-icon">
+                        <i class="bi bi-bell"></i>
+                    </div>
+                    <h4 class="additional-feature-title">Notificaciones</h4>
+                    <p class="additional-feature-text">
+                        Alertas automáticas sobre sesiones, cambios y recordatorios para maximizar la participación.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="additional-feature-item">
+                    <div class="additional-feature-icon">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <h4 class="additional-feature-title">Alto Rendimiento</h4>
+                    <p class="additional-feature-text">
+                        Infraestructura optimizada para eventos masivos sin demoras ni tiempos de espera.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="additional-feature-item">
+                    <div class="additional-feature-icon">
+                        <i class="bi bi-cloud-check"></i>
+                    </div>
+                    <h4 class="additional-feature-title">Nube Confiable</h4>
+                    <p class="additional-feature-text">
+                        Almacenamiento seguro con backups automáticos y disponibilidad garantizada 24/7.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="additional-feature-item">
+                    <div class="additional-feature-icon">
+                        <i class="bi bi-bar-chart-line"></i>
+                    </div>
+                    <h4 class="additional-feature-title">Analytics Avanzado</h4>
+                    <p class="additional-feature-text">
+                        Reportes detallados con tendencias y patrones para optimizar tus actividades.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="additional-feature-item">
+                    <div class="additional-feature-icon">
+                        <i class="bi bi-puzzle"></i>
+                    </div>
+                    <h4 class="additional-feature-title">Fácil Configuración</h4>
+                    <p class="additional-feature-text">
+                        Comienza en minutos con una interfaz intuitiva y sin curvas de aprendizaje complicadas.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="use-cases-section">
+    <div class="container">
+        <h2 class="text-center mb-4 use-cases-heading">Perfecto para cualquier tipo de organización</h2>
+        <p class="text-center text-muted mb-5 use-cases-subheading">
+            Ya sea que gestiones una escuela, empresa, club deportivo, iglesia o cualquier grupo, MIRAE se adapta a tus necesidades
+        </p>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h3 class="use-case-title">Instituciones Educativas</h3>
+                    <p class="use-case-description">
+                        Gestiona la asistencia de clases, talleres y actividades extracurriculares.
+                        Mantén registros precisos y genera reportes para padres y autoridades.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <h3 class="use-case-title">Empresas y Corporaciones</h3>
+                    <p class="use-case-description">
+                        Controla asistencia a reuniones, capacitaciones y eventos corporativos.
+                        Optimiza recursos y mide el compromiso de tu equipo.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="bi bi-heart"></i>
+                    </div>
+                    <h3 class="use-case-title">Organizaciones Religiosas</h3>
+                    <p class="use-case-description">
+                        Registra la asistencia a servicios, grupos pequeños y actividades comunitarias.
+                        Fortalece el seguimiento pastoral de tus miembros.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                    <h3 class="use-case-title">Clubes Deportivos</h3>
+                    <p class="use-case-description">
+                        Monitorea la asistencia a entrenamientos, competencias y eventos deportivos.
+                        Identifica patrones y mejora el rendimiento del equipo.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <h3 class="use-case-title">Organizadores de Eventos</h3>
+                    <p class="use-case-description">
+                        Controla el acceso y asistencia a conferencias, seminarios y eventos especiales.
+                        Obtén datos precisos de participación en tiempo real.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <h3 class="use-case-title">Organizaciones Sin Fines de Lucro</h3>
+                    <p class="use-case-description">
+                        Registra la participación de voluntarios y beneficiarios en programas y actividades.
+                        Demuestra el impacto de tu organización con datos concretos.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container text-center">
+        <h2 class="cta-heading">¿Listo para revolucionar la gestión de asistencias?</h2>
+        <p class="cta-text">
+            Únete a las organizaciones que ya están transformando su forma de trabajar con MIRAE.
+            Comienza gratis hoy mismo, sin compromiso ni tarjeta de crédito.
+        </p>
+        <div class="cta-buttons">
+            <a th:href="@{/organizations/register}" class="btn-cta-large">
+                <i class="bi bi-rocket-takeoff me-2"></i>Comenzar Ahora - Es Gratis
+            </a>
+            <a th:href="@{/auth/login}" class="btn-cta-secondary">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Ya tengo cuenta
+            </a>
+        </div>
+        <p class="cta-footnote mt-4">
+            <i class="bi bi-shield-check me-2"></i>
+            Tus datos están seguros y protegidos • Sin cargos ocultos • Soporte dedicado
+        </p>
+    </div>
+</section>
+
+<footer class="footer-landing" id="contact">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <h5 class="footer-heading">MIRAE</h5>
+                <p class="footer-description">
+                    Sistema inteligente de control de asistencia para organizaciones modernas.
+                    Simplifica, automatiza y optimiza la gestión de participación.
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h5 class="footer-heading">Enlaces Rápidos</h5>
+                <div class="footer-links">
+                    <a href="#inicio">Inicio</a>
+                    <a href="#caracteristicas">Características</a>
+                    <a th:href="@{/organizations/register}">Registrarse</a>
+                    <a th:href="@{/auth/login}">Iniciar Sesión</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h5 class="footer-heading">Información</h5>
+                <div class="footer-links">
+                    <a href="#contact">Contacto</a>
+                    <a href="#privacy">Política de Privacidad</a>
+                    <a href="#terms">Términos del Servicio</a>
+                    <a href="#support">Soporte</a>
+                </div>
+            </div>
+        </div>
+        <hr class="footer-divider mt-4 mb-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p class="footer-copyright mb-0">
+                    &copy; 2026 MIRAE - Sistema de Control de Asistencia. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/bootstrap.bundle.js}"></script>
+<script th:src="@{/js/landing.js}"></script>
+</body>
+</html>

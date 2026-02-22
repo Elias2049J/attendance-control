@@ -1,5 +1,6 @@
 package com.elias.attendancecontrol.service.implementation;
-import com.elias.attendancecontrol.config.TenantContext;
+
+import com.elias.attendancecontrol.config.SecurityUtils;
 import com.elias.attendancecontrol.model.entity.*;
 import com.elias.attendancecontrol.persistence.repository.*;
 import com.elias.attendancecontrol.service.LogService;
@@ -8,19 +9,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SessionServiceImpl implements SessionService {
+
     private final SessionRepository sessionRepository;
     private final ActivityRepository activityRepository;
     private final ActivityIncidentRepository activityIncidentRepository;
     private final QrTokenRepository qrTokenRepository;
     private final LogService logService;
+    private final SecurityUtils securityUtils;
     @Override
     @Transactional
     public Session activateSession(Long id) {
@@ -78,13 +83,15 @@ public class SessionServiceImpl implements SessionService {
     @Override
     @Transactional(readOnly = true)
     public List<Session> listSessions() {
-        if (TenantContext.hasCurrentOrganization()) {
-            Long orgId = TenantContext.getCurrentOrganizationId();
-            log.debug("Listing sessions for organization: {}", orgId);
-            return sessionRepository.findByActivityOrganizationId(orgId);
-        }
-        log.debug("No organization context, listing all sessions");
-        return sessionRepository.findAll();
+        return securityUtils.getCurrentOrganizationId()
+                .map(orgId -> {
+                    log.debug("Listing sessions for organization: {}", orgId);
+                    return sessionRepository.findByActivityOrganizationId(orgId);
+                })
+                .orElseGet(() -> {
+                    log.debug("No organization context, listing all sessions");
+                    return sessionRepository.findAll();
+                });
     }
     @Override
     @Transactional(readOnly = true)

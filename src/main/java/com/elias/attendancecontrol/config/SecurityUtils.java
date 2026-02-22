@@ -1,4 +1,5 @@
 package com.elias.attendancecontrol.config;
+import com.elias.attendancecontrol.model.entity.Organization;
 import com.elias.attendancecontrol.model.entity.OrganizationRole;
 import com.elias.attendancecontrol.model.entity.SystemRole;
 import com.elias.attendancecontrol.model.entity.User;
@@ -6,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 import java.util.Optional;
 @Slf4j
 @Component
@@ -25,6 +28,17 @@ public class SecurityUtils {
         return getCurrentUser()
                 .orElseThrow(() -> new IllegalStateException("Usuario no autenticado"));
     }
+
+    public Optional<Long> getCurrentOrganizationId() {
+        return getCurrentUser()
+                .map(User::getOrganization)
+                .map(Organization::getId);
+    }
+    
+    public Optional<Organization> getCurrentOrganization() {
+        return getCurrentUser().map(User::getOrganization);
+    }
+
     public boolean isSystemAdmin() {
         return getCurrentUser()
                 .map(user -> user.getSystemRole() == SystemRole.ADMIN && user.getOrganization() == null)
@@ -95,7 +109,7 @@ public class SecurityUtils {
         if (isSystemAdmin()) {
             return;
         }
-        Long currentOrgId = TenantContext.getCurrentOrganizationId();
+        Long currentOrgId = getCurrentOrganizationId().orElse(null);
         if (currentOrgId == null || !currentOrgId.equals(resourceOrgId)) {
             throw new SecurityException("No tiene permisos para acceder a este recurso");
         }
@@ -104,7 +118,7 @@ public class SecurityUtils {
         if (isSystemAdmin()) {
             return true;
         }
-        Long currentOrgId = TenantContext.getCurrentOrganizationId();
+        Long currentOrgId = getCurrentOrganizationId().orElse(null);
         return currentOrgId != null && currentOrgId.equals(resourceOrgId);
     }
     public boolean hasRole(String role) {
@@ -113,6 +127,6 @@ public class SecurityUtils {
             return false;
         }
         return authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_" + role));
+                .anyMatch(authority -> Objects.equals(authority.getAuthority(), "ROLE_" + role));
     }
 }
