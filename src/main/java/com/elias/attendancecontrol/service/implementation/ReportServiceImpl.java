@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -18,30 +19,37 @@ public class ReportServiceImpl implements ReportService {
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final UserRepository userRepository;
+
     @Override
     public Map<String, Object> generateReport(LocalDate startDate, LocalDate endDate) {
         return Map.of();
     }
+
     @Override
     public Map<String, Object> generateActivityReport(Long activityId, LocalDate startDate, LocalDate endDate) {
         return Map.of();
     }
+
     @Override
     public Map<String, Object> generateUserReport(Long userId, LocalDate startDate, LocalDate endDate) {
         return Map.of();
     }
+
     @Override
     public byte[] exportReport(Map<String, Object> reportData, String format) {
         return new byte[0];
     }
+
     @Override
     public double calculateAttendanceRate(Long activityId, LocalDate startDate, LocalDate endDate) {
         return 0;
     }
+
     @Override
     public Map<String, Object> calculateStatistics(Long activityId) {
         return Map.of();
     }
+
     @Override
     public Map<String, Object> aggregateData(Long activityId, LocalDate startDate, LocalDate endDate) {
         return Map.of();
@@ -77,6 +85,7 @@ public class ReportServiceImpl implements ReportService {
         log.info("Enrollment attendance report generated for activity: {}", activityId);
         return report;
     }
+
     @Override
     public Map<String, Object> getParticipantStatistics(Long activityId, Long userId) {
         log.debug("Getting participant statistics: activity={}, user={}", activityId, userId);

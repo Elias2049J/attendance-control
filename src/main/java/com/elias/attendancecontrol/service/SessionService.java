@@ -11,7 +11,6 @@ public interface SessionService {
     boolean canActivate(Long sessionId);
     boolean canClose(Long sessionId);
     List<Session> generateSessions(Long activityId);
-    List<Session> applyRecurrenceRules(Long activityId);
     List<Session> applyExceptions(Long activityId, List<Session> sessions);
     List<Session> getSessionsByActivity(Long activityId);
 }

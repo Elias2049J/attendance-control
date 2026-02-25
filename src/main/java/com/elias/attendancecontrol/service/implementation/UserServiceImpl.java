@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService {
         log.info("User registered successfully: {}", savedUser.getUsername());
         return savedUser;
     }
+
     @Override
     @Transactional
     public User createUser(User user) {
@@ -61,21 +62,17 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("El correo electrónico ya existe");
         }
 
-        securityUtils.getCurrentOrganizationId().ifPresent(orgId -> {
-            Organization organization = organizationRepository.findById(orgId)
-                    .orElseThrow(() -> new IllegalArgumentException("Organización no encontrada"));
+        Organization organization = securityUtils.getCurrentOrganization().orElseThrow();
 
-            if (!organizationService.canAddUser(orgId)) {
-                throw new IllegalStateException(
-                        "Has alcanzado el límite de usuarios de tu plan (" +
-                        organization.getMaxUsers() + " usuarios)");
-            }
-
-            user.setOrganization(organization);
-        });
-
+        if (!organizationService.canAddUser(organization.getId())) {
+            throw new IllegalStateException(
+                    "Has alcanzado el límite de usuarios de tu plan (" +
+                            organization.getMaxUsers() + " usuarios)");
+        }
+        user.setOrganization(organization);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
+
         logService.log(builder -> builder
             .eventType("USER_CREATED")
             .description("Usuario creado: " + savedUser.getUsername())
@@ -85,19 +82,24 @@ public class UserServiceImpl implements UserService {
         log.info("User created successfully: {}", savedUser.getUsername());
         return savedUser;
     }
+
     @Override
     @Transactional
-    public User updateUser(Long id, User user) {
-        log.debug("Updating user: {}", id);
-        User existingUser = userRepository.findById(id)
+    public User updateUser(Long userToUpdateId, User userToUpdate) {
+        log.debug("Updating user: {}", userToUpdateId);
+        User existingUser = userRepository.findById(userToUpdateId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-        existingUser.setName(user.getName());
-        existingUser.setLastname(user.getLastname());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setSystemRole(user.getSystemRole());
-        existingUser.setActive(user.getActive());
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        existingUser.setName(userToUpdate.getName());
+        existingUser.setLastname(userToUpdate.getLastname());
+        existingUser.setEmail(userToUpdate.getEmail());
+        existingUser.setSystemRole(userToUpdate.getSystemRole());
+        if (userToUpdate.getOrganizationRole().isOwner() &&
+                !existingUser.getOrganizationRole().isOwner()) {
+            userToUpdate.setOrganizationRole(existingUser.getOrganizationRole());
+        }
+        existingUser.setActive(userToUpdate.getActive());
+        if (userToUpdate.getPassword() != null && !userToUpdate.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(userToUpdate.getPassword()));
         }
         User updatedUser = userRepository.save(existingUser);
         logService.log(builder -> builder

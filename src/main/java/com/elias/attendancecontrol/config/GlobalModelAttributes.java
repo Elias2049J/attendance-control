@@ -11,12 +11,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalModelAttributes {
-
     private final SecurityUtils securityUtils;
 
-    /**
-     * Verifica si el usuario actual es administrador del sistema
-     */
     @ModelAttribute("isSysAdmin")
     public Boolean isSysAdmin() {
         try {
@@ -27,9 +23,6 @@ public class GlobalModelAttributes {
         }
     }
 
-    /**
-     * Verifica si el usuario actual es dueño de organización
-     */
     @ModelAttribute("isOrgOwner")
     public Boolean isOrgOwner() {
         try {
@@ -40,9 +33,6 @@ public class GlobalModelAttributes {
         }
     }
 
-    /**
-     * Verifica si el usuario actual es miembro de la organización
-     */
     @ModelAttribute("isOrgMember")
     public Boolean isOrgMember() {
         try {
@@ -53,9 +43,6 @@ public class GlobalModelAttributes {
         }
     }
 
-    /**
-     * Verifica si el usuario actual es administrador de organización
-     */
     @ModelAttribute("isOrgAdmin")
     public Boolean isOrgAdmin() {
         try {
@@ -66,9 +53,6 @@ public class GlobalModelAttributes {
         }
     }
 
-    /**
-     * Verifica si el usuario actual es dueño o admin de organización
-     */
     @ModelAttribute("isOrgOwnerOrAdmin")
     public Boolean isOrgOwnerOrAdmin() {
         try {
@@ -79,9 +63,6 @@ public class GlobalModelAttributes {
         }
     }
 
-    /**
-     * Verifica si el usuario puede gestionar usuarios
-     */
     @ModelAttribute("canManageUsers")
     public Boolean canManageUsers() {
         try {
@@ -92,9 +73,6 @@ public class GlobalModelAttributes {
         }
     }
 
-    /**
-     * Verifica si el usuario puede gestionar actividades
-     */
     @ModelAttribute("canManageActivities")
     public Boolean canManageActivities() {
         try {
@@ -105,9 +83,6 @@ public class GlobalModelAttributes {
         }
     }
 
-    /**
-     * Nombre de usuario actual
-     */
     @ModelAttribute("currentUsername")
     public String currentUsername() {
         return securityUtils.getCurrentUser()
@@ -115,9 +90,6 @@ public class GlobalModelAttributes {
                 .orElse(null);
     }
 
-    /**
-     * Nombre completo del usuario actual
-     */
     @ModelAttribute("currentUserFullName")
     public String currentUserFullName() {
         return securityUtils.getCurrentUser()
@@ -125,17 +97,11 @@ public class GlobalModelAttributes {
                 .orElse(null);
     }
 
-    /**
-     * Usuario actual completo
-     */
     @ModelAttribute("currentUser")
     public User currentUser() {
         return securityUtils.getCurrentUser().orElse(null);
     }
 
-    /**
-     * Nombre de la organización del usuario actual
-     */
     @ModelAttribute("currentOrganizationName")
     public String currentOrganizationName() {
         return securityUtils.getCurrentOrganization()
@@ -143,9 +109,6 @@ public class GlobalModelAttributes {
                 .orElse(null);
     }
 
-    /**
-     * ID de la organización del usuario actual
-     */
     @ModelAttribute("currentOrganizationId")
     public Long currentOrganizationId() {
         return securityUtils.getCurrentOrganizationId().orElse(null);

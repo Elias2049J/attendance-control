@@ -19,7 +19,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SessionServiceImpl implements SessionService {
-
     private final SessionRepository sessionRepository;
     private final ActivityRepository activityRepository;
     private final ActivityIncidentRepository activityIncidentRepository;
@@ -120,6 +119,7 @@ public class SessionServiceImpl implements SessionService {
             default -> false;
         };
     }
+
     @Override
     @Transactional(readOnly = true)
     public boolean canActivate(Long sessionId) {
@@ -132,6 +132,7 @@ public class SessionServiceImpl implements SessionService {
             return false;
         }
     }
+
     @Override
     @Transactional(readOnly = true)
     public boolean canClose(Long sessionId) {
@@ -190,11 +191,7 @@ public class SessionServiceImpl implements SessionService {
         log.info("Generated {} sessions for activity: {}", generatedSessions.size(), activityId);
         return generatedSessions;
     }
-    @Override
-    @Transactional(readOnly = true)
-    public List<Session> applyRecurrenceRules(Long activityId) {
-        return generateSessions(activityId);
-    }
+
     @Override
     @Transactional(readOnly = true)
     public List<Session> applyExceptions(Long activityId, List<Session> sessions) {
@@ -231,6 +228,7 @@ public class SessionServiceImpl implements SessionService {
         log.debug("Applied {} exceptions, {} sessions remain", incidents.size(), result.size());
         return result;
     }
+
     private boolean shouldGenerateSession(LocalDate date, RecurrenceRule rule) {
         boolean result = switch (rule.getRecurrenceType()) {
             case NONE -> date.equals(rule.getStartDate()); // Solo genera sesión en la fecha de inicio
@@ -246,6 +244,7 @@ public class SessionServiceImpl implements SessionService {
 
         return result;
     }
+
     private boolean isInWeekDays(LocalDate date, String daysOfWeek) {
         if (daysOfWeek == null || daysOfWeek.isEmpty()) {
             log.warn("Days of week is null or empty for WEEKLY recurrence on date: {}", date);
@@ -262,6 +261,7 @@ public class SessionServiceImpl implements SessionService {
 
         return isInDays;
     }
+
     private Session createSessionForDate(Activity activity, LocalDate date, RecurrenceRule rule) {
         Session session = new Session();
         session.setActivity(activity);
@@ -281,6 +281,7 @@ public class SessionServiceImpl implements SessionService {
             case MONTHLY -> current.plusMonths(1);
         };
     }
+
     private void validateSessionTolerance(Session session) {
         if (session.getToleranceMinutes() == null) {
             throw new IllegalStateException("La sesión no tiene tolerancia configurada");
@@ -297,6 +298,7 @@ public class SessionServiceImpl implements SessionService {
         log.debug("Session tolerance validated: tolerance={} min, duration={} min",
             session.getToleranceMinutes(), sessionDuration);
     }
+
     @Override
     @Transactional(readOnly = true)
     public List<Session> getSessionsByActivity(Long activityId) {

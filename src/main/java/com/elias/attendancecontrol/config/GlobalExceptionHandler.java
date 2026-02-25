@@ -50,6 +50,7 @@ public class GlobalExceptionHandler {
 
         return VIEW_ACCESS_DENIED;
     }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request, Model model) {
         String path = request.getRequestURI();
@@ -62,6 +63,7 @@ public class GlobalExceptionHandler {
         log.warn("IllegalArgumentException occurred at path: {}, message: {}", path, e.getMessage());
         return VIEW_ERROR;
     }
+
     @ExceptionHandler(IllegalStateException.class)
     public String handleIllegalStateException(IllegalStateException e, HttpServletRequest request, Model model) {
         String path = request.getRequestURI();
@@ -74,6 +76,7 @@ public class GlobalExceptionHandler {
         log.warn("IllegalStateException occurred at path: {}, message: {}", path, e.getMessage());
         return VIEW_ERROR;
     }
+
     @ExceptionHandler(Exception.class)
     public String handleAllExceptions(Exception e, HttpServletRequest request, Model model) {
         String path = request.getRequestURI();

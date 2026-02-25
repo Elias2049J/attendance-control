@@ -37,11 +37,11 @@
                                             <h5 class="card-title mb-1" th:text="${org.name}">Nombre Org</h5>
                                             <small class="text-muted" th:text="'@' + ${org.slug}">@slug</small>
                                         </div>
-                                        <span th:if="${org.active}" class="badge bg-success">Activa</span>
+                                        <span th:if="${org.active}" class="badge">Activa</span>
                                         <span th:unless="${org.active}" class="badge bg-secondary">Inactiva</span>
                                     </div>
                                     <div class="mb-3">
-                                        <span class="badge bg-primary" th:text="${org.plan.displayName}">PLAN</span>
+                                        <span class="badge" th:text="${org.plan.displayName}">PLAN</span>
                                     </div>
                                     <div class="d-flex justify-content-between text-muted small mb-3">
                                         <div>

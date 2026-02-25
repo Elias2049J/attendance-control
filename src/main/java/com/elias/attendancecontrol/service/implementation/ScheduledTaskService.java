@@ -16,6 +16,7 @@ public class ScheduledTaskService {
     private final ActivityRepository activityRepository;
     private final ActivityService activityService;
     private final TokenService tokenService;
+
     @Scheduled(cron = "${scheduler.activity-completion.cron}")
     public void autoCompleteFinishedActivities() {
         log.info("Starting auto-completion check for finished activities");
@@ -34,6 +35,7 @@ public class ScheduledTaskService {
         }
         log.info("Auto-completion check completed: {} activities completed", completedCount);
     }
+
     @Scheduled(fixedRateString = "${scheduler.qr-regeneration.fixed-rate.ms}")
     public void autoRegenerateActiveSessionQRs() {
         log.debug("Starting auto-regeneration of QR codes for active sessions");

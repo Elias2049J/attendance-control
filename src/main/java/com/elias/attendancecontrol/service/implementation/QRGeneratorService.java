@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+
 @Slf4j
 @Service
 public class QRGeneratorService {

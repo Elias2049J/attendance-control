@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
+
 @Slf4j
 @Controller
 @RequestMapping("/users")
@@ -27,7 +28,6 @@ public class UserController {
     public String listUsers(Model model) {
         log.debug("Listing all users");
         model.addAttribute("users", userService.listUsers());
-        model.addAttribute("canManageUsers", securityUtils.canManageUsers());
         return "users/list";
     }
 
@@ -46,27 +46,17 @@ public class UserController {
                             BindingResult result,
                             Model model,
                             RedirectAttributes redirectAttributes) {
-        log.debug("Creating new user: {}", user.getUsername());
-
         if (result.hasErrors()) {
             prepareFormModel(model);
             return "users/form";
         }
-
         try {
-            User currentUser = securityUtils.getCurrentUserOrThrow();
-            user.setSystemRole(SystemRole.USER);
-            user.setOrganization(currentUser.getOrganization());
-
-            if (user.getOrganizationRole() == OrganizationRole.OWNER) {
+            if (user.getOrganizationRole().isOwner()) {
                 model.addAttribute("error", "No tiene permisos para crear propietarios");
                 prepareFormModel(model);
                 return "users/form";
             }
 
-            if (securityUtils.isOrganizationAdmin() && user.getOrganizationRole() != OrganizationRole.MEMBER) {
-                user.setOrganizationRole(OrganizationRole.MEMBER);
-            }
             userService.createUser(user);
             redirectAttributes.addFlashAttribute("success", "Usuario creado exitosamente");
             return "redirect:/users";
@@ -102,15 +92,15 @@ public class UserController {
     @PostMapping("/{id}")
     @PreAuthorize("hasAnyRole('ORG_OWNER', 'ORG_ADMIN', 'ADMIN')")
     public String updateUser(@PathVariable Long id,
-                            @Valid @ModelAttribute User user,
+                            @Valid @ModelAttribute User userToUpdate,
                             BindingResult result,
                             Model model,
                             RedirectAttributes redirectAttributes) {
         log.debug("Updating user: {}", id);
         try {
-            User targetUser = userService.getUserById(id);
+            User existingUser = userService.getUserById(id);
 
-            if (!securityUtils.canEditUser(targetUser)) {
+            if (!securityUtils.canEditUser(existingUser)) {
                 redirectAttributes.addFlashAttribute("error", "No tiene permisos para editar este usuario");
                 return "redirect:/users";
             }
@@ -121,15 +111,7 @@ public class UserController {
                 return "users/form";
             }
 
-            user.setSystemRole(targetUser.getSystemRole());
-            user.setOrganization(targetUser.getOrganization());
-
-            if (user.getOrganizationRole() == OrganizationRole.OWNER &&
-                    targetUser.getOrganizationRole() != OrganizationRole.OWNER) {
-                user.setOrganizationRole(targetUser.getOrganizationRole());
-            }
-
-            userService.updateUser(id, user);
+            userService.updateUser(id, userToUpdate);
             redirectAttributes.addFlashAttribute("success", "Usuario actualizado exitosamente");
             return "redirect:/users";
         } catch (IllegalArgumentException e) {
