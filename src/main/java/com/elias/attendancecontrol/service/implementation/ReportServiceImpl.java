@@ -18,11 +18,11 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class ReportServiceImpl implements ReportService {
-    private final ActivityRepository activityRepository;
     private final SessionRepository sessionRepository;
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentRepository enrollmentRepository;
-    private final UserRepository userRepository;
+    private final ActivityService activityService;
+    private final UserService userService;
 
     @Override
     public Map<String, Object> generateActivityReport(Long activityId, LocalDate startDate, LocalDate endDate) {
@@ -80,8 +80,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Map<String, Object> generateEnrollmentAttendanceReport(Long activityId) {
         log.debug("Generating enrollment attendance report for activity: {}", activityId);
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        Activity activity = activityService.getActivityById(activityId);
         List<User> enrolledUsers = enrollmentRepository.findUsersByActivityAndStatus(
                 activity, EnrollmentStatus.ENROLLED);
         List<Session> sessions = sessionRepository.findByActivityOrderBySessionDateAsc(activity);
@@ -112,11 +111,10 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Map<String, Object> getParticipantStatistics(Long activityId, Long userId) {
         log.debug("Getting participant statistics: activity={}, user={}", activityId, userId);
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        Activity activity = activityService.getActivityById(activityId);
         boolean isEnrolled = enrollmentRepository.existsByActivityAndUserAndStatus(
                 activity,
-                userRepository.findById(userId).orElseThrow(),
+                userService.getUserById(userId),
                 EnrollmentStatus.ENROLLED
         );
         if (!isEnrolled) {
@@ -124,7 +122,7 @@ public class ReportServiceImpl implements ReportService {
         }
         List<Session> sessions = sessionRepository.findByActivityOrderBySessionDateAsc(activity);
         List<Attendance> attendances = attendanceRepository.findByUser(
-                userRepository.findById(userId).orElseThrow()
+                userService.getUserById(userId)
         ).stream()
                 .filter(att -> sessions.contains(att.getSession()))
                 .toList();

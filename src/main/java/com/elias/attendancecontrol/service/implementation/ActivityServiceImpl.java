@@ -3,14 +3,12 @@ package com.elias.attendancecontrol.service.implementation;
 import com.elias.attendancecontrol.config.SecurityUtils;
 import com.elias.attendancecontrol.model.entity.*;
 import com.elias.attendancecontrol.persistence.repository.ActivityRepository;
-import com.elias.attendancecontrol.persistence.repository.OrganizationRepository;
 import com.elias.attendancecontrol.persistence.repository.SessionRepository;
 import com.elias.attendancecontrol.service.ActivityService;
 import com.elias.attendancecontrol.service.EnrollmentService;
 import com.elias.attendancecontrol.service.LogService;
 import com.elias.attendancecontrol.service.OrganizationService;
 import com.elias.attendancecontrol.service.RecurrenceService;
-import com.elias.attendancecontrol.service.SessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,16 +25,14 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class ActivityServiceImpl implements ActivityService {
-
     private final ActivityRepository activityRepository;
-    private final OrganizationRepository organizationRepository;
     private final SessionRepository sessionRepository;
     private final OrganizationService organizationService;
-    private final SessionService sessionService;
     private final EnrollmentService enrollmentService;
     private final RecurrenceService recurrenceService;
     private final LogService logService;
     private final SecurityUtils securityUtils;
+    private final ActivityService activityService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -95,14 +91,13 @@ public class ActivityServiceImpl implements ActivityService {
         log.info("Activity created successfully: {}", savedActivity.getName());
         return savedActivity;
     }
+
     @Override
     public Activity updateActivity(Long id, Activity activity) {
         log.debug("Updating activity: {}", id);
-        Activity existingActivity = activityRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
-        existingActivity.setName(activity.getName());
+        Activity existingActivity = getActivityById(id);
         existingActivity.setDescription(activity.getDescription());
-        existingActivity.setResponsible(activity.getResponsible());
+        if (activity.getResponsible() != null) existingActivity.setResponsible(activity.getResponsible());
         Activity updatedActivity = activityRepository.save(existingActivity);
 
         securityUtils.getCurrentUser().ifPresent(currentUser ->
@@ -123,8 +118,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Transactional
     public void activateActivity(Long id) {
         log.debug("Activating activity: {}", id);
-        Activity activity = activityRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        Activity activity = getActivityById(id);
 
         if (activity.getRecurrenceRule() == null) {
             throw new IllegalStateException("La actividad no tiene regla de recurrencia configurada");
@@ -171,11 +165,15 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Activity getActivityById(Long id) {
-        return activityRepository.findById(id)
+        Activity activity =  activityRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        if (activity.getOrganization() != null) {
+            securityUtils.validateResourceOwnership(activity.getOrganization().getId());
+        }
+        return activity;
     }
+
     @Transactional(readOnly = true)
     @Override
     public List<Activity> findActiveActivities() {
@@ -269,6 +267,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         log.info("Activity cancelled successfully: {}", activityId);
     }
+
     @Override
     @Transactional(readOnly = true)
     public boolean canPublish(Long activityId) {
@@ -280,6 +279,7 @@ public class ActivityServiceImpl implements ActivityService {
             return false;
         }
     }
+
     @Override
     @Transactional(readOnly = true)
     public boolean canComplete(Long activityId) {
@@ -317,6 +317,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         log.info("Activity status changed: {} -> {}", oldStatus, newStatus);
     }
+
     private void validateStatusTransition(ActivityStatus current, ActivityStatus target) {
         if (current == target) {
             throw new IllegalStateException("La actividad ya está en ese estado");
@@ -358,8 +359,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public boolean isResponsible(Long activityId, Long userId) {
-        long responsibleId = activityRepository.findById(activityId)
-                .orElseThrow()
+        long responsibleId = activityService.getActivityById(activityId)
                 .getResponsible().getId();
         return responsibleId == userId;
     }

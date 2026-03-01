@@ -35,9 +35,6 @@ public class ActivityIncidentController {
         log.debug("Listing incidents for activity: {}", activityId);
         try {
             Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             List<ActivityIncident> incidents = activityIncidentService.getIncidentsByActivity(activityId);
             model.addAttribute("activity", activity);
             model.addAttribute("incidents", incidents);
@@ -53,9 +50,6 @@ public class ActivityIncidentController {
         log.debug("Showing reschedule form for activity: {}", activityId);
         try {
             Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             model.addAttribute("activity", activity);
             model.addAttribute("sessions", sessionService.getSessionsByActivity(activityId));
             return "incident/reschedule";
@@ -73,10 +67,6 @@ public class ActivityIncidentController {
                                       RedirectAttributes redirectAttributes) {
         log.debug("Rescheduling occurrence for activity: {} from {} to {}", activityId, originalDate, newDate);
         try {
-            Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             activityIncidentService.rescheduleOccurrence(activityId, originalDate, newDate, reason);
             redirectAttributes.addFlashAttribute("success", "Ocurrencia reprogramada exitosamente");
             return "redirect:/activities";
@@ -95,9 +85,6 @@ public class ActivityIncidentController {
         log.debug("Showing cancel form for activity: {}", activityId);
         try {
             Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             model.addAttribute("activity", activity);
             model.addAttribute("sessions", sessionService.getSessionsByActivity(activityId));
             return "incident/cancel";
@@ -114,10 +101,6 @@ public class ActivityIncidentController {
                                    RedirectAttributes redirectAttributes) {
         log.debug("Cancelling occurrence for activity: {} on date: {}", activityId, date);
         try {
-            Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             activityIncidentService.cancelOccurrence(activityId, date, reason);
             redirectAttributes.addFlashAttribute("success", "Ocurrencia cancelada exitosamente");
             return "redirect:/activities";

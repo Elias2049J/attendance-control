@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{layout :: head('Registrar Organización')}"></head>
 <body class="d-flex flex-column min-vh-100">
     <nav class="navbar navbar-dark bg-primary">
@@ -42,7 +42,7 @@
                                             <div class="form-text">Nombre completo de su organización</div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="slug" class="form-label">Identificador único (URL) *</label>
+                                            <label for="slug" class="form-label">Identificador único para URL *</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
                                                 <input type="text" class="form-control" id="slug"
@@ -50,7 +50,19 @@
                                                        pattern="[a-z0-9-]+"
                                                        placeholder="mi-empresa">
                                             </div>
-                                            <div class="form-text">Solo letras minúsculas, números y guiones. Ej: mi-empresa</div>
+                                            <div class="form-text">
+                                                <span class="text-muted">Caracteres permitidos: letras minúsculas <code>a-z</code>, números <code>0-9</code> y guiones <code>-</code>. Sin espacios ni caracteres especiales.</span>
+                                            </div>
+                                            <div class="alert alert-info py-2 px-3 mt-2 mb-0 d-flex align-items-start gap-2" role="alert" style="font-size: 0.85rem;">
+                                                <i class="bi bi-lightbulb-fill text-warning mt-1 flex-shrink-0"></i>
+                                                <div>
+                                                    <strong>¿Para qué sirve?</strong> El slug es la parte de la URL con la que tus miembros accederán al sistema.<br>
+                                                    Por ejemplo, si tu organización se llama <em>"Academia Futuro"</em> y eliges el slug
+                                                    <code>academia-futuro</code>, la URL quedará así:<br>
+                                                    <code class="text-primary">mirae.app/<strong>academia-futuro</strong>/dashboard</code><br>
+                                                    <span class="text-muted">Este identificador es único, permanente y no puede contener espacios ni caracteres especiales.</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="mb-3">
@@ -186,7 +198,6 @@
                 </div>
             </div>
         </div>
-    </div>
     <div th:replace="~{layout :: scripts}"></div>
 </body>
 </html>

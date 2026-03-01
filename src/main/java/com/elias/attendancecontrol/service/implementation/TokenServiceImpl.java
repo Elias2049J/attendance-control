@@ -29,6 +29,13 @@ public class TokenServiceImpl implements TokenService {
     private final QRGeneratorService qrGeneratorService;
     @Value("${qr.duration-minutes}")
     private int qrDurationMinutes;
+
+    @Override
+    public QRToken getQRTokenByToken(String token) {
+        return qrTokenRepository.findByToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Token QR no encontrado"));
+    }
+
     @Override
     @Transactional(readOnly = true)
     public boolean validateSessionToken(String token) {
@@ -41,16 +48,6 @@ public class TokenServiceImpl implements TokenService {
         return sessionToken.getActive()
             && now.isBefore(sessionToken.getExpirationTime())
             && sessionToken.getUser().getActive();
-    }
-    @Override
-    @Transactional
-    public void revokeToken(String token) {
-        sessionTokenRepository.findByTokenAndActiveTrue(token)
-            .ifPresent(sessionToken -> {
-                sessionToken.setActive(false);
-                sessionTokenRepository.save(sessionToken);
-                log.info("Token revoked: {}", token);
-            });
     }
 
     private QRToken generateQR(Session session) {
@@ -132,16 +129,6 @@ public class TokenServiceImpl implements TokenService {
         }
 
         return qrToken;
-    }
-    @Override
-    @Transactional
-    public void invalidateQR(String token) {
-        qrTokenRepository.findByToken(token)
-            .ifPresent(qrToken -> {
-                qrToken.setActive(false);
-                qrTokenRepository.save(qrToken);
-                log.info("QR token invalidated: {}", token);
-            });
     }
 
     @Override

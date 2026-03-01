@@ -4,6 +4,7 @@ import com.elias.attendancecontrol.model.entity.Activity;
 import com.elias.attendancecontrol.model.entity.RecurrenceRule;
 import com.elias.attendancecontrol.persistence.repository.ActivityRepository;
 import com.elias.attendancecontrol.persistence.repository.RecurrenceRuleRepository;
+import com.elias.attendancecontrol.service.ActivityService;
 import com.elias.attendancecontrol.service.LogService;
 import com.elias.attendancecontrol.service.RecurrenceService;
 import com.elias.attendancecontrol.service.SessionService;
@@ -20,12 +21,12 @@ public class RecurrenceServiceImpl implements RecurrenceService {
     private final SessionService sessionService;
     private final LogService logService;
     private final SecurityUtils securityUtils;
+    private final ActivityService activityService;
 
     @Override
     public void generateSessionsForActivity(Long activityId) {
         log.debug("Generating sessions for activity: {}", activityId);
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        Activity activity = activityService.getActivityById(activityId);
 
         if (activity.getRecurrenceRule() == null) {
             throw new IllegalStateException("La actividad no tiene regla de recurrencia configurada");
@@ -45,8 +46,7 @@ public class RecurrenceServiceImpl implements RecurrenceService {
     @Override
     public RecurrenceRule configureRecurrence(Long activityId, RecurrenceRule recurrenceRule) {
         log.debug("Configuring recurrence for activity: {}", activityId);
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        Activity activity = activityService.getActivityById(activityId);
 
         if (!validateRecurrence(recurrenceRule)) {
             throw new IllegalArgumentException("Regla de recurrencia inválida");

@@ -3,6 +3,7 @@ package com.elias.attendancecontrol.service.implementation;
 import com.elias.attendancecontrol.config.SecurityUtils;
 import com.elias.attendancecontrol.model.entity.*;
 import com.elias.attendancecontrol.persistence.repository.*;
+import com.elias.attendancecontrol.service.ActivityService;
 import com.elias.attendancecontrol.service.LogService;
 import com.elias.attendancecontrol.service.SessionService;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +26,13 @@ public class SessionServiceImpl implements SessionService {
     private final QrTokenRepository qrTokenRepository;
     private final LogService logService;
     private final SecurityUtils securityUtils;
+    private final ActivityService activityService;
 
     @Override
     @Transactional
     public Session activateSession(Long id) {
         log.debug("Attempting to activate session: {}", id);
-        Session session = sessionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Sesión no encontrada"));
+        Session session = getSessionById(id);
         validateSessionTolerance(session);
         if (!session.getStatus().isPlanned()) {
             throw new IllegalStateException(
@@ -59,8 +60,7 @@ public class SessionServiceImpl implements SessionService {
     @Transactional
     public Session closeSession(Long id) {
         log.debug("Attempting to close session: {}", id);
-        Session session = sessionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Sesión no encontrada"));
+        Session session = getSessionById(id);
         if (!session.getStatus().isActive()) {
             throw new IllegalStateException(
                 "Solo se pueden cerrar sesiones en estado ACTIVE. Estado actual: " + session.getStatus().getDisplayName());
@@ -149,8 +149,7 @@ public class SessionServiceImpl implements SessionService {
     @Transactional
     public List<Session> generateSessions(Long activityId) {
         log.debug("Generating sessions for activity: {}", activityId);
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        Activity activity = activityService.getActivityById(activityId);
         RecurrenceRule rule = activity.getRecurrenceRule();
         if (rule == null) {
             throw new IllegalStateException("La actividad no tiene regla de recurrencia");
@@ -197,8 +196,7 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(readOnly = true)
     public List<Session> applyExceptions(Long activityId, List<Session> sessions) {
         log.debug("Applying exceptions for activity: {}", activityId);
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        Activity activity = activityService.getActivityById(activityId);
         List<ActivityIncident> incidents = activityIncidentRepository.findByActivity(activity);
         if (incidents.isEmpty()) {
             return sessions;
@@ -304,8 +302,7 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(readOnly = true)
     public List<Session> getSessionsByActivity(Long activityId) {
         log.debug("Getting sessions for activity: {}", activityId);
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        Activity activity = activityService.getActivityById(activityId);
         return sessionRepository.findByActivityOrderBySessionDateAsc(activity);
     }
 

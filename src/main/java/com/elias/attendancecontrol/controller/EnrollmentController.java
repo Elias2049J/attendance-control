@@ -1,5 +1,4 @@
 package com.elias.attendancecontrol.controller;
-import com.elias.attendancecontrol.config.SecurityUtils;
 import com.elias.attendancecontrol.model.entity.Activity;
 import com.elias.attendancecontrol.model.entity.Enrollment;
 import com.elias.attendancecontrol.model.entity.SystemRole;
@@ -23,7 +22,6 @@ public class EnrollmentController {
     private final EnrollmentService enrollmentService;
     private final ActivityService activityService;
     private final UserService userService;
-    private final SecurityUtils securityUtils;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ORG_OWNER', 'ORG_ADMIN', 'ORG_MEMBER')")
@@ -31,9 +29,6 @@ public class EnrollmentController {
         log.debug("Listing enrollments for activity: {}", activityId);
         try {
             Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             List<Enrollment> enrollments = enrollmentService.getEnrollmentsByActivity(activityId);
             List<User> enrolledUsers = enrollmentService.getEnrolledParticipants(activityId);
             long enrolledCount = enrollmentService.getEnrolledCount(activityId);
@@ -55,9 +50,6 @@ public class EnrollmentController {
         log.debug("Showing enroll form for activity: {}", activityId);
         try {
             Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             List<User> enrolledUsers = enrollmentService.getEnrolledParticipants(activityId);
             List<Long> enrolledUserIds = enrolledUsers.stream()
                     .map(User::getId)
@@ -81,10 +73,6 @@ public class EnrollmentController {
                                    RedirectAttributes redirectAttributes) {
         log.debug("Enrolling single user {} in activity {}", userId, activityId);
         try {
-            Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             enrollmentService.enrollUser(activityId, userId);
             redirectAttributes.addFlashAttribute("success", "Usuario inscrito exitosamente");
         } catch (SecurityException e) {
@@ -108,10 +96,6 @@ public class EnrollmentController {
             return "redirect:/activities/" + activityId + "/enrollments/enroll";
         }
         try {
-            Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             enrollmentService.enrollMultipleUsers(activityId, userIds);
             redirectAttributes.addFlashAttribute("success",
                 "Inscripción masiva completada. Total seleccionados: " + userIds.size());
@@ -132,10 +116,7 @@ public class EnrollmentController {
                                    RedirectAttributes redirectAttributes) {
         log.debug("Removing user {} from activity {}", userId, activityId);
         try {
-            Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
+            activityService.getActivityById(activityId);
             enrollmentService.removeParticipant(activityId, userId);
             redirectAttributes.addFlashAttribute("success", "Participante removido exitosamente");
         } catch (SecurityException e) {
@@ -155,9 +136,6 @@ public class EnrollmentController {
         log.debug("Showing absent users for session: {}", sessionId);
         try {
             Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             List<User> expectedUsers = enrollmentService.getExpectedParticipants(sessionId);
             List<User> absentUsers = enrollmentService.getAbsentUsers(sessionId);
             model.addAttribute("activity", activity);

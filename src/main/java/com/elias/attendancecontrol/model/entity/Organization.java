@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 @Entity
 @Table(name = "organizations")
 @Getter
@@ -18,6 +20,10 @@ public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "uuid", nullable = false, updatable = false)
+    private UUID uuid;
+    @Column(name = "official_id")
+    private String officialID;
     @NotBlank(message = "El nombre de la organización es obligatorio")
     @Size(min = 3, max = 200, message = "El nombre debe tener entre 3 y 200 caracteres")
     @Column(name = "name", nullable = false, length = 200)
@@ -26,7 +32,7 @@ public class Organization {
     @Size(min = 3, max = 50, message = "El slug debe tener entre 3 y 50 caracteres")
     @Pattern(regexp = "^[a-z0-9-]+$", message = "El slug solo puede contener letras minúsculas, números y guiones")
     @Column(name = "slug", nullable = false, unique = true, length = 50)
-    private String slug; // URL-friendly: "empresa-abc", "colegio-xyz"
+    private String slug;
     @Size(max = 1000, message = "La descripción no puede exceder 1000 caracteres")
     @Column(name = "description", length = 1000)
     private String description;
@@ -56,7 +62,7 @@ public class Organization {
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
     @Column(name = "expiration_date")
-    private LocalDateTime expirationDate; // Para planes de pago
+    private LocalDateTime expirationDate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private User owner;
@@ -64,6 +70,7 @@ public class Organization {
     private List<User> users = new ArrayList<>();
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
     private List<Activity> activities = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         createdDate = LocalDateTime.now();
@@ -73,6 +80,7 @@ public class Organization {
         if (plan == null) {
             plan = OrganizationPlan.FREE;
         }
+        if (uuid == null) uuid = UUID.randomUUID();
     }
 
     public void applyPlanLimits(Integer freeMaxUsers, Integer freeMaxActivities,

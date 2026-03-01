@@ -1,10 +1,6 @@
 package com.elias.attendancecontrol.service.implementation;
-import com.elias.attendancecontrol.config.SecurityUtils;
 import com.elias.attendancecontrol.model.entity.*;
 import com.elias.attendancecontrol.persistence.repository.AttendanceRepository;
-import com.elias.attendancecontrol.persistence.repository.QrTokenRepository;
-import com.elias.attendancecontrol.persistence.repository.SessionRepository;
-import com.elias.attendancecontrol.persistence.repository.UserRepository;
 import com.elias.attendancecontrol.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,15 +14,11 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AttendanceServiceImpl implements AttendanceService {
     private final AttendanceRepository attendanceRepository;
-    private final UserRepository userRepository;
-    private final SessionRepository sessionRepository;
-    private final QrTokenRepository qrTokenRepository;
     private final TokenService tokenService;
     private final LogService logService;
     private final EnrollmentService enrollmentService;
-    private final SecurityUtils securityUtils;
-    private final ActivityService activityService;
     private final UserService userService;
+    private final SessionService sessionService;
 
     @Override
     @Transactional
@@ -35,12 +27,10 @@ public class AttendanceServiceImpl implements AttendanceService {
         if (!tokenService.validateQR(qrToken)) {
             throw new IllegalArgumentException("Código QR inválido o expirado");
         }
-        QRToken qr = qrTokenRepository.findByToken(qrToken)
-                .orElseThrow(() -> new IllegalArgumentException("Token QR no encontrado"));
+        QRToken qr = tokenService.getQRTokenByToken(qrToken);
         Session session = qr.getSession();
         validateSessionTolerance(session);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        User user = userService.getUserById(userId);
         if (!user.getActive()) {
             throw new IllegalStateException("Usuario inactivo. Contacte al administrador.");
         }
@@ -79,6 +69,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             userId, session.getId(), savedAttendance.getStatus());
         return savedAttendance;
     }
+
     @Override
     @Transactional
     public List<Attendance> manualRegistrationBatch(Long sessionId, Map<Long, AttendanceStatus> userAttendances) {
@@ -88,8 +79,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             throw new IllegalArgumentException("La lista de asistencias no puede estar vacía");
         }
 
-        Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Sesión no encontrada"));
+        Session session = sessionService.getSessionById(sessionId);
 
         validateSessionTolerance(session);
 
@@ -111,9 +101,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             AttendanceStatus newStatus = entry.getValue();
 
             try {
-                User user = userRepository.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + userId));
-
+                User user = userService.getUserById(userId);
                 if (!user.getActive()) {
                     errors.add("Usuario inactivo: " + user.getUsername());
                     continue;
@@ -195,40 +183,40 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         return attendances;
     }
+
     @Override
     @Transactional(readOnly = true)
     public List<Attendance> listAttendance() {
         return attendanceRepository.findAll();
     }
+
     @Transactional(readOnly = true)
     @Override
     public boolean validateSession(Long sessionId) {
         try {
-            Session session = sessionRepository.findById(sessionId)
-                    .orElseThrow(() -> new IllegalArgumentException("Sesión no encontrada"));
+            Session session = sessionService.getSessionById(sessionId);
             return session.getStatus().isActive();
         } catch (IllegalArgumentException e) {
             log.warn("Session validation failed: {}", e.getMessage());
             return false;
         }
     }
+
     @Transactional(readOnly = true)
     @Override
     public boolean validateUser(Long userId) {
         try {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-            return user.getActive();
+            return userService.getUserById(userId).getActive();
         } catch (IllegalArgumentException e) {
             log.warn("User validation failed: {}", e.getMessage());
             return false;
         }
     }
+
     @Transactional(readOnly = true)
     @Override
     public boolean validateTime(Long sessionId) {
-        Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Sesión no encontrada"));
+        Session session = sessionService.getSessionById(sessionId);
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime sessionStart = LocalDateTime.of(session.getSessionDate(), session.getStartTime());
         int tolerance = session.getToleranceMinutes();
@@ -239,6 +227,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             sessionId, now, allowedStart, allowedEnd, tolerance, isValid);
         return isValid;
     }
+
     @Transactional(readOnly = true)
     @Override
     public boolean checkDuplicate(Long sessionId, Long userId) {
@@ -248,19 +237,18 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
         return exists;
     }
+
     @Transactional(readOnly = true)
     @Override
     public List<Attendance> getAttendanceBySession(Long sessionId) {
-        Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Sesión no encontrada"));
+        Session session = sessionService.getSessionById(sessionId);
         return attendanceRepository.findBySession(session);
     }
 
 
     @Override
     public List<Attendance> getAttendanceByUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        User user = userService.getUserById(userId);
         return attendanceRepository.findByUser(user);
     }
 

@@ -6,10 +6,10 @@ import com.elias.attendancecontrol.model.entity.Session;
 import com.elias.attendancecontrol.model.entity.SessionStatus;
 import com.elias.attendancecontrol.model.entity.User;
 import com.elias.attendancecontrol.persistence.repository.ActivityIncidentRepository;
-import com.elias.attendancecontrol.persistence.repository.ActivityRepository;
 import com.elias.attendancecontrol.persistence.repository.AttendanceRepository;
 import com.elias.attendancecontrol.persistence.repository.SessionRepository;
 import com.elias.attendancecontrol.service.ActivityIncidentService;
+import com.elias.attendancecontrol.service.ActivityService;
 import com.elias.attendancecontrol.service.LogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +22,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ActivityIncidentServiceImpl implements ActivityIncidentService {
     private final ActivityIncidentRepository activityIncidentRepository;
-    private final ActivityRepository activityRepository;
     private final SessionRepository sessionRepository;
     private final AttendanceRepository attendanceRepository;
     private final LogService logService;
     private final SecurityUtils securityUtils;
+    private final ActivityService activityService;
+
     @Override
     @Transactional
     public ActivityIncident registerIncident(ActivityIncident incident) {
@@ -48,8 +49,7 @@ public class ActivityIncidentServiceImpl implements ActivityIncidentService {
                                                  LocalDate newDate, String reason) {
         log.debug("Rescheduling occurrence for activity {} from {} to {}",
             activityId, originalDate, newDate);
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        Activity activity = activityService.getActivityById(activityId);
         validateUserCanManageIncidents(activity);
         if (newDate.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("La nueva fecha no puede estar en el pasado");
@@ -93,8 +93,7 @@ public class ActivityIncidentServiceImpl implements ActivityIncidentService {
     @Transactional
     public ActivityIncident cancelOccurrence(Long activityId, LocalDate date, String reason) {
         log.debug("Cancelling occurrence for activity {} on date {}", activityId, date);
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        Activity activity = activityService.getActivityById(activityId);
         validateUserCanManageIncidents(activity);
         Session session = sessionRepository
             .findByActivityAndSessionDate(activity, date)
@@ -138,8 +137,7 @@ public class ActivityIncidentServiceImpl implements ActivityIncidentService {
     @Transactional(readOnly = true)
     public List<ActivityIncident> getIncidentsByActivity(Long activityId) {
         log.debug("Getting incidents for activity: {}", activityId);
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
+        Activity activity = activityService.getActivityById(activityId);
         return activityIncidentRepository.findByActivity(activity);
     }
     @Override

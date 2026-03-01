@@ -3,7 +3,7 @@ import com.elias.attendancecontrol.model.entity.Organization;
 import com.elias.attendancecontrol.model.entity.OrganizationRole;
 import com.elias.attendancecontrol.model.entity.SystemRole;
 import com.elias.attendancecontrol.model.entity.User;
-import com.elias.attendancecontrol.persistence.repository.UserRepository;
+import com.elias.attendancecontrol.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -20,8 +20,8 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class SecurityUtils {
+    private final UserService userService;
 
-    private final UserRepository userRepository;
     public Optional<User> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -80,15 +80,8 @@ public class SecurityUtils {
         return hasOrganizationRole(OrganizationRole.ADMIN);
     }
 
-
     public boolean isOrganizationOwnerOrAdmin() {
         return isOrganizationOwner() || isOrganizationAdmin();
-    }
-    public boolean belongsToOrganization(Long organizationId) {
-        return getCurrentUser()
-                .map(user -> user.getOrganization() != null
-                        && user.getOrganization().getId().equals(organizationId))
-                .orElse(false);
     }
 
     public boolean canManageUsers() {
@@ -97,16 +90,6 @@ public class SecurityUtils {
 
     public boolean canManageActivities() {
         return isSystemAdmin() || isOrganizationOwnerOrAdmin();
-    }
-
-    public boolean canViewUser(User targetUser) {
-        User currentUser = getCurrentUser().orElse(null);
-        if (currentUser == null) return false;
-        if (isSystemAdmin()) return true;
-        if (currentUser.getId().equals(targetUser.getId())) return true;
-        return isOrganizationOwnerOrAdmin() && currentUser.getOrganization() != null
-                && targetUser.getOrganization() != null
-                && currentUser.getOrganization().getId().equals(targetUser.getOrganization().getId());
     }
 
     public boolean canEditUser(User targetUser) {
@@ -132,18 +115,18 @@ public class SecurityUtils {
             if (!(principal instanceof CustomUserDetails currentDetails)) return;
             if (!currentDetails.getUser().getId().equals(userId)) return;
 
-            userRepository.findById(userId).ifPresent(freshUser -> {
-                var authorities = new ArrayList<SimpleGrantedAuthority>();
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + freshUser.getSystemRole().name()));
-                if (freshUser.getOrganizationRole() != null) {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_ORG_" + freshUser.getOrganizationRole().name()));
-                }
-                CustomUserDetails freshDetails = new CustomUserDetails(freshUser, authorities);
-                UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
-                        freshDetails, null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(newAuth);
-                log.debug("SecurityContext refreshed for user: {}", freshUser.getUsername());
-            });
+            User freshUser = userService.getUserById(userId);
+
+            var authorities = new ArrayList<SimpleGrantedAuthority>();
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + freshUser.getSystemRole().name()));
+            if (freshUser.getOrganizationRole() != null) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_ORG_" + freshUser.getOrganizationRole().name()));
+            }
+            CustomUserDetails freshDetails = new CustomUserDetails(freshUser, authorities);
+            UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                    freshDetails, null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+            log.debug("SecurityContext refreshed for user: {}", freshUser.getUsername());
         } catch (Exception e) {
             log.warn("Could not refresh SecurityContext for user {}: {}", userId, e.getMessage());
         }
@@ -171,13 +154,6 @@ public class SecurityUtils {
         }
     }
 
-    public boolean canAccessResource(Long resourceOrgId) {
-        if (isSystemAdmin()) {
-            return true;
-        }
-        Long currentOrgId = getCurrentOrganizationId().orElse(null);
-        return currentOrgId != null && currentOrgId.equals(resourceOrgId);
-    }
 
     public boolean hasRole(String role) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

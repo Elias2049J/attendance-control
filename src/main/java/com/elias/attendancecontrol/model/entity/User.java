@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -18,6 +20,8 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "uuid", unique = true, updatable = false)
+    private UUID uuid;
     @NotBlank(message = "El nombre de usuario es obligatorio")
     @Size(min = 3, max = 50, message = "El nombre de usuario debe tener entre 3 y 50 caracteres")
     @Pattern(regexp = "^[a-zA-Z0-9._-]+$", message = "El nombre de usuario solo puede contener letras, números, puntos, guiones y guiones bajos")
@@ -64,9 +68,10 @@ public class User {
     private List<AuditLog> auditLogs = new ArrayList<>();
     @OneToMany(mappedBy = "createdByUser", cascade = CascadeType.ALL)
     private List<ActivityIncident> activityIncidents = new ArrayList<>();
-    @PrePersist
 
+    @PrePersist
     protected void onCreate() {
+        if (uuid == null) uuid = UUID.randomUUID();
         createdDate = LocalDateTime.now();
     }
 

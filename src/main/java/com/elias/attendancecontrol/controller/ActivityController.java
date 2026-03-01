@@ -129,9 +129,6 @@ public class ActivityController {
         log.debug("Showing edit form for activity: {}", id);
         try {
             Activity activity = activityService.getActivityById(id);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             model.addAttribute("activity", activity);
             model.addAttribute("users", userService.listUsers());
             model.addAttribute("recurrenceTypes", RecurrenceType.values());
@@ -218,10 +215,6 @@ public class ActivityController {
     public String activateActivity(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         log.debug("Activating activity: {}", id);
         try {
-            Activity activity = activityService.getActivityById(id);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             activityService.activateActivity(id);
             redirectAttributes.addFlashAttribute("success", "Actividad activada exitosamente. Las sesiones han sido generadas.");
         } catch (SecurityException e) {
@@ -238,10 +231,6 @@ public class ActivityController {
     public String pauseActivity(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         log.debug("Pausing activity: {}", id);
         try {
-            Activity activity = activityService.getActivityById(id);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             activityService.pauseActivity(id);
             redirectAttributes.addFlashAttribute("success", "Actividad pausada exitosamente");
         } catch (SecurityException e) {
@@ -258,10 +247,6 @@ public class ActivityController {
     public String completeActivity(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         log.debug("Completing activity: {}", id);
         try {
-            Activity activity = activityService.getActivityById(id);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             activityService.completeActivity(id);
             redirectAttributes.addFlashAttribute("success", "Actividad completada exitosamente");
         } catch (SecurityException e) {
@@ -278,10 +263,6 @@ public class ActivityController {
     public String cancelActivity(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         log.debug("Cancelling activity: {}", id);
         try {
-            Activity activity = activityService.getActivityById(id);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             activityService.cancelActivity(id);
             redirectAttributes.addFlashAttribute("success", "Actividad cancelada exitosamente");
         } catch (SecurityException e) {
@@ -299,9 +280,6 @@ public class ActivityController {
         try {
             Activity activity = activityService.getActivityById(id);
             long userId = securityUtils.getCurrentUserOrThrow().getId();
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             long sessionsCount = sessionService.getSessionsByActivity(id).size();
             long enrolledCount = enrollmentService.getEnrolledCount(id);
             model.addAttribute("activity", activity);
@@ -325,9 +303,6 @@ public class ActivityController {
         log.debug("Viewing schedule for activity: {}", id);
         try {
             Activity activity = activityService.getActivityById(id);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             List<Session> sessions = sessionService.getSessionsByActivity(id);
             model.addAttribute("activity", activity);
             model.addAttribute("sessions", sessions);
@@ -345,9 +320,6 @@ public class ActivityController {
         log.debug("Viewing attendances for activity: {}", id);
         try {
             Activity activity = activityService.getActivityById(id);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             List<Session> sessions = sessionService.getSessionsByActivity(id);
             Map<Session, List<Attendance>> attendanceMap = sessions.stream()
                     .collect(Collectors.toMap(s -> s, s -> attendanceService.getAttendanceBySession(s.getId())));
@@ -370,9 +342,6 @@ public class ActivityController {
         }
         try {
             Activity activity = activityService.getActivityById(id);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
             long pendingSessions = sessionService.getSessionsByActivity(id).stream()
                     .filter(s -> s.getStatus() == SessionStatus.PLANNED)
                     .count();
@@ -406,9 +375,6 @@ public class ActivityController {
         log.debug("Managing session {} from activity {}", sessionId, activityId);
         try {
             Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
 
             Session session = sessionService.getSessionById(sessionId);
             if (!session.getActivity().getId().equals(activityId)) {
@@ -447,9 +413,7 @@ public class ActivityController {
         log.debug("Viewing QR for session {} from activity {}", sessionId, activityId);
         try {
             Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
+
 
             Session sessionEntity = sessionService.getSessionById(sessionId);
             if (!sessionEntity.getActivity().getId().equals(activityId)) {
@@ -487,10 +451,7 @@ public class ActivityController {
                                      RedirectAttributes redirectAttributes) {
         log.debug("Regenerating QR for session {} from activity {}", sessionId, activityId);
         try {
-            Activity activity = activityService.getActivityById(activityId);
-            if (activity.getOrganization() != null) {
-                securityUtils.validateResourceOwnership(activity.getOrganization().getId());
-            }
+            activityService.getActivityById(activityId);
 
             tokenService.regenerateQR(sessionId);
             redirectAttributes.addFlashAttribute("success", "Código QR regenerado exitosamente");
