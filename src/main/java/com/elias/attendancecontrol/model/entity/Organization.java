@@ -20,10 +20,6 @@ public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "uuid", nullable = false, updatable = false)
-    private UUID uuid;
-    @Column(name = "official_id")
-    private String officialID;
     @NotBlank(message = "El nombre de la organización es obligatorio")
     @Size(min = 3, max = 200, message = "El nombre debe tener entre 3 y 200 caracteres")
     @Column(name = "name", nullable = false, length = 200)
@@ -80,7 +76,6 @@ public class Organization {
         if (plan == null) {
             plan = OrganizationPlan.FREE;
         }
-        if (uuid == null) uuid = UUID.randomUUID();
     }
 
     public void applyPlanLimits(Integer freeMaxUsers, Integer freeMaxActivities,

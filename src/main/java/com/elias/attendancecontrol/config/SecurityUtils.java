@@ -3,7 +3,7 @@ import com.elias.attendancecontrol.model.entity.Organization;
 import com.elias.attendancecontrol.model.entity.OrganizationRole;
 import com.elias.attendancecontrol.model.entity.SystemRole;
 import com.elias.attendancecontrol.model.entity.User;
-import com.elias.attendancecontrol.service.UserService;
+import com.elias.attendancecontrol.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class SecurityUtils {
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     public Optional<User> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -115,18 +115,18 @@ public class SecurityUtils {
             if (!(principal instanceof CustomUserDetails currentDetails)) return;
             if (!currentDetails.getUser().getId().equals(userId)) return;
 
-            User freshUser = userService.getUserById(userId);
-
-            var authorities = new ArrayList<SimpleGrantedAuthority>();
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + freshUser.getSystemRole().name()));
-            if (freshUser.getOrganizationRole() != null) {
-                authorities.add(new SimpleGrantedAuthority("ROLE_ORG_" + freshUser.getOrganizationRole().name()));
-            }
-            CustomUserDetails freshDetails = new CustomUserDetails(freshUser, authorities);
-            UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
-                    freshDetails, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(newAuth);
-            log.debug("SecurityContext refreshed for user: {}", freshUser.getUsername());
+            userRepository.findById(userId).ifPresent(freshUser -> {
+                var authorities = new ArrayList<SimpleGrantedAuthority>();
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + freshUser.getSystemRole().name()));
+                if (freshUser.getOrganizationRole() != null) {
+                    authorities.add(new SimpleGrantedAuthority("ROLE_ORG_" + freshUser.getOrganizationRole().name()));
+                }
+                CustomUserDetails freshDetails = new CustomUserDetails(freshUser, authorities);
+                UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                        freshDetails, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(newAuth);
+                log.debug("SecurityContext refreshed for user: {}", freshUser.getUsername());
+            });
         } catch (Exception e) {
             log.warn("Could not refresh SecurityContext for user {}: {}", userId, e.getMessage());
         }

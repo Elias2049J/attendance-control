@@ -19,7 +19,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final AttendanceRepository attendanceRepository;
     private final LogService logService;
     private final SecurityUtils securityUtils;
-    private final ActivityService activityService;
+    private final ActivityRepository activityRepository;
     private final UserService userService;
     private final SessionService sessionService;
 
@@ -27,7 +27,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional
     public Enrollment enrollUser(Long activityId, Long userId) {
         log.debug("Enrolling user {} in activity {}", userId, activityId);
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         User user = userService.getUserById(userId);
         if (!activity.getStatus().isScheduled()) {
             throw new IllegalStateException("No se puede inscribir en una actividad inactiva");
@@ -60,7 +61,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional
     public void enrollMultipleUsers(Long activityId, List<Long> userIds) {
         log.debug("Enrolling {} users in activity {}", userIds.size(), activityId);
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         if (!activity.getStatus().isScheduled()) {
             throw new IllegalStateException("No se puede inscribir en una actividad inactiva");
         }
@@ -109,7 +111,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional
     public void removeParticipant(Long activityId, Long userId) {
         log.debug("Removing user {} from activity {}", userId, activityId);
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         User user = userService.getUserById(userId);
         Enrollment enrollment = enrollmentRepository.findByActivityAndUser(activity, user)
                 .orElseThrow(() -> new IllegalArgumentException("Inscripción no encontrada"));
@@ -130,7 +133,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional(readOnly = true)
     public List<User> getEnrolledParticipants(Long activityId) {
         log.debug("Getting enrolled participants for activity {}", activityId);
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         return enrollmentRepository.findUsersByActivityAndStatus(activity, EnrollmentStatus.ENROLLED);
     }
 
@@ -145,7 +149,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     @Transactional(readOnly = true)
     public boolean isUserEnrolled(Long activityId, Long userId) {
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         User user = userService.getUserById(userId);
         return enrollmentRepository.existsByActivityAndUserAndStatus(activity, user, EnrollmentStatus.ENROLLED);
     }
@@ -192,14 +197,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     @Transactional(readOnly = true)
     public List<Enrollment> getEnrollmentsByActivity(Long activityId) {
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         return enrollmentRepository.findByActivity(activity);
     }
 
     @Override
     @Transactional(readOnly = true)
     public long getEnrolledCount(Long activityId) {
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         return enrollmentRepository.countByActivityAndStatus(activity, EnrollmentStatus.ENROLLED);
     }
 
@@ -207,7 +214,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional
     public void completeAllEnrollments(Long activityId) {
         log.debug("Completing all enrollments for activity: {}", activityId);
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         List<Enrollment> activeEnrollments = enrollmentRepository.findByActivityAndStatus(activity, EnrollmentStatus.ENROLLED);
         for (Enrollment enrollment : activeEnrollments) {
             enrollment.setStatus(EnrollmentStatus.COMPLETED);

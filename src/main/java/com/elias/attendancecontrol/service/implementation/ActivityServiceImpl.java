@@ -32,7 +32,6 @@ public class ActivityServiceImpl implements ActivityService {
     private final RecurrenceService recurrenceService;
     private final LogService logService;
     private final SecurityUtils securityUtils;
-    private final ActivityService activityService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -359,7 +358,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public boolean isResponsible(Long activityId, Long userId) {
-        long responsibleId = activityService.getActivityById(activityId)
+        long responsibleId = getActivityById(activityId)
                 .getResponsible().getId();
         return responsibleId == userId;
     }

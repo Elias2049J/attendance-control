@@ -26,7 +26,6 @@ public class SessionServiceImpl implements SessionService {
     private final QrTokenRepository qrTokenRepository;
     private final LogService logService;
     private final SecurityUtils securityUtils;
-    private final ActivityService activityService;
 
     @Override
     @Transactional
@@ -149,7 +148,8 @@ public class SessionServiceImpl implements SessionService {
     @Transactional
     public List<Session> generateSessions(Long activityId) {
         log.debug("Generating sessions for activity: {}", activityId);
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         RecurrenceRule rule = activity.getRecurrenceRule();
         if (rule == null) {
             throw new IllegalStateException("La actividad no tiene regla de recurrencia");
@@ -196,7 +196,8 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(readOnly = true)
     public List<Session> applyExceptions(Long activityId, List<Session> sessions) {
         log.debug("Applying exceptions for activity: {}", activityId);
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         List<ActivityIncident> incidents = activityIncidentRepository.findByActivity(activity);
         if (incidents.isEmpty()) {
             return sessions;
@@ -302,7 +303,8 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(readOnly = true)
     public List<Session> getSessionsByActivity(Long activityId) {
         log.debug("Getting sessions for activity: {}", activityId);
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         return sessionRepository.findByActivityOrderBySessionDateAsc(activity);
     }
 

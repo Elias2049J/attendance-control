@@ -21,12 +21,12 @@ public class RecurrenceServiceImpl implements RecurrenceService {
     private final SessionService sessionService;
     private final LogService logService;
     private final SecurityUtils securityUtils;
-    private final ActivityService activityService;
 
     @Override
     public void generateSessionsForActivity(Long activityId) {
         log.debug("Generating sessions for activity: {}", activityId);
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
 
         if (activity.getRecurrenceRule() == null) {
             throw new IllegalStateException("La actividad no tiene regla de recurrencia configurada");
@@ -46,7 +46,8 @@ public class RecurrenceServiceImpl implements RecurrenceService {
     @Override
     public RecurrenceRule configureRecurrence(Long activityId, RecurrenceRule recurrenceRule) {
         log.debug("Configuring recurrence for activity: {}", activityId);
-        Activity activity = activityService.getActivityById(activityId);
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
 
         if (!validateRecurrence(recurrenceRule)) {
             throw new IllegalArgumentException("Regla de recurrencia inválida");

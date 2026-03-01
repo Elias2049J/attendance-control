@@ -20,8 +20,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "uuid", unique = true, updatable = false)
-    private UUID uuid;
     @NotBlank(message = "El nombre de usuario es obligatorio")
     @Size(min = 3, max = 50, message = "El nombre de usuario debe tener entre 3 y 50 caracteres")
     @Pattern(regexp = "^[a-zA-Z0-9._-]+$", message = "El nombre de usuario solo puede contener letras, números, puntos, guiones y guiones bajos")
@@ -71,7 +69,6 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
-        if (uuid == null) uuid = UUID.randomUUID();
         createdDate = LocalDateTime.now();
     }
 
