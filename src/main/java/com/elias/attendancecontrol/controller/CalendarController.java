@@ -37,7 +37,14 @@ public class CalendarController {
         }
         model.addAttribute("sessions", calendarService.getCalendarView(startDate, endDate));
         model.addAttribute("activities", activityService.listActivitiesSorted());
-        model.addAttribute("eventsJson", new ObjectMapper().writeValueAsString(calendarService.getCalendarEventsForJson(startDate, endDate)));
+        String eventsJson = "[]";
+        try {
+            eventsJson = new ObjectMapper().writeValueAsString(
+                    calendarService.getCalendarEventsForJson(startDate, endDate));
+        } catch (Exception e) {
+            log.error("Error serializing calendar events to JSON", e);
+        }
+        model.addAttribute("eventsJson", eventsJson);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
         model.addAttribute("activeMenu", "calendar");

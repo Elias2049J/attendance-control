@@ -143,7 +143,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public List<Activity> getActivitiesByUser(Long userId) {
         log.debug("Getting activities for user {}", userId);
         User user = userService.getUserById(userId);
-        return enrollmentRepository.findActivitiesByUserAndStatus(user, EnrollmentStatus.ENROLLED);
+        return enrollmentRepository.findActivitiesByUserAndStatusWithDetails(user, EnrollmentStatus.ENROLLED);
     }
 
     @Override

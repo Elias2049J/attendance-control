@@ -11,29 +11,36 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface SessionRepository extends JpaRepository<Session, Long> {
-    List<Session> findByActivityOrderBySessionDateAsc(Activity activity);
-    List<Session> findBySessionDateBetweenOrderBySessionDateAsc(LocalDate start, LocalDate end);
-    List<Session> findByActivityAndSessionDateBetween(Activity activity, LocalDate start, LocalDate end);
+    @Query("SELECT s FROM Session s JOIN FETCH s.activity a JOIN FETCH a.organization LEFT JOIN FETCH a.responsible WHERE s.activity = :activity ORDER BY s.sessionDate ASC")
+    List<Session> findByActivityOrderBySessionDateAsc(@Param("activity") Activity activity);
+
+    @Query("SELECT s FROM Session s JOIN FETCH s.activity a JOIN FETCH a.organization LEFT JOIN FETCH a.responsible WHERE s.sessionDate BETWEEN :start AND :end ORDER BY s.sessionDate ASC")
+    List<Session> findBySessionDateBetweenOrderBySessionDateAsc(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    @Query("SELECT s FROM Session s JOIN FETCH s.activity a JOIN FETCH a.organization LEFT JOIN FETCH a.responsible WHERE s.activity = :activity AND s.sessionDate BETWEEN :start AND :end")
+    List<Session> findByActivityAndSessionDateBetween(@Param("activity") Activity activity, @Param("start") LocalDate start, @Param("end") LocalDate end);
+
     Optional<Session> findByActivityAndSessionDate(Activity activity, LocalDate date);
     boolean existsByActivityAndSessionDate(Activity activity, LocalDate date);
-    List<Session> findByStatus(SessionStatus status);
-    List<Session> findByActivityAndStatus(Activity activity, SessionStatus status);
+
+    @Query("SELECT s FROM Session s JOIN FETCH s.activity a JOIN FETCH a.organization LEFT JOIN FETCH a.responsible WHERE s.status = :status")
+    List<Session> findByStatus(@Param("status") SessionStatus status);
+
+    @Query("SELECT s FROM Session s JOIN FETCH s.activity a JOIN FETCH a.organization LEFT JOIN FETCH a.responsible WHERE s.activity = :activity AND s.status = :status")
+    List<Session> findByActivityAndStatus(@Param("activity") Activity activity, @Param("status") SessionStatus status);
+
     long countByActivityAndStatus(Activity activity, SessionStatus status);
 
-    @Query("SELECT s FROM Session s WHERE s.activity.organization.id = :orgId ORDER BY s.sessionDate ASC")
+    @Query("SELECT s FROM Session s JOIN FETCH s.activity a JOIN FETCH a.organization LEFT JOIN FETCH a.responsible WHERE a.organization.id = :orgId ORDER BY s.sessionDate ASC")
     List<Session> findByActivityOrganizationId(@Param("orgId") Long organizationId);
 
-    @Query("SELECT s FROM Session s WHERE s.sessionDate BETWEEN :startDate AND :endDate " +
-           "AND s.activity.organization.id = :orgId ORDER BY s.sessionDate ASC")
+    @Query("SELECT s FROM Session s JOIN FETCH s.activity a JOIN FETCH a.organization LEFT JOIN FETCH a.responsible WHERE s.sessionDate BETWEEN :startDate AND :endDate AND a.organization.id = :orgId ORDER BY s.sessionDate ASC")
     List<Session> findBySessionDateBetweenAndActivityOrganizationId(
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate,
         @Param("orgId") Long organizationId);
 
-    @Query("SELECT s FROM Session s " +
-           "JOIN FETCH s.activity a " +
-           "JOIN FETCH a.organization " +
-           "WHERE s.id = :id")
+    @Query("SELECT s FROM Session s JOIN FETCH s.activity a JOIN FETCH a.organization LEFT JOIN FETCH a.responsible WHERE s.id = :id")
     Optional<Session> findByIdWithActivityAndOrganization(@Param("id") Long id);
 
     @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END " +

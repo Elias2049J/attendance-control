@@ -23,5 +23,9 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     @Query("SELECT e.activity FROM Enrollment e WHERE e.user = :user AND e.status = :status ORDER BY e.activity.recurrenceRule.startDate ASC, e.activity.id DESC")
     List<Activity> findActivitiesByUserAndStatus(@Param("user") User user,
                                                   @Param("status") EnrollmentStatus status);
+
+    @Query("SELECT DISTINCT a FROM Activity a LEFT JOIN FETCH a.responsible LEFT JOIN FETCH a.recurrenceRule WHERE a.id IN (SELECT e.activity.id FROM Enrollment e WHERE e.user = :user AND e.status = :status) ORDER BY a.recurrenceRule.startDate ASC, a.id DESC")
+    List<Activity> findActivitiesByUserAndStatusWithDetails(@Param("user") User user,
+                                                             @Param("status") EnrollmentStatus status);
     long countByActivityAndStatus(Activity activity, EnrollmentStatus status);
 }

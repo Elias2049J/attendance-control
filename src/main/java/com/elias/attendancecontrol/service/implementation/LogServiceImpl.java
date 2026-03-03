@@ -49,7 +49,7 @@ public class LogServiceImpl implements LogService {
     @Transactional(readOnly = true)
     public List<AuditLog> listAuditLogs() {
         if (securityUtils.isSystemAdmin()) {
-            return auditLogRepository.findAll();
+            return auditLogRepository.findAllWithUser();
         }
 
         return securityUtils.getCurrentOrganizationId()

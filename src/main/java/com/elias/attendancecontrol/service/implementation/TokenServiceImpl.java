@@ -97,7 +97,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     @Transactional(readOnly = true)
     public boolean validateQR(String token) {
-        Optional<QRToken> qrTokenOpt = qrTokenRepository.findByToken(token);
+        Optional<QRToken> qrTokenOpt = qrTokenRepository.findByTokenWithSessionAndOrganization(token);
         if (qrTokenOpt.isEmpty()) {
             log.debug("QR token not found: {}", token);
             return false;
@@ -117,11 +117,10 @@ public class TokenServiceImpl implements TokenService {
     public QRToken getQRTokenWithSessionAndOrganization(String token, String orgSlug) {
         log.debug("Getting QR token with session and organization validation for token: {} and org: {}", token, orgSlug);
 
-        QRToken qrToken = qrTokenRepository.findByToken(token)
+        QRToken qrToken = qrTokenRepository.findByTokenWithSessionAndOrganization(token)
                 .orElseThrow(() -> new IllegalArgumentException("Token QR no encontrado"));
 
-        Session session = qrToken.getSession();
-        String sessionOrgSlug = session.getActivity().getOrganization().getSlug();
+        String sessionOrgSlug = qrToken.getSession().getActivity().getOrganization().getSlug();
 
         if (!sessionOrgSlug.equals(orgSlug)) {
             log.warn("Organization slug mismatch. Expected: {}, Got: {}", sessionOrgSlug, orgSlug);

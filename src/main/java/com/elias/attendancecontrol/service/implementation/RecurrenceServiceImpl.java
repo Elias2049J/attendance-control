@@ -4,7 +4,6 @@ import com.elias.attendancecontrol.model.entity.Activity;
 import com.elias.attendancecontrol.model.entity.RecurrenceRule;
 import com.elias.attendancecontrol.persistence.repository.ActivityRepository;
 import com.elias.attendancecontrol.persistence.repository.RecurrenceRuleRepository;
-import com.elias.attendancecontrol.service.ActivityService;
 import com.elias.attendancecontrol.service.LogService;
 import com.elias.attendancecontrol.service.RecurrenceService;
 import com.elias.attendancecontrol.service.SessionService;
@@ -49,9 +48,7 @@ public class RecurrenceServiceImpl implements RecurrenceService {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
 
-        if (!validateRecurrence(recurrenceRule)) {
-            throw new IllegalArgumentException("Regla de recurrencia inválida");
-        }
+        validateRecurrence(recurrenceRule);
 
         if (activity.getRecurrenceRule() != null) {
             RecurrenceRule oldRule = activity.getRecurrenceRule();
@@ -80,9 +77,7 @@ public class RecurrenceServiceImpl implements RecurrenceService {
         RecurrenceRule existingRule = recurrenceRuleRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Regla de recurrencia no encontrada"));
 
-        if (!validateRecurrence(recurrenceRule)) {
-            throw new IllegalArgumentException("Regla de recurrencia inválida");
-        }
+        validateRecurrence(recurrenceRule);
 
         existingRule.setRecurrenceType(recurrenceRule.getRecurrenceType());
         existingRule.setDaysOfWeek(recurrenceRule.getDaysOfWeek());
@@ -108,44 +103,37 @@ public class RecurrenceServiceImpl implements RecurrenceService {
     @Override
     public boolean validateRecurrence(RecurrenceRule rule) {
         if (rule == null) {
-            log.debug("Validation failed: rule is null");
-            return false;
+            throw new IllegalArgumentException("La regla de recurrencia no puede ser nula");
         }
         if (rule.getStartDate() == null) {
-            log.debug("Validation failed: start date is null");
-            return false;
+            throw new IllegalArgumentException("La fecha de inicio es obligatoria");
+        }
+        if (rule.getStartDate().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("La fecha de inicio no puede ser anterior a hoy");
         }
         if (rule.getEndDate() != null && rule.getEndDate().isBefore(rule.getStartDate())) {
-            log.debug("Validation failed: end date is before start date");
-            return false;
+            throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio");
         }
         if (rule.getRecurrenceType() == null) {
-            log.debug("Validation failed: recurrence type is null");
-            return false;
+            throw new IllegalArgumentException("El tipo de recurrencia es obligatorio");
         }
         if (rule.getRecurrenceType().isWeekly() &&
             (rule.getDaysOfWeek() == null || rule.getDaysOfWeek().isEmpty())) {
-            log.debug("Validation failed: WEEKLY recurrence without days of week");
-            return false;
+            throw new IllegalArgumentException("Debe seleccionar al menos un día de la semana para la recurrencia semanal");
         }
         if (rule.getStartTime() == null || rule.getEndTime() == null) {
-            log.debug("Validation failed: start time or end time is null");
-            return false;
+            throw new IllegalArgumentException("La hora de inicio y fin son obligatorias");
         }
         if (rule.getEndTime().isBefore(rule.getStartTime()) || rule.getEndTime().equals(rule.getStartTime())) {
-            log.debug("Validation failed: end time ({}) must be after start time ({})",
-                rule.getEndTime(), rule.getStartTime());
-            return false;
+            throw new IllegalArgumentException("La hora de fin debe ser posterior a la hora de inicio");
         }
         if (rule.getToleranceMinutes() == null || rule.getToleranceMinutes() < 0) {
-            log.debug("Validation failed: tolerance minutes is null or negative");
-            return false;
+            throw new IllegalArgumentException("La tolerancia no puede ser negativa");
         }
         long sessionDuration = rule.getDurationMinutes();
         if (rule.getToleranceMinutes() > sessionDuration) {
-            log.debug("Validation failed: tolerance ({} min) exceeds session duration ({} min)",
-                rule.getToleranceMinutes(), sessionDuration);
-            return false;
+            throw new IllegalArgumentException(
+                "La tolerancia (" + rule.getToleranceMinutes() + " min) no puede superar la duración de la sesión (" + sessionDuration + " min)");
         }
         log.debug("Recurrence rule validation passed");
         return true;

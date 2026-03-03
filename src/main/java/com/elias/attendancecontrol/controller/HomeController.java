@@ -70,4 +70,19 @@ public class HomeController {
         model.addAttribute("activeMenu", "home");
         return "index";
     }
+
+    @GetMapping("/terms")
+    public String terms() {
+        return "legal/terms";
+    }
+
+    @GetMapping("/privacy")
+    public String privacy() {
+        return "legal/privacy";
+    }
+
+    @GetMapping("/support")
+    public String support() {
+        return "legal/support";
+    }
 }

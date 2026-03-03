@@ -9,8 +9,17 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
+    @Query("SELECT a FROM Activity a LEFT JOIN FETCH a.responsible LEFT JOIN FETCH a.organization WHERE a.id = :id")
+    Optional<Activity> findByIdWithDetails(@Param("id") Long id);
+
+    @Query("SELECT a FROM Activity a LEFT JOIN FETCH a.responsible LEFT JOIN FETCH a.recurrenceRule WHERE a.organization.id = :orgId ORDER BY a.recurrenceRule.startDate ASC, a.id DESC")
+    List<Activity> findByOrganizationIdWithDetails(@Param("orgId") Long organizationId);
+
+    @Query("SELECT a FROM Activity a LEFT JOIN FETCH a.responsible LEFT JOIN FETCH a.recurrenceRule WHERE a.responsible.id = :userId")
+    List<Activity> findByResponsibleIdWithDetails(@Param("userId") Long userId);
     List<Activity> findByStatusOrderByIdDesc(ActivityStatus status);
     List<Activity> findByStatusInOrderByIdDesc(List<ActivityStatus> statuses);
     List<Activity> findByResponsible(User user);

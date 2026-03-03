@@ -32,6 +32,7 @@ public class CalendarServiceImpl implements CalendarService {
     private final ActivityService activityService;
 
     @Override
+    @Transactional(readOnly = true)
     public List<Session> getCalendarView(LocalDate startDate, LocalDate endDate) {
         Optional<Organization> organizationOptional = securityUtils.getCurrentOrganization();
         User user = securityUtils.getCurrentUserOrThrow();
@@ -63,8 +64,7 @@ public class CalendarServiceImpl implements CalendarService {
     private List<Session> getCalendarForMember(LocalDate startDate, LocalDate endDate, User user) {
         List<Activity> activitiesFromUser = activityService.findAllByUserResponsibleAndEnrolled(user.getId());
         return activitiesFromUser.stream()
-                .flatMap(a -> a.getSessions().stream())
-                .filter(s -> !s.getSessionDate().isBefore(startDate) && !s.getSessionDate().isAfter(endDate))
+                .flatMap(a -> sessionRepository.findByActivityAndSessionDateBetween(a, startDate, endDate).stream())
                 .collect(Collectors.toList());
     }
 
@@ -83,6 +83,7 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CalendarEventDTO> getCalendarEventsForJson(LocalDate startDate, LocalDate endDate) {
         DateTimeFormatter isoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         return getCalendarView(startDate, endDate).stream()

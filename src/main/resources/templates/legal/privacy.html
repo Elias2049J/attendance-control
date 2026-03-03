@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidad - MIRAE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/landing.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        body { background: #f8f9fa; }
+        .legal-hero {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495e 100%);
+            padding: 100px 0 60px;
+            color: white;
+        }
+        .legal-hero h1 { font-size: 2.5rem; font-weight: 700; }
+        .legal-hero p { color: rgba(255,255,255,0.8); font-size: 1.05rem; }
+        .legal-body { max-width: 860px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+        .legal-section { margin-bottom: 2.5rem; }
+        .legal-section h2 {
+            color: #2C3E50;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-left: 4px solid #26A69A;
+            padding-left: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .legal-section p, .legal-section li { color: #444; line-height: 1.8; font-size: 0.97rem; }
+        .legal-section ul { padding-left: 1.4rem; }
+        .legal-section ul li { margin-bottom: 0.4rem; }
+        .badge-beta {
+            background: #26A69A;
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 600;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        .alert-beta {
+            background: #e8f5e9;
+            border-left: 4px solid #26A69A;
+            color: #2C3E50;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.93rem; }
+        .data-table th { background: #2C3E50; color: white; padding: 0.75rem 1rem; text-align: left; }
+        .data-table td { padding: 0.7rem 1rem; border-bottom: 1px solid #e0e0e0; color: #444; vertical-align: top; }
+        .data-table tr:nth-child(even) td { background: #f5f5f5; }
+        .toc { background: #fff; border-radius: 10px; padding: 1.5rem 2rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin-bottom: 2.5rem; }
+        .toc h3 { font-size: 1rem; font-weight: 700; color: #2C3E50; margin-bottom: 0.75rem; }
+        .toc a { color: #26A69A; text-decoration: none; font-size: 0.93rem; display: block; padding: 0.2rem 0; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar-landing">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <a class="navbar-brand" th:href="@{/}">MIRAE</a>
+            <div class="d-flex align-items-center gap-3">
+                <a th:href="@{/auth/login}" class="nav-link">Ingresar</a>
+                <a th:href="@{/organizations/register}" class="btn btn-register">Registrarse</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="legal-hero text-center">
+    <div class="container">
+        <h1><i class="bi bi-shield-lock me-2"></i>Política de Privacidad <span class="badge-beta">BETA</span></h1>
+        <p class="mt-2">Última actualización: marzo 2026</p>
+    </div>
+</div>
+
+<div class="legal-body">
+
+    <div class="alert-beta">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        <strong>Compromiso de transparencia:</strong> Los datos registrados en MIRAE no se utilizan con ningún fin comercial o analítico externo. Son eliminados permanentemente al concluir la fase beta.
+    </div>
+
+    <div class="toc">
+        <h3><i class="bi bi-list-ul me-1"></i> Contenido</h3>
+        <a href="#responsable">1. Responsable del tratamiento</a>
+        <a href="#datos-recopilados">2. Datos que recopilamos</a>
+        <a href="#finalidad">3. Finalidad del tratamiento</a>
+        <a href="#no-comercializacion">4. No comercialización de datos</a>
+        <a href="#almacenamiento">5. Almacenamiento y seguridad</a>
+        <a href="#eliminacion">6. Eliminación de datos</a>
+        <a href="#derechos">7. Derechos del usuario</a>
+        <a href="#cookies">8. Cookies y sesiones</a>
+        <a href="#terceros">9. Servicios de terceros</a>
+        <a href="#menores">10. Menores de edad</a>
+        <a href="#cambios-privacidad">11. Cambios en esta política</a>
+        <a href="#contacto-privacidad">12. Contacto</a>
+    </div>
+
+    <div class="legal-section" id="responsable">
+        <h2>1. Responsable del tratamiento</h2>
+        <p>El responsable del tratamiento de los datos personales procesados a través de MIRAE es el equipo de desarrollo del proyecto, en adelante "MIRAE" o "nosotros". Para cualquier consulta relacionada con el tratamiento de sus datos, puede contactarnos en <a href="mailto:soporte.mirae@gmail.com" style="color:#26A69A;">soporte.mirae@gmail.com</a>.</p>
+    </div>
+
+    <div class="legal-section" id="datos-recopilados">
+        <h2>2. Datos que recopilamos</h2>
+        <p>MIRAE recopila únicamente los datos estrictamente necesarios para el funcionamiento del Servicio:</p>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tipo de dato</th>
+                    <th>Ejemplo</th>
+                    <th>Quién lo introduce</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Datos de identificación</td>
+                    <td>Nombre, apellido, correo electrónico</td>
+                    <td>El administrador de la organización o el propio usuario</td>
+                </tr>
+                <tr>
+                    <td>Credenciales de acceso</td>
+                    <td>Nombre de usuario, contraseña (cifrada con BCrypt)</td>
+                    <td>El administrador de la organización o el propio usuario</td>
+                </tr>
+                <tr>
+                    <td>Datos de organización</td>
+                    <td>Nombre, slug, logo</td>
+                    <td>El representante (Owner) de la organización</td>
+                </tr>
+                <tr>
+                    <td>Registros de asistencia</td>
+                    <td>Fecha, hora, estado (presente/tarde/ausente)</td>
+                    <td>Generados automáticamente por el sistema al escanear un QR</td>
+                </tr>
+                <tr>
+                    <td>Registros de auditoría</td>
+                    <td>Acción realizada, fecha, usuario responsable</td>
+                    <td>Generados automáticamente por el sistema</td>
+                </tr>
+                <tr>
+                    <td>Datos de sesión web</td>
+                    <td>Cookie de sesión HTTP</td>
+                    <td>Generados automáticamente al iniciar sesión</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="mt-3">No recopilamos datos de geolocalización, perfiles de comportamiento, información de pago ni datos biométricos.</p>
+    </div>
+
+    <div class="legal-section" id="finalidad">
+        <h2>3. Finalidad del tratamiento</h2>
+        <p>Los datos recopilados se utilizan exclusivamente para:</p>
+        <ul>
+            <li><strong>Autenticación:</strong> verificar la identidad del usuario al iniciar sesión</li>
+            <li><strong>Control de asistencia:</strong> registrar y mostrar la participación de los miembros en actividades</li>
+            <li><strong>Generación de reportes:</strong> producir estadísticas de asistencia para uso interno de la organización</li>
+            <li><strong>Auditoría interna:</strong> registrar acciones realizadas dentro del sistema para trazabilidad</li>
+            <li><strong>Gestión organizacional:</strong> administrar miembros, roles y actividades dentro de cada organización</li>
+        </ul>
+        <p>No existe ningún procesamiento automatizado de perfiles, decisiones automatizadas ni transferencia de datos a terceros con fines comerciales o publicitarios.</p>
+    </div>
+
+    <div class="legal-section" id="no-comercializacion">
+        <h2>4. No comercialización de datos</h2>
+        <p>MIRAE declara expresamente que:</p>
+        <ul>
+            <li>Los datos almacenados <strong>no se venden, alquilan ni ceden</strong> a ningún tercero bajo ninguna circunstancia</li>
+            <li>Los datos <strong>no se utilizan con fines publicitarios</strong> ni para elaborar perfiles comerciales</li>
+            <li>Los datos <strong>no se comparten con socios comerciales</strong> ni con plataformas de análisis de terceros</li>
+            <li>El proyecto <strong>no tiene fines lucrativos</strong> en su fase actual</li>
+        </ul>
+    </div>
+
+    <div class="legal-section" id="almacenamiento">
+        <h2>5. Almacenamiento y seguridad</h2>
+        <p>Los datos se almacenan en servidores en la nube con las siguientes medidas de seguridad aplicadas:</p>
+        <ul>
+            <li><strong>Cifrado de contraseñas:</strong> todas las contraseñas se almacenan con hash y nunca en texto plano</li>
+            <li><strong>Aislamiento de datos:</strong> arquitectura multi-tenant que garantiza que los datos de cada organización son inaccesibles para otras organizaciones</li>
+            <li><strong>Cookies seguras:</strong> las cookies de sesión se configuran con los atributos <code>HttpOnly</code>, <code>SameSite=Strict</code> y <code>Secure</code> (en producción)</li>
+            <li><strong>Tokens QR temporales:</strong> los códigos QR son de corta duración y se invalidan automáticamente</li>
+            <li><strong>Control de acceso:</strong> sistema de roles y permisos que limita el acceso a los datos según el rol de cada usuario</li>
+        </ul>
+        <p>No obstante, al tratarse de una versión beta, no podemos garantizar la seguridad absoluta de los datos. Se recomienda no almacenar información personal sensible en la plataforma.</p>
+    </div>
+
+    <div class="legal-section" id="eliminacion">
+        <h2>6. Eliminación de datos</h2>
+        <p>MIRAE se compromete a:</p>
+        <ul>
+            <li><strong>Eliminar todos los datos registrados</strong> en la plataforma al concluir la fase beta, incluyendo usuarios, organizaciones, actividades, registros de asistencia y logs de auditoría</li>
+            <li>Esta eliminación será <strong>permanente e irrecuperable</strong></li>
+            <li>Los usuarios serán notificados con antelación razonable antes de la eliminación masiva de datos</li>
+        </ul>
+        <p>Si desea solicitar la eliminación anticipada de los datos de su organización, puede hacerlo enviando una solicitud a <a href="mailto:soporte.mirae@gmail.com" style="color:#26A69A;">soporte.mirae@gmail.com</a>.</p>
+    </div>
+
+    <div class="legal-section" id="derechos">
+        <h2>7. Derechos del usuario</h2>
+        <p>Todo usuario tiene derecho a:</p>
+        <ul>
+            <li><strong>Acceso:</strong> solicitar qué datos personales suyos están almacenados en el sistema</li>
+            <li><strong>Rectificación:</strong> corregir datos inexactos a través del perfil de usuario o solicitando soporte</li>
+            <li><strong>Eliminación:</strong> solicitar la eliminación de su cuenta y datos asociados</li>
+            <li><strong>Portabilidad:</strong> solicitar una copia de sus registros de asistencia en formato exportable</li>
+            <li><strong>Oposición:</strong> oponerse al tratamiento de sus datos en casos justificados</li>
+        </ul>
+        <p>Para ejercer cualquiera de estos derechos, envíe su solicitud a <a href="mailto:soporte.mirae@gmail.com" style="color:#26A69A;">soporte.mirae@gmail.com</a> con el asunto "Derechos ARCO".</p>
+    </div>
+
+    <div class="legal-section" id="cookies">
+        <h2>8. Cookies y sesiones</h2>
+        <p>MIRAE utiliza únicamente una cookie de sesión técnica, necesaria para mantener la sesión del usuario autenticado. Esta cookie:</p>
+        <ul>
+            <li>Es de tipo <strong>HttpOnly</strong> (no accesible por JavaScript)</li>
+            <li>Tiene una duración máxima de <strong>8 horas</strong>, tras las cuales la sesión expira automáticamente</li>
+            <li>Se elimina al cerrar sesión explícitamente</li>
+            <li>No se utiliza para rastreo, publicidad ni análisis de comportamiento</li>
+        </ul>
+        <p>No se utilizan cookies de terceros, cookies de seguimiento ni tecnologías similares como pixels de seguimiento o fingerprinting.</p>
+    </div>
+
+    <div class="legal-section" id="terceros">
+        <h2>9. Servicios de terceros</h2>
+        <p>MIRAE utiliza los siguientes recursos de terceros únicamente para el funcionamiento de la interfaz:</p>
+        <ul>
+            <li><strong>Bootstrap 5</strong> (CDN de jsDelivr): librería de estilos cargada desde CDN externo</li>
+            <li><strong>Bootstrap Icons</strong> (CDN de jsDelivr): iconografía de la interfaz</li>
+            <li><strong>FullCalendar</strong> (CDN de jsDelivr): componente de calendario interactivo</li>
+        </ul>
+        <p>Estos recursos no reciben datos personales de los usuarios. Son bibliotecas de interfaz cargadas desde CDN públicos. No se integra ningún sistema de analítica externo (Google Analytics, Hotjar, etc.).</p>
+    </div>
+
+    <div class="legal-section" id="menores">
+        <h2>10. Menores de edad</h2>
+        <p>MIRAE no está diseñado para ser utilizado directamente por menores de 14 años. Si una organización registra menores en el sistema, es responsabilidad de dicha organización contar con el consentimiento de sus tutores legales. MIRAE no verifica la edad de los usuarios registrados por las organizaciones.</p>
+    </div>
+
+    <div class="legal-section" id="cambios-privacidad">
+        <h2>11. Cambios en esta política</h2>
+        <p>Esta Política de Privacidad puede actualizarse en cualquier momento. La fecha de última actualización se indica en la parte superior de este documento. Le recomendamos revisarla periódicamente. El uso continuado del Servicio tras la publicación de cambios implica la aceptación de la política actualizada.</p>
+    </div>
+
+    <div class="legal-section" id="contacto-privacidad">
+        <h2>12. Contacto</h2>
+        <p>Para cualquier consulta relacionada con el tratamiento de sus datos personales:</p>
+        <p><i class="bi bi-envelope-fill me-2" style="color:#26A69A;"></i><a href="mailto:soporte.mirae@gmail.com" style="color:#26A69A;">soporte.mirae@gmail.com</a></p>
+        <p class="text-muted" style="font-size:0.9rem;">Intentamos responder en un plazo máximo de 5 días hábiles.</p>
+    </div>
+
+    <div class="text-center mt-5 pt-3 border-top">
+        <a th:href="@{/}" style="color:#26A69A; text-decoration:none;"><i class="bi bi-arrow-left me-1"></i>Volver al inicio</a>
+        <span class="mx-3 text-muted">·</span>
+        <a th:href="@{/terms}" style="color:#26A69A; text-decoration:none;">Términos del Servicio</a>
+        <span class="mx-3 text-muted">·</span>
+        <a th:href="@{/support}" style="color:#26A69A; text-decoration:none;">Soporte</a>
+    </div>
+</div>
+
+<footer class="footer-landing">
+    <div class="container text-center">
+        <p class="footer-copyright mb-0">&copy; 2026 MIRAE - Sistema de Control de Asistencia. Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

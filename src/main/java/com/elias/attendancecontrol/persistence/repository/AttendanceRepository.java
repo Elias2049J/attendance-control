@@ -20,6 +20,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     boolean existsBySessionAndUser(Session session, User user);
     boolean existsBySession_IdAndUser_Id(Long sessionId, Long userId);
     boolean existsBySession(Session session);
+    long countBySession(Session session);
 
     List<Attendance> findAllByUser_IdAndSession_Activity_Id(Long userId, Long sessionActivityId);
 

@@ -116,7 +116,8 @@
                                     <label for="singleEventDate" class="form-label">
                                         <i class="bi bi-calendar-check"></i> ¿Cuándo se realizará? *
                                     </label>
-                                    <input type="date" class="form-control" id="singleEventDate">
+                                    <input type="date" class="form-control" id="singleEventDate"
+                                           th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
                                     <small class="text-muted">Seleccione la fecha del evento</small>
                                 </div>
                             </div>
@@ -132,7 +133,8 @@
                                             <i class="bi bi-calendar-event"></i> ¿Desde cuándo? *
                                         </label>
                                         <input type="date" class="form-control" id="startDate" name="startDate"
-                                               th:value="${activity.recurrenceRule != null ? activity.recurrenceRule.startDate : ''}">
+                                               th:value="${activity.recurrenceRule != null ? activity.recurrenceRule.startDate : ''}"
+                                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
                                         <small class="text-muted">Fecha de inicio de la repetición</small>
                                     </div>
                                     <div class="col-md-6 mb-3">
@@ -140,7 +142,8 @@
                                             <i class="bi bi-calendar-x"></i> ¿Hasta cuándo? (opcional)
                                         </label>
                                         <input type="date" class="form-control" id="endDate" name="endDate"
-                                               th:value="${activity.recurrenceRule != null ? activity.recurrenceRule.endDate : ''}">
+                                               th:value="${activity.recurrenceRule != null ? activity.recurrenceRule.endDate : ''}"
+                                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
                                         <small class="text-muted">Dejar vacío si no tiene fecha fin</small>
                                     </div>
                                 </div>

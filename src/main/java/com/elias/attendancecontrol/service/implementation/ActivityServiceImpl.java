@@ -149,7 +149,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Transactional(readOnly = true)
     public List<Activity> listActivitiesSorted() {
         return securityUtils.getCurrentOrganizationId()
-                .map(activityRepository::findByOrganizationId)
+                .map(activityRepository::findByOrganizationIdWithDetails)
                 .orElseGet(() -> activityRepository.findAll()
                         .stream()
                         .sorted(Comparator.comparing((Activity a) ->
@@ -160,12 +160,12 @@ public class ActivityServiceImpl implements ActivityService {
                         )
                         .toList()
                 );
-
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Activity getActivityById(Long id) {
-        Activity activity =  activityRepository.findById(id)
+        Activity activity = activityRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada"));
         if (activity.getOrganization() != null) {
             securityUtils.validateResourceOwnership(activity.getOrganization().getId());
@@ -182,12 +182,15 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Activity> findByResponsible(Long userId) {
-        return activityRepository.findByResponsibleId(userId)
+        return activityRepository.findByResponsibleIdWithDetails(userId)
                 .stream()
                 .filter(a -> !a.getStatus().isDraft())
                 .sorted(Comparator.comparing(
-                        (Activity a) -> a.getRecurrenceRule().getStartDate())
+                        (Activity a) -> a.getRecurrenceRule() != null
+                                ? a.getRecurrenceRule().getStartDate()
+                                : LocalDate.MAX)
                         .thenComparing(Activity::getId, Comparator.reverseOrder())
                 ).toList();
     }
@@ -252,13 +255,18 @@ public class ActivityServiceImpl implements ActivityService {
         if (activity.getStatus().isFinalState()) {
             throw new IllegalStateException("La actividad ya está en estado final");
         }
+        List<Session> sessions = sessionRepository.findByActivityAndStatus(activity, SessionStatus.PLANNED);
+        sessions.addAll(sessionRepository.findByActivityAndStatus(activity, SessionStatus.ACTIVE));
+        sessions.forEach(s -> s.setStatus(SessionStatus.CANCELLED));
+        sessionRepository.saveAll(sessions);
+        log.debug("Cancelled {} sessions for activity: {}", sessions.size(), activityId);
         activity.setStatus(ActivityStatus.CANCELLED);
         activityRepository.save(activity);
 
         securityUtils.getCurrentUser().ifPresent(currentUser ->
             logService.log(builder -> builder
                     .eventType("ACTIVITY_CANCELLED")
-                    .description("Actividad cancelada: " + activity.getName())
+                    .description("Actividad cancelada: " + activity.getName() + " (" + sessions.size() + " sesiones canceladas)")
                     .user(currentUser)
                     .organization(currentUser.getOrganization())
             )
@@ -357,6 +365,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isResponsible(Long activityId, Long userId) {
         long responsibleId = getActivityById(activityId)
                 .getResponsible().getId();

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos del Servicio - MIRAE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/landing.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        body { background: #f8f9fa; }
+        .legal-hero {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495e 100%);
+            padding: 100px 0 60px;
+            color: white;
+        }
+        .legal-hero h1 { font-size: 2.5rem; font-weight: 700; }
+        .legal-hero p { color: rgba(255,255,255,0.8); font-size: 1.05rem; }
+        .legal-body { max-width: 860px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+        .legal-section { margin-bottom: 2.5rem; }
+        .legal-section h2 {
+            color: #2C3E50;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-left: 4px solid #26A69A;
+            padding-left: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .legal-section p, .legal-section li { color: #444; line-height: 1.8; font-size: 0.97rem; }
+        .legal-section ul { padding-left: 1.4rem; }
+        .legal-section ul li { margin-bottom: 0.4rem; }
+        .badge-beta {
+            background: #26A69A;
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 600;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        .alert-beta {
+            background: #e8f5e9;
+            border-left: 4px solid #26A69A;
+            color: #2C3E50;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .toc { background: #fff; border-radius: 10px; padding: 1.5rem 2rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin-bottom: 2.5rem; }
+        .toc h3 { font-size: 1rem; font-weight: 700; color: #2C3E50; margin-bottom: 0.75rem; }
+        .toc a { color: #26A69A; text-decoration: none; font-size: 0.93rem; display: block; padding: 0.2rem 0; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar-landing">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <a class="navbar-brand" th:href="@{/}">MIRAE</a>
+            <div class="d-flex align-items-center gap-3">
+                <a th:href="@{/auth/login}" class="nav-link">Ingresar</a>
+                <a th:href="@{/organizations/register}" class="btn btn-register">Registrarse</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="legal-hero text-center">
+    <div class="container">
+        <h1><i class="bi bi-file-earmark-text me-2"></i>Términos del Servicio <span class="badge-beta">BETA</span></h1>
+        <p class="mt-2">Última actualización: marzo 2026</p>
+    </div>
+</div>
+
+<div class="legal-body">
+
+    <div class="alert-beta">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        <strong>Versión de prueba:</strong> MIRAE se encuentra actualmente en fase beta. El servicio es gratuito, no tiene fines lucrativos y los datos serán eliminados al finalizar esta etapa.
+    </div>
+
+    <div class="toc">
+        <h3><i class="bi bi-list-ul me-1"></i> Contenido</h3>
+        <a href="#aceptacion">1. Aceptación de los términos</a>
+        <a href="#descripcion">2. Descripción del servicio</a>
+        <a href="#uso-permitido">3. Uso permitido</a>
+        <a href="#uso-prohibido">4. Conducta prohibida</a>
+        <a href="#cuentas">5. Cuentas y responsabilidades</a>
+        <a href="#datos">6. Datos y privacidad</a>
+        <a href="#beta">7. Condiciones de la versión beta</a>
+        <a href="#disponibilidad">8. Disponibilidad del servicio</a>
+        <a href="#propiedad">9. Propiedad intelectual</a>
+        <a href="#limitacion">10. Limitación de responsabilidad</a>
+        <a href="#modificaciones">11. Modificaciones</a>
+        <a href="#contacto-legal">12. Contacto</a>
+    </div>
+
+    <div class="legal-section" id="aceptacion">
+        <h2>1. Aceptación de los términos</h2>
+        <p>Al acceder y utilizar MIRAE ("el Servicio"), usted acepta quedar vinculado por estos Términos del Servicio. Si no está de acuerdo con alguna de las condiciones aquí establecidas, le solicitamos que no utilice el Servicio. El uso continuado de la plataforma implica la aceptación plena de estos términos.</p>
+    </div>
+
+    <div class="legal-section" id="descripcion">
+        <h2>2. Descripción del servicio</h2>
+        <p>MIRAE es un sistema de control de asistencia basado en la nube, diseñado para organizaciones que necesitan gestionar la participación de sus miembros en actividades y sesiones. El Servicio incluye:</p>
+        <ul>
+            <li>Registro de asistencia mediante códigos QR</li>
+            <li>Gestión de actividades con recurrencia configurable</li>
+            <li>Administración de miembros y roles dentro de la organización</li>
+            <li>Generación de reportes y estadísticas de participación</li>
+            <li>Calendario de sesiones</li>
+        </ul>
+    </div>
+
+    <div class="legal-section" id="uso-permitido">
+        <h2>3. Uso permitido</h2>
+        <p>El Servicio está destinado exclusivamente a:</p>
+        <ul>
+            <li>Organizaciones legalmente constituidas o grupos organizados con fines lícitos</li>
+            <li>Registro y control de asistencia de personas que han dado su consentimiento para participar</li>
+            <li>Gestión interna de actividades y miembros</li>
+        </ul>
+        <p>El uso debe realizarse de buena fe, respetando la normativa aplicable en el país del usuario y los derechos de terceros.</p>
+    </div>
+
+    <div class="legal-section" id="uso-prohibido">
+        <h2>4. Conducta prohibida</h2>
+        <p>Queda estrictamente prohibido:</p>
+        <ul>
+            <li>Utilizar el Servicio para actividades ilegales, fraudulentas o que vulneren derechos de terceros</li>
+            <li>Registrar asistencia de personas sin su conocimiento o consentimiento</li>
+            <li>Intentar acceder a datos de otras organizaciones o usuarios</li>
+            <li>Realizar ingeniería inversa, descompilar o alterar el Servicio</li>
+            <li>Sobrecargar intencionalmente los servidores o realizar ataques de denegación de servicio</li>
+            <li>Compartir credenciales de acceso con terceros no autorizados</li>
+            <li>Introducir malware, virus u otro código malicioso</li>
+        </ul>
+    </div>
+
+    <div class="legal-section" id="cuentas">
+        <h2>5. Cuentas y responsabilidades</h2>
+        <p>Al registrar una organización en MIRAE, el representante (Owner) asume la responsabilidad de:</p>
+        <ul>
+            <li>Proporcionar información veraz y actualizada durante el registro</li>
+            <li>Mantener la confidencialidad de las credenciales de acceso</li>
+            <li>Gestionar correctamente los roles y permisos de los miembros de su organización</li>
+            <li>Notificar inmediatamente cualquier acceso no autorizado al correo de soporte</li>
+            <li>Garantizar que el uso del Servicio por parte de sus miembros cumpla con estos términos</li>
+        </ul>
+        <p>MIRAE se reserva el derecho de suspender o eliminar cuentas que incumplan estos términos, sin previo aviso en casos graves.</p>
+    </div>
+
+    <div class="legal-section" id="datos">
+        <h2>6. Datos y privacidad</h2>
+        <p>Los datos ingresados en el Servicio (nombres, correos electrónicos, registros de asistencia) son propiedad de la organización que los introduce. MIRAE actúa únicamente como procesador técnico de dichos datos y no los comercializa, comparte ni utiliza con ningún otro propósito que no sea el funcionamiento del Servicio.</p>
+        <p>Para más detalles, consulte nuestra <a th:href="@{/privacy}" style="color:#26A69A;">Política de Privacidad</a>.</p>
+    </div>
+
+    <div class="legal-section" id="beta">
+        <h2>7. Condiciones de la versión beta</h2>
+        <p>MIRAE se encuentra actualmente en fase de prueba (beta). En consecuencia:</p>
+        <ul>
+            <li>El Servicio se ofrece de forma completamente gratuita y sin garantías de continuidad</li>
+            <li>El proyecto no tiene fines lucrativos en esta etapa</li>
+            <li><strong>Todos los datos serán eliminados de forma permanente al concluir la fase beta</strong>, sin posibilidad de recuperación posterior</li>
+            <li>Las funcionalidades pueden cambiar, añadirse o eliminarse sin previo aviso</li>
+            <li>Pueden producirse interrupciones del servicio sin notificación previa</li>
+        </ul>
+        <p>Se recomienda no almacenar datos críticos o sensibles en la plataforma durante esta fase.</p>
+    </div>
+
+    <div class="legal-section" id="disponibilidad">
+        <h2>8. Disponibilidad del servicio</h2>
+        <p>MIRAE no garantiza una disponibilidad del 100%. El Servicio puede experimentar interrupciones por mantenimiento, actualizaciones o causas de fuerza mayor. No nos hacemos responsables de pérdidas derivadas de la indisponibilidad temporal del Servicio durante la fase beta.</p>
+    </div>
+
+    <div class="legal-section" id="propiedad">
+        <h2>9. Propiedad intelectual</h2>
+        <p>El código fuente, diseño, marcas, logotipos y contenido del Servicio son propiedad intelectual de sus desarrolladores. No se concede ninguna licencia para reproducir, distribuir o crear obras derivadas sin autorización expresa y por escrito. Los datos generados por las organizaciones usuarias permanecen siendo propiedad de dichas organizaciones.</p>
+    </div>
+
+    <div class="legal-section" id="limitacion">
+        <h2>10. Limitación de responsabilidad</h2>
+        <p>En la máxima medida permitida por la ley aplicable, MIRAE y sus desarrolladores no serán responsables por:</p>
+        <ul>
+            <li>Pérdida de datos durante o después de la fase beta</li>
+            <li>Daños directos, indirectos o consecuentes derivados del uso o imposibilidad de uso del Servicio</li>
+            <li>Decisiones tomadas por organizaciones basadas en los datos o reportes generados por el Servicio</li>
+        </ul>
+        <p>El Servicio se proporciona "tal cual" (as-is) y "según disponibilidad" (as-available), sin garantías de ningún tipo, expresas o implícitas.</p>
+    </div>
+
+    <div class="legal-section" id="modificaciones">
+        <h2>11. Modificaciones a los términos</h2>
+        <p>MIRAE se reserva el derecho de modificar estos Términos en cualquier momento. Los cambios entrarán en vigor desde su publicación en esta página. El uso continuado del Servicio tras la publicación de modificaciones implica la aceptación de los nuevos términos. Se recomienda revisar esta página periódicamente.</p>
+    </div>
+
+    <div class="legal-section" id="contacto-legal">
+        <h2>12. Contacto</h2>
+        <p>Para consultas relacionadas con estos Términos del Servicio, puede contactarnos en:</p>
+        <p><i class="bi bi-envelope-fill me-2" style="color:#26A69A;"></i><a href="mailto:soporte.mirae@gmail.com" style="color:#26A69A;">soporte.mirae@gmail.com</a></p>
+    </div>
+
+    <div class="text-center mt-5 pt-3 border-top">
+        <a th:href="@{/}" style="color:#26A69A; text-decoration:none;"><i class="bi bi-arrow-left me-1"></i>Volver al inicio</a>
+        <span class="mx-3 text-muted">·</span>
+        <a th:href="@{/privacy}" style="color:#26A69A; text-decoration:none;">Política de Privacidad</a>
+        <span class="mx-3 text-muted">·</span>
+        <a th:href="@{/support}" style="color:#26A69A; text-decoration:none;">Soporte</a>
+    </div>
+</div>
+
+<footer class="footer-landing">
+    <div class="container text-center">
+        <p class="footer-copyright mb-0">&copy; 2026 MIRAE - Sistema de Control de Asistencia. Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

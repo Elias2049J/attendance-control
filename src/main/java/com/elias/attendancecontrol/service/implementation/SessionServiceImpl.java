@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class SessionServiceImpl implements SessionService {
     private final ActivityRepository activityRepository;
     private final ActivityIncidentRepository activityIncidentRepository;
     private final QrTokenRepository qrTokenRepository;
+    private final AttendanceRepository attendanceRepository;
     private final LogService logService;
     private final SecurityUtils securityUtils;
 
@@ -38,9 +40,18 @@ public class SessionServiceImpl implements SessionService {
                 "Solo se pueden activar sesiones en estado PLANNED. Estado actual: " + session.getStatus().getDisplayName());
         }
         LocalDate today = LocalDate.now();
-        if (session.getSessionDate().isAfter(today.plusDays(1))) {
+        if (session.getSessionDate().isAfter(today)) {
             throw new IllegalStateException(
-                "No se puede activar una sesión con más de 1 día de anticipación");
+                "No se puede activar una sesión con fecha futura");
+        }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime allowedActivationStart = LocalDateTime.of(
+                session.getSessionDate(), session.getStartTime())
+                .minusMinutes(session.getToleranceMinutes());
+        if (now.isBefore(allowedActivationStart)) {
+            throw new IllegalStateException(
+                "No se puede activar la sesión antes de los " + session.getToleranceMinutes() +
+                " minutos previos al inicio (" + session.getStartTime() + ")");
         }
         session.setStatus(SessionStatus.ACTIVE);
         Session savedSession = sessionRepository.save(session);
@@ -77,7 +88,7 @@ public class SessionServiceImpl implements SessionService {
                 .description("Sesión cerrada: " + session.getId())
                 .session(session)
                 .user(securityUtils.getCurrentUser().orElse(null))
-                .details("Asistencias registradas: " + session.getAttendances().size())
+                .details("Asistencias registradas: " + attendanceRepository.countBySession(session))
         );
         log.info("Session closed successfully: {}", id);
 
@@ -103,7 +114,7 @@ public class SessionServiceImpl implements SessionService {
     @Override
     @Transactional(readOnly = true)
     public Session getSessionById(Long id) {
-        return sessionRepository.findById(id)
+        return sessionRepository.findByIdWithActivityAndOrganization(id)
                 .orElseThrow(() -> new IllegalArgumentException("Sesión no encontrada"));
     }
 
@@ -125,9 +136,12 @@ public class SessionServiceImpl implements SessionService {
     public boolean canActivate(Long sessionId) {
         try {
             Session session = getSessionById(sessionId);
-            LocalDate today = LocalDate.now();
-            return session.getStatus().isPlanned()
-                && !session.getSessionDate().isAfter(today.plusDays(1));
+            if (!session.getStatus().isPlanned()) return false;
+            java.time.LocalDateTime now = java.time.LocalDateTime.now();
+            java.time.LocalDateTime allowedStart = java.time.LocalDateTime.of(
+                    session.getSessionDate(), session.getStartTime())
+                    .minusMinutes(session.getToleranceMinutes());
+            return !now.isBefore(allowedStart);
         } catch (IllegalArgumentException e) {
             return false;
         }

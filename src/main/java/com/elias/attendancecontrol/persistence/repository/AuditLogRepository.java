@@ -15,9 +15,14 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
     List<AuditLog> findByEventType(String eventType);
     List<AuditLog> findByEventDateBetween(LocalDateTime start, LocalDateTime end);
     List<AuditLog> findByUserAndEventDateBetween(User user, LocalDateTime start, LocalDateTime end);
-    @Query("SELECT a FROM AuditLog a WHERE a.user.organization.id = :orgId ORDER BY a.eventDate DESC")
+
+    @Query("SELECT a FROM AuditLog a LEFT JOIN FETCH a.user ORDER BY a.eventDate DESC")
+    List<AuditLog> findAllWithUser();
+
+    @Query("SELECT a FROM AuditLog a LEFT JOIN FETCH a.user WHERE a.user.organization.id = :orgId ORDER BY a.eventDate DESC")
     List<AuditLog> findByOrganization(@Param("orgId") Long organizationId);
-    @Query("SELECT a FROM AuditLog a WHERE " +
+
+    @Query("SELECT a FROM AuditLog a LEFT JOIN FETCH a.user WHERE " +
            "(:userId IS NULL OR a.user.id = :userId) AND " +
            "(:eventType IS NULL OR a.eventType = :eventType) AND " +
            "(:startDate IS NULL OR a.eventDate >= :startDate) AND " +
@@ -27,7 +32,8 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
                               @Param("eventType") String eventType,
                               @Param("startDate") LocalDateTime startDate,
                               @Param("endDate") LocalDateTime endDate);
-    @Query("SELECT a FROM AuditLog a WHERE " +
+
+    @Query("SELECT a FROM AuditLog a LEFT JOIN FETCH a.user WHERE " +
            "a.user.organization.id = :orgId AND " +
            "(:userId IS NULL OR a.user.id = :userId) AND " +
            "(:eventType IS NULL OR a.eventType = :eventType) AND " +

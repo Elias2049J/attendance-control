@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soporte - MIRAE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/landing.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        body { background: #f8f9fa; }
+        .legal-hero {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495e 100%);
+            padding: 100px 0 60px;
+            color: white;
+        }
+        .legal-hero h1 { font-size: 2.5rem; font-weight: 700; }
+        .legal-hero p { color: rgba(255,255,255,0.8); font-size: 1.05rem; }
+        .support-body { max-width: 900px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+        .contact-card {
+            background: linear-gradient(135deg, #2C3E50, #26A69A);
+            color: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            box-shadow: 0 8px 30px rgba(38, 166, 154, 0.25);
+        }
+        .contact-card h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .contact-card p { color: rgba(255,255,255,0.85); font-size: 1rem; margin-bottom: 1.5rem; }
+        .contact-email-btn {
+            background: white;
+            color: #2C3E50;
+            padding: 0.85rem 2.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        .contact-email-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); color: #26A69A; }
+        .contact-email-btn i { margin-right: 0.5rem; color: #26A69A; }
+        .faq-section h2 {
+            color: #2C3E50;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .faq-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 1.1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #2C3E50;
+            font-size: 0.97rem;
+            user-select: none;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        .faq-question:hover { background: #f5f5f5; }
+        .faq-question .faq-icon { color: #26A69A; font-size: 1.1rem; transition: transform 0.2s; flex-shrink: 0; margin-left: 1rem; }
+        .faq-question.open .faq-icon { transform: rotate(45deg); }
+        .faq-answer {
+            display: none;
+            padding: 0 1.5rem 1.2rem;
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            border-top: 1px solid #f0f0f0;
+        }
+        .faq-answer.show { display: block; }
+        .faq-category-title {
+            color: #26A69A;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 2rem 0 0.75rem;
+        }
+        .step-list { padding-left: 0; list-style: none; }
+        .step-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            color: #555;
+        }
+        .step-number {
+            background: #26A69A;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        code { background: #f0f0f0; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.88rem; color: #c0392b; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar-landing">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <a class="navbar-brand" th:href="@{/}">MIRAE</a>
+            <div class="d-flex align-items-center gap-3">
+                <a th:href="@{/auth/login}" class="nav-link">Ingresar</a>
+                <a th:href="@{/organizations/register}" class="btn btn-register">Registrarse</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="legal-hero text-center">
+    <div class="container">
+        <h1><i class="bi bi-headset me-2"></i>Centro de Soporte</h1>
+        <p class="mt-2">Soluciones para los problemas más comunes al comenzar a usar MIRAE</p>
+    </div>
+</div>
+
+<div class="support-body">
+
+    <!-- Contacto -->
+    <div class="contact-card">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;"><i class="bi bi-envelope-heart"></i></div>
+        <h2>¿No encontraste lo que buscabas?</h2>
+        <p>Escríbenos directamente. Respondemos en un plazo máximo de 48 horas hábiles.</p>
+        <a href="mailto:soporte.mirae@gmail.com" class="contact-email-btn">
+            <i class="bi bi-envelope-fill"></i>soporte.mirae@gmail.com
+        </a>
+        <p class="mt-3" style="font-size:0.85rem; color:rgba(255,255,255,0.65);">
+            Incluye el nombre de tu organización y una descripción detallada del problema.
+        </p>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section">
+        <h2><i class="bi bi-question-circle me-2" style="color:#26A69A;"></i>Preguntas frecuentes</h2>
+
+        <!-- REGISTRO Y ACCESO -->
+        <div class="faq-category-title"><i class="bi bi-person-plus me-1"></i>Registro y acceso</div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                ¿Cómo registro mi organización en MIRAE?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <ul class="step-list">
+                    <li><span class="step-number">1</span> Haz clic en <strong>Registrarse</strong> en la página de inicio.</li>
+                    <li><span class="step-number">2</span> Completa el formulario con el nombre de tu organización, un <em>slug</em> único (identificador en la URL, solo letras minúsculas, números y guiones) y tus datos de representante.</li>
+                    <li><span class="step-number">3</span> Recibirás acceso inmediato como Owner (propietario) de la organización.</li>
+                    <li><span class="step-number">4</span> Desde el panel, puedes comenzar a añadir miembros y crear actividades.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                No puedo iniciar sesión, ¿qué hago?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <p>Verifica lo siguiente:</p>
+                <ul class="step-list">
+                    <li><span class="step-number">1</span> Asegúrate de estar ingresando tu <strong>nombre de usuario</strong> (no el correo electrónico).</li>
+                    <li><span class="step-number">2</span> Las contraseñas distinguen mayúsculas de minúsculas. Verifica que <code>Caps Lock</code> no esté activado.</li>
+                    <li><span class="step-number">3</span> Si tu cuenta fue creada por un administrador de tu organización, pídele que verifique que tu cuenta esté <strong>activa</strong>.</li>
+                    <li><span class="step-number">4</span> Si ninguno de los anteriores aplica, contacta a <a href="mailto:soporte.mirae@gmail.com" style="color:#26A69A;">soporte.mirae@gmail.com</a> indicando tu nombre de usuario y organización.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                ¿Qué es el "slug" de la organización?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <p>El slug es el identificador único de tu organización que aparece en las URLs del sistema. Por ejemplo, si tu organización se llama "Academia Norte", su slug podría ser <code>academia-norte</code>. Los participantes usarán ese slug en el enlace para registrar asistencia por QR.</p>
+                <p>Solo se admiten <strong>letras minúsculas sin acentos, números y guiones</strong>. No puede contener espacios ni caracteres especiales.</p>
+            </div>
+        </div>
+
+        <!-- MIEMBROS Y ROLES -->
+        <div class="faq-category-title"><i class="bi bi-people me-1"></i>Miembros y roles</div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                ¿Cómo añado miembros a mi organización?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <ul class="step-list">
+                    <li><span class="step-number">1</span> Ve a <strong>Miembros</strong> en el menú lateral izquierdo.</li>
+                    <li><span class="step-number">2</span> Haz clic en el botón <strong>Agregar Miembro</strong> (esquina superior derecha).</li>
+                    <li><span class="step-number">3</span> Completa el formulario con los datos del nuevo miembro. Se creará su usuario y podrá acceder con las credenciales asignadas.</li>
+                </ul>
+                <p>Los administradores pueden añadir miembros con rol <strong>Miembro</strong>. Solo el Owner puede crear administradores.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                ¿Cuál es la diferencia entre Owner, Administrador y Miembro?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <ul>
+                    <li><strong>Owner (Propietario):</strong> acceso total. Puede gestionar todo, incluidos administradores y la configuración de la organización. Solo puede haber uno.</li>
+                    <li><strong>Administrador:</strong> puede crear y gestionar actividades, inscribir/remover participantes y ver reportes. No puede cambiar la configuración de la organización ni gestionar otros administradores.</li>
+                    <li><strong>Miembro:</strong> puede ver actividades en las que está inscrito, registrar asistencia mediante QR y acceder a su historial de participación. Si es designado responsable de una actividad, puede activar y cerrar sesiones.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Un miembro no puede iniciar sesión aunque su cuenta fue creada. ¿Por qué?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <p>La causa más común es que la cuenta esté <strong>deshabilitada</strong>. Puedes cambiarlo directamente desde la lista de miembros sin necesidad de entrar a editar:</p>
+                <ul class="step-list">
+                    <li><span class="step-number">1</span> Ve a <strong>Miembros</strong> en el menú lateral izquierdo.</li>
+                    <li><span class="step-number">2</span> Ubica al miembro en la tabla. En la columna <strong>Estado</strong> verás un botón que dice <code>Deshabilitado</code> (en gris).</li>
+                    <li><span class="step-number">3</span> Haz clic en ese botón desplegable y selecciona <strong>Activo</strong> en el menú que aparece.</li>
+                    <li><span class="step-number">4</span> Confirma el cambio en el diálogo. El estado cambiará inmediatamente a <code>Activo</code> (en verde) y el miembro podrá iniciar sesión.</li>
+                </ul>
+                <p class="mt-2" style="color:#888; font-size:0.88rem;"><i class="bi bi-info-circle me-1"></i>Si el miembro estaba activo y ya no puede ingresar, verifica también que no haya un problema con sus credenciales (ver pregunta anterior).</p>
+            </div>
+        </div>
+
+        <!-- ACTIVIDADES Y SESIONES -->
+        <div class="faq-category-title"><i class="bi bi-calendar-event me-1"></i>Actividades y sesiones</div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Creé una actividad pero no aparece en el calendario ni en la lista. ¿Por qué?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <p>Las actividades recién creadas quedan en estado <strong>Borrador</strong> y no son visibles para los miembros ni generan sesiones en el calendario hasta que se activen. Para activarla:</p>
+                <ul class="step-list">
+                    <li><span class="step-number">1</span> Ve a <strong>Actividades</strong> desde el menú lateral y abre la actividad.</li>
+                    <li><span class="step-number">2</span> En el panel lateral derecho (<em>Acciones</em>), verás el botón verde <strong>"Activar y Generar Sesiones"</strong>. Haz clic en él.</li>
+                    <li><span class="step-number">3</span> El estado cambiará de <code>Borrador</code> a <code>Programada</code> y todas las sesiones serán creadas automáticamente según la recurrencia configurada.</li>
+                </ul>
+                <p class="mt-2" style="color:#888; font-size:0.88rem;"><i class="bi bi-info-circle me-1"></i>Si el botón no aparece, verifica que la actividad tenga una programación configurada (fecha, horario y tipo de recurrencia). Si falta algún dato, el sistema mostrará una advertencia con un enlace para configurarla.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                No puedo activar una sesión aunque la actividad ya está activa.
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <p>Las sesiones solo se pueden activar dentro de la <strong>ventana de tiempo permitida</strong>: desde los minutos de tolerancia configurados <em>antes</em> del horario de inicio. Por ejemplo, con 15 minutos de tolerancia, una sesión de las 15:00 puede activarse a partir de las 14:45 del mismo día.</p>
+                <p>Si intentas activarla antes de esa ventana, el botón <strong>Activar</strong> no aparecerá disponible en la tabla de sesiones de la actividad. Esto es intencional: evita que los participantes puedan registrar asistencia horas antes del horario real.</p>
+                <p>Al activar la sesión, el sistema también <strong>genera automáticamente un código QR</strong> para el registro de asistencia, y te redirige a la pantalla de gestión con el QR visible.</p>
+                <p class="mt-1" style="color:#888; font-size:0.88rem;"><i class="bi bi-info-circle me-1"></i>Los miembros designados como responsables de la actividad también pueden activar sesiones.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                ¿Por qué no puedo seleccionar una fecha de inicio en el pasado al crear o editar una actividad?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <p>MIRAE no permite programar actividades con fecha de inicio anterior a hoy. El selector de fecha bloquea automáticamente las fechas pasadas, y si se intenta enviar el formulario con una fecha anterior, el sistema la rechazará con un mensaje de error.</p>
+                <p>Esto garantiza que todas las sesiones generadas correspondan a fechas futuras reales. Si necesitas registrar asistencias históricas de forma excepcional, contacta a <a href="mailto:soporte.mirae@gmail.com" style="color:#26A69A;">soporte.mirae@gmail.com</a>.</p>
+            </div>
+        </div>
+
+        <!-- REGISTRO DE ASISTENCIA POR QR -->
+        <div class="faq-category-title"><i class="bi bi-qr-code-scan me-1"></i>Registro de asistencia con QR</div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                El participante escanea el QR pero recibe un error. ¿Cuál puede ser la causa?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <p>Los errores más frecuentes al escanear el QR son:</p>
+                <ul>
+                    <li><strong>"QR inválido o expirado":</strong> el código QR se regenera automáticamente cada minuto. Si el participante tardó en abrir el enlace, el código puede haber cambiado. Pídele que escanee el QR nuevamente.</li>
+                    <li><strong>"La sesión no está activa":</strong> el responsable aún no ha activado la sesión. Debe activarla primero desde su panel.</li>
+                    <li><strong>"Fuera del horario permitido":</strong> el escaneo ocurrió fuera de la ventana de asistencia (antes de la hora de tolerancia o después del límite). Verifica la hora configurada.</li>
+                    <li><strong>"Ya existe un registro":</strong> el participante ya registró asistencia en esta sesión. No se permiten registros duplicados.</li>
+                    <li><strong>"Usuario no inscrito":</strong> si la actividad requiere inscripción, el participante debe estar inscrito antes de poder registrar asistencia.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                ¿El participante necesita instalar alguna aplicación para escanear el QR?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <p><strong>No.</strong> El QR contiene un enlace web. El participante solo necesita:</p>
+                <ul class="step-list">
+                    <li><span class="step-number">1</span> Abrir la cámara de su teléfono (o cualquier lector de QR).</li>
+                    <li><span class="step-number">2</span> Apuntar al código QR mostrado en pantalla.</li>
+                    <li><span class="step-number">3</span> Tocar el enlace que aparece.</li>
+                    <li><span class="step-number">4</span> Si no tiene sesión iniciada, se le pedirá que inicie sesión con sus credenciales de MIRAE.</li>
+                    <li><span class="step-number">5</span> La asistencia se registra automáticamente.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- REPORTES -->
+        <div class="faq-category-title"><i class="bi bi-bar-chart me-1"></i>Reportes y datos</div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                ¿Cómo exporto un reporte de asistencia?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <ul class="step-list">
+                    <li><span class="step-number">1</span> Ve a <strong>Reportes</strong> en el menú lateral.</li>
+                    <li><span class="step-number">2</span> Verás tres secciones: <strong>Reporte General</strong>, <strong>Reporte por Actividad</strong> y <strong>Reporte por Miembro</strong>.</li>
+                    <li><span class="step-number">3</span> Selecciona el rango de fechas (y la actividad o miembro si aplica).</li>
+                    <li><span class="step-number">4</span> Haz clic en <strong>Exportar PDF</strong> o <strong>Exportar Excel</strong> directamente en esa sección. El archivo se descargará automáticamente.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                ¿Mis datos se perderán cuando termine la versión beta?
+                <i class="bi bi-plus-circle faq-icon"></i>
+            </button>
+            <div class="faq-answer">
+                <p>Sí. Al concluir la fase beta, <strong>todos los datos serán eliminados de forma permanente</strong>: usuarios, organizaciones, actividades, registros de asistencia e historial. Se notificará con anticipación antes de la eliminación para que puedas exportar los reportes que necesites. Te recomendamos exportar tus datos periódicamente si son importantes para tu organización.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="text-center mt-5 pt-3 border-top">
+        <a th:href="@{/}" style="color:#26A69A; text-decoration:none;"><i class="bi bi-arrow-left me-1"></i>Volver al inicio</a>
+        <span class="mx-3 text-muted">·</span>
+        <a th:href="@{/terms}" style="color:#26A69A; text-decoration:none;">Términos del Servicio</a>
+        <span class="mx-3 text-muted">·</span>
+        <a th:href="@{/privacy}" style="color:#26A69A; text-decoration:none;">Política de Privacidad</a>
+    </div>
+</div>
+
+<footer class="footer-landing">
+    <div class="container text-center">
+        <p class="footer-copyright mb-0">&copy; 2026 MIRAE - Sistema de Control de Asistencia. Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleFaq(btn) {
+        const answer = btn.nextElementSibling;
+        const isOpen = answer.classList.contains('show');
+        document.querySelectorAll('.faq-answer.show').forEach(el => el.classList.remove('show'));
+        document.querySelectorAll('.faq-question.open').forEach(el => el.classList.remove('open'));
+        if (!isOpen) {
+            answer.classList.add('show');
+            btn.classList.add('open');
+        }
+    }
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
